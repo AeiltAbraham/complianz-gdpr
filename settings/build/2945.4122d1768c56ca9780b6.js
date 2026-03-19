@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkcomplianz_settings=globalThis.webpackChunkcomplianz_settings||[]).push([[2945],{32945(e,a,n){n.d(a,{default:()=>s});var o=n(51609),t=n(68394),l=n(86087);const s=(0,l.memo)(({colorValue:e,onChangeComplete:a})=>{const[n,s]=(0,l.useState)(e);return(0,o.createElement)(t.xk,{color:n,onChange:e=>{s(e.hex)},onChangeComplete:a,disableAlpha:!0})})}}]);

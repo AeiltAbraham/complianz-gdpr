@@ -478,6 +478,10 @@ function cmplz_menu() {
 							'id'       => 'settings-data',
 							'title'    => __( 'Data',  'complianz-gdpr'  ),
 						],
+						[
+							'id'       => 'tools-share',
+							'title'    => __( 'Share Settings',  'complianz-gdpr'  ),
+						],
 					],
 				],
 				[

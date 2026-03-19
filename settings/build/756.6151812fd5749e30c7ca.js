@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkcomplianz_settings=globalThis.webpackChunkcomplianz_settings||[]).push([[756],{80756(e,t,a){a.d(t,{default:()=>n});var l=a(51609);const n=(e,t)=>(0,l.createElement)(l.Fragment,null,e&&t.map((e,t)=>(0,l.createElement)("div",{key:t},e)))}}]);

@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkcomplianz_settings=globalThis.webpackChunkcomplianz_settings||[]).push([[9166],{99166(s,t,e){e.d(t,{default:()=>n});const n=s=>function(t){return new Promise(e=>setTimeout(()=>e(t),s))}}}]);

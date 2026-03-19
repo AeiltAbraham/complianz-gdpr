@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkcomplianz_settings=globalThis.webpackChunkcomplianz_settings||[]).push([[1203],{1203(s,l,n){n.d(l,{default:()=>t});const t=()=>null}}]);

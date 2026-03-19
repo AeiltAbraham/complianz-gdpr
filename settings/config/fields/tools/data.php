@@ -45,6 +45,15 @@ function cmplz_tools_data_fields( $fields ) {
 			'label'    => __( "Clear all data from Complianz on uninstall", 'complianz-gdpr' ),
 			'tooltip'  => __( 'Enabling this option will delete all your settings, and the Complianz tables when you deactivate and remove Complianz.', 'complianz-gdpr' ),
 		],
+		[
+			'id'       => 'share_settings',
+			'menu_id'  => 'tools-data',
+			'group_id' => 'tools-share',
+			'disabled' => false,
+			'type'     => 'share',
+			'label'    => __( 'Share Settings', 'complianz-gdpr' ),
+			'tooltip'  => __( 'Share your Complianz settings with another site using a secure key, or import settings from a remote site.', 'complianz-gdpr' ),
+		],
 	] );
 
 }

@@ -58,6 +58,9 @@ const COMPONENT_MAP = {
 	'export': {
 		componentPath: 'Settings/Export/ExportControl',
 	},
+	'share': {
+		componentPath: 'Settings/Export/ShareControl',
+	},
 	'integrations-services': {
 		componentPath: 'Settings/Integrations/ServicesControl',
 	},
