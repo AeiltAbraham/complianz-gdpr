@@ -80,10 +80,11 @@ if ( ! class_exists( 'cmplz_share' ) ) {
 			}
 
 			if ( 'import_remote_settings' === $action ) {
-				$request_data = $request->get_param( 'data' );
-				$url          = isset( $request_data['url'] ) ? esc_url_raw( $request_data['url'] ) : '';
-				$key          = isset( $request_data['key'] ) ? sanitize_text_field( $request_data['key'] ) : '';
-				$data         = $this->import_from_remote( $url, $key );
+				$url = $request->get_param( 'url' );
+				$key = $request->get_param( 'key' );
+				$url = ! empty( $url ) ? esc_url_raw( $url ) : '';
+				$key = ! empty( $key ) ? sanitize_text_field( $key ) : '';
+				$data = $this->import_from_remote( $url, $key );
 			}
 
 			return $data;
@@ -298,9 +299,12 @@ if ( ! class_exists( 'cmplz_share' ) ) {
 						continue;
 					}
 
+					// Fields that reference source-site attachment IDs and should not transfer.
+					$skip_fields = array( 'ID', 'logo_attachment_id' );
+
 					$banner = new CMPLZ_COOKIEBANNER();
 					foreach ( $banner_data as $field_name => $value ) {
-						if ( 'ID' === $field_name ) {
+						if ( in_array( $field_name, $skip_fields, true ) ) {
 							continue;
 						}
 						if ( property_exists( $banner, $field_name ) ) {
