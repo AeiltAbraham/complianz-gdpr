@@ -137,12 +137,12 @@ class CmplzTestShare extends WP_UnitTestCase {
 
 	/**
 	 * Test import_settings with valid data updates options.
+	 * Uses 'use_country' which is a known Complianz field ID.
 	 */
 	public function test_import_settings_updates_options() {
 		$import_data = array(
 			'settings' => array(
-				'use_country' => true,
-				'test_field'  => 'test_value',
+				'use_country' => 'yes',
 			),
 		);
 
@@ -152,7 +152,7 @@ class CmplzTestShare extends WP_UnitTestCase {
 		$this->assertContains( 'settings', $result['imported'] );
 
 		$options = get_option( 'cmplz_options' );
-		$this->assertEquals( 'test_value', $options['test_field'] );
+		$this->assertEquals( 'yes', $options['use_country'] );
 	}
 
 	/**
@@ -163,7 +163,7 @@ class CmplzTestShare extends WP_UnitTestCase {
 			'settings' => array(
 				'a_b_testing'         => true,
 				'a_b_testing_buttons' => true,
-				'other_setting'       => 'value',
+				'use_country'         => 'yes',
 			),
 		);
 
@@ -172,7 +172,7 @@ class CmplzTestShare extends WP_UnitTestCase {
 		$options = get_option( 'cmplz_options' );
 		$this->assertArrayNotHasKey( 'a_b_testing', $options );
 		$this->assertArrayNotHasKey( 'a_b_testing_buttons', $options );
-		$this->assertEquals( 'value', $options['other_setting'] );
+		$this->assertEquals( 'yes', $options['use_country'] );
 	}
 
 	/**
@@ -201,5 +201,119 @@ class CmplzTestShare extends WP_UnitTestCase {
 
 		$this->assertFalse( $result['success'] );
 		$this->assertStringContainsString( 'Invalid key format', $result['message'] );
+	}
+
+	/**
+	 * Test that unknown settings keys are filtered out during import.
+	 */
+	public function test_import_rejects_unknown_settings_keys() {
+		$import_data = array(
+			'settings' => array(
+				'use_country'           => 'yes',
+				'injected_malicious_key' => 'evil_value',
+			),
+		);
+
+		$this->share->import_settings( $import_data );
+
+		$options = get_option( 'cmplz_options' );
+		$this->assertEquals( 'yes', $options['use_country'] );
+		$this->assertArrayNotHasKey( 'injected_malicious_key', $options );
+	}
+
+	/**
+	 * Test that import sanitizes string values.
+	 */
+	public function test_import_sanitizes_string_values() {
+		$import_data = array(
+			'settings' => array(
+				'organisation_name' => '<script>alert("xss")</script>Acme Corp',
+			),
+		);
+
+		$this->share->import_settings( $import_data );
+
+		$options = get_option( 'cmplz_options' );
+		$this->assertStringNotContainsString( '<script>', $options['organisation_name'] );
+		$this->assertStringContainsString( 'Acme Corp', $options['organisation_name'] );
+	}
+
+	/**
+	 * Test that REST download endpoint rejects invalid key format.
+	 */
+	public function test_rest_download_rejects_invalid_key() {
+		$request = new WP_REST_Request( 'POST', '/complianz/v1/share/download' );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_body( wp_json_encode( array( 'key' => 'short' ) ) );
+
+		$response = $this->share->rest_api_share_download( $request );
+
+		$this->assertInstanceOf( 'WP_Error', $response );
+		$this->assertEquals( 'cmplz_invalid_key', $response->get_error_code() );
+	}
+
+	/**
+	 * Test that REST download endpoint rejects wrong key.
+	 */
+	public function test_rest_download_rejects_wrong_key() {
+		// Generate a real key first.
+		$this->share->generate_share_key();
+
+		// Try downloading with a different valid-format key.
+		$wrong_key = str_repeat( 'ab', 32 );
+		$request   = new WP_REST_Request( 'POST', '/complianz/v1/share/download' );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_body( wp_json_encode( array( 'key' => $wrong_key ) ) );
+
+		$response = $this->share->rest_api_share_download( $request );
+
+		$this->assertInstanceOf( 'WP_Error', $response );
+		$this->assertEquals( 'cmplz_invalid_key', $response->get_error_code() );
+	}
+
+	/**
+	 * Test that REST download endpoint returns data with valid key.
+	 */
+	public function test_rest_download_returns_data_with_valid_key() {
+		$result = $this->share->generate_share_key();
+
+		$request = new WP_REST_Request( 'POST', '/complianz/v1/share/download' );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_body( wp_json_encode( array( 'key' => $result['key'] ) ) );
+
+		$response = $this->share->rest_api_share_download( $request );
+
+		$this->assertInstanceOf( 'WP_REST_Response', $response );
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertArrayHasKey( 'settings', $data );
+		$this->assertArrayHasKey( 'banners', $data );
+	}
+
+	/**
+	 * Test that a non-admin user cannot generate a key.
+	 */
+	public function test_non_admin_cannot_generate_key() {
+		// Switch to a subscriber user.
+		$subscriber_id = $this->factory->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$result = $this->share->generate_share_key();
+
+		$this->assertFalse( $result['success'] );
+		$this->assertStringContainsString( 'Unauthorized', $result['message'] );
+	}
+
+	/**
+	 * Test that a non-admin user cannot import settings.
+	 */
+	public function test_non_admin_cannot_import_settings() {
+		$subscriber_id = $this->factory->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$result = $this->share->import_settings( array( 'settings' => array( 'use_country' => 'yes' ) ) );
+
+		$this->assertFalse( $result['success'] );
+		$this->assertStringContainsString( 'Unauthorized', $result['message'] );
 	}
 }

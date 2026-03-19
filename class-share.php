@@ -58,7 +58,7 @@ if ( ! class_exists( 'cmplz_share' ) ) {
 				'complianz/v1',
 				'share/download',
 				array(
-					'methods'             => 'GET',
+					'methods'             => 'POST',
 					'callback'            => array( $this, 'rest_api_share_download' ),
 					'permission_callback' => '__return_true',
 				)
@@ -138,7 +138,8 @@ if ( ! class_exists( 'cmplz_share' ) ) {
 		 * @return WP_REST_Response|WP_Error
 		 */
 		public function rest_api_share_download( $request ) {
-			$key = sanitize_text_field( $request->get_param( 'key' ) );
+			$params = $request->get_json_params();
+			$key    = isset( $params['key'] ) ? sanitize_text_field( $params['key'] ) : '';
 
 			if ( empty( $key ) || ! ctype_xdigit( $key ) || strlen( $key ) !== 64 ) {
 				return new WP_Error(
@@ -227,13 +228,14 @@ if ( ! class_exists( 'cmplz_share' ) ) {
 
 			// Build the endpoint URL.
 			$endpoint = trailingslashit( $url ) . 'wp-json/complianz/v1/share/download';
-			$endpoint = add_query_arg( 'key', $key, $endpoint );
 
-			$response = wp_remote_get(
+			$response = wp_remote_post(
 				$endpoint,
 				array(
 					'timeout'   => 30,
 					'sslverify' => true,
+					'body'      => wp_json_encode( array( 'key' => $key ) ),
+					'headers'   => array( 'Content-Type' => 'application/json' ),
 				)
 			);
 
@@ -253,7 +255,7 @@ if ( ! class_exists( 'cmplz_share' ) ) {
 			$data = json_decode( $body, true );
 
 			if ( 200 !== $code || ! is_array( $data ) ) {
-				$message = isset( $data['message'] ) ? $data['message'] : __( 'Unknown error from the remote site.', 'complianz-gdpr' );
+				$message = isset( $data['message'] ) ? sanitize_text_field( $data['message'] ) : __( 'Unknown error from the remote site.', 'complianz-gdpr' );
 				return array( 'success' => false, 'message' => $message );
 			}
 
@@ -282,7 +284,17 @@ if ( ! class_exists( 'cmplz_share' ) ) {
 			// Import settings.
 			if ( isset( $data['settings'] ) && is_array( $data['settings'] ) ) {
 				$current_settings = get_option( 'cmplz_options', array() );
-				$new_settings     = array_merge( $current_settings, $data['settings'] );
+
+				// Whitelist: only allow known Complianz field IDs.
+				$valid_ids        = $this->get_valid_field_ids();
+				$filtered_import  = array();
+				foreach ( $data['settings'] as $setting_key => $setting_value ) {
+					if ( in_array( $setting_key, $valid_ids, true ) ) {
+						$filtered_import[ $setting_key ] = $this->sanitize_setting_value( $setting_value );
+					}
+				}
+
+				$new_settings = array_merge( $current_settings, $filtered_import );
 
 				// Remove site-specific keys that should not transfer.
 				unset( $new_settings['a_b_testing'] );
@@ -308,9 +320,12 @@ if ( ! class_exists( 'cmplz_share' ) ) {
 							continue;
 						}
 						if ( property_exists( $banner, $field_name ) ) {
-							$banner->{$field_name} = $value;
+							// Sanitize before setting: save() also sanitizes during DB write,
+							// but we sanitize here as defense-in-depth.
+							$banner->{$field_name} = $this->sanitize_banner_field( $field_name, $value );
 						}
 					}
+					// save() applies its own field-specific sanitization before writing to DB.
 					$banner->save();
 				}
 				$imported[] = 'banners';
@@ -346,11 +361,16 @@ if ( ! class_exists( 'cmplz_share' ) ) {
 				wp_mkdir_p( $temp_dir );
 			}
 
-			// Protect temp directory from direct access.
-			$htaccess = trailingslashit( $temp_dir ) . '.htaccess';
+			// Protect temp directory from direct access (Apache + Nginx + fallback).
+			$htaccess  = trailingslashit( $temp_dir ) . '.htaccess';
+			$index_php = trailingslashit( $temp_dir ) . 'index.php';
 			if ( ! file_exists( $htaccess ) ) {
 				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- writing .htaccess in plugin temp dir
 				file_put_contents( $htaccess, "deny from all\n" );
+			}
+			if ( ! file_exists( $index_php ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- writing index.php in plugin temp dir
+				file_put_contents( $index_php, "<?php\n// Silence is golden.\n" );
 			}
 
 			// Build export data in the same format as class-export.php.
@@ -380,7 +400,9 @@ if ( ! class_exists( 'cmplz_share' ) ) {
 		}
 
 		/**
-		 * Clean up expired temp files.
+		 * Clean up all previous share temp files.
+		 *
+		 * Called before generating a new key to remove stale exports.
 		 *
 		 * @return void
 		 */
@@ -405,6 +427,10 @@ if ( ! class_exists( 'cmplz_share' ) ) {
 
 		/**
 		 * Check if current IP is rate-limited for failed key attempts.
+		 *
+		 * Uses WordPress core transients (not cmplz_set_transient) intentionally:
+		 * per-IP keys would bloat the single cmplz_transients option array.
+		 * Core transients auto-expire via the DB and are per-key.
 		 *
 		 * @return bool
 		 */
@@ -437,6 +463,77 @@ if ( ! class_exists( 'cmplz_share' ) ) {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
 			return sanitize_text_field( wp_unslash( $ip ) );
+		}
+
+		/**
+		 * Get all valid Complianz field IDs for import whitelisting.
+		 *
+		 * @return array List of valid field ID strings.
+		 */
+		private function get_valid_field_ids() {
+			$fields = cmplz_fields( false );
+			return array_column( $fields, 'id' );
+		}
+
+		/**
+		 * Sanitize an imported setting value.
+		 *
+		 * @param mixed $value The value to sanitize.
+		 *
+		 * @return mixed Sanitized value.
+		 */
+		private function sanitize_setting_value( $value ) {
+			if ( is_string( $value ) ) {
+				return sanitize_text_field( $value );
+			}
+			if ( is_array( $value ) ) {
+				return array_map( array( $this, 'sanitize_setting_value' ), $value );
+			}
+			if ( is_bool( $value ) || is_int( $value ) || is_float( $value ) ) {
+				return $value;
+			}
+			return '';
+		}
+
+		/**
+		 * Sanitize a banner field value before setting it on the model.
+		 *
+		 * Defense-in-depth: the banner save() method applies its own sanitization,
+		 * but we sanitize here too so unsanitized values never sit in memory.
+		 *
+		 * @param string $field_name Banner property name.
+		 * @param mixed  $value      Value to sanitize.
+		 *
+		 * @return mixed Sanitized value.
+		 */
+		private function sanitize_banner_field( $field_name, $value ) {
+			// HTML fields that support limited markup.
+			$html_fields = array( 'message_optin', 'message_optout', 'message_optin_x', 'message_optout_x', 'custom_css' );
+			if ( in_array( $field_name, $html_fields, true ) ) {
+				if ( 'custom_css' === $field_name ) {
+					return wp_strip_all_tags( $value );
+				}
+				return wp_kses_post( $value );
+			}
+
+			// Array fields (color palettes, border radius, etc.).
+			if ( is_array( $value ) ) {
+				// Serialized text+checkbox arrays (e.g., header, dismiss).
+				if ( isset( $value['text'] ) ) {
+					$value['text'] = sanitize_text_field( $value['text'] );
+					$value['show'] = isset( $value['show'] ) ? (int) $value['show'] : 0;
+					return $value;
+				}
+				return array_map( 'sanitize_text_field', $value );
+			}
+
+			// Numeric fields.
+			if ( is_int( $value ) || is_float( $value ) || is_bool( $value ) ) {
+				return $value;
+			}
+
+			// Default: plain text sanitization.
+			return sanitize_text_field( $value );
 		}
 	}
 }

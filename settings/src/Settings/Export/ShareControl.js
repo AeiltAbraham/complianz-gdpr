@@ -6,7 +6,7 @@ import useFields from "../Fields/FieldsData";
 import useMenu from "../../Menu/MenuData";
 import Icon from "../../utils/Icon";
 
-function ShareControl() {
+function ShareControlComponent() {
 	const {fetchFieldsData, showSavedSettingsNotice, addHelpNotice, removeHelpNotice} = useFields();
 	const {selectedSubMenuItem} = useMenu();
 
@@ -30,16 +30,39 @@ function ShareControl() {
 				addHelpNotice('share_settings', 'warning', response.message || __("Could not generate key", "complianz-gdpr"), __("Error", "complianz-gdpr"), false);
 			}
 		} catch (error) {
-			console.error(error);
+			addHelpNotice('share_settings', 'warning', __("Could not generate key. Please try again.", "complianz-gdpr"), __("Error", "complianz-gdpr"), false);
 		}
 		setGenerating(false);
 	};
 
 	const copyToClipboard = () => {
-		navigator.clipboard.writeText(shareKey).then(() => {
+		if (navigator.clipboard && navigator.clipboard.writeText) {
+			navigator.clipboard.writeText(shareKey).then(() => {
+				setCopied(true);
+				setTimeout(() => setCopied(false), 2000);
+			}).catch(() => {
+				fallbackCopy(shareKey);
+			});
+		} else {
+			fallbackCopy(shareKey);
+		}
+	};
+
+	const fallbackCopy = (text) => {
+		const textarea = document.createElement('textarea');
+		textarea.value = text;
+		textarea.style.position = 'fixed';
+		textarea.style.opacity = '0';
+		document.body.appendChild(textarea);
+		textarea.select();
+		try {
+			document.execCommand('copy');
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2000);
-		});
+		} catch (e) {
+			addHelpNotice('share_settings', 'warning', __("Could not copy to clipboard. Please select and copy the key manually.", "complianz-gdpr"), __("Copy failed", "complianz-gdpr"), false);
+		}
+		document.body.removeChild(textarea);
 	};
 
 	const importFromRemote = async () => {
@@ -65,7 +88,7 @@ function ShareControl() {
 				addHelpNotice('share_settings', 'warning', response.message || __("Import failed", "complianz-gdpr"), __("Error", "complianz-gdpr"), false);
 			}
 		} catch (error) {
-			console.error(error);
+			addHelpNotice('share_settings', 'warning', __("Import failed. Please check the URL and key and try again.", "complianz-gdpr"), __("Error", "complianz-gdpr"), false);
 		}
 		setImporting(false);
 	};
@@ -141,4 +164,6 @@ function ShareControl() {
 	);
 }
 
-export default memo(ShareControl);
+// Named export for direct imports; default export required by dynamic component loader in Field.js.
+export const ShareControl = memo(ShareControlComponent);
+export default ShareControl;
