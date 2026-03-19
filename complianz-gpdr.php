@@ -340,7 +340,6 @@ if ( ! class_exists( 'COMPLIANZ' ) ) {
 				require_once CMPLZ_PATH . 'progress/class-progress.php';
 				require_once CMPLZ_PATH . 'cookiebanner/admin/cookiebanner.php';
 				require_once CMPLZ_PATH . 'class-export.php';
-				require_once CMPLZ_PATH . 'class-share.php';
 				require_once CMPLZ_PATH . 'documents/admin-class-documents.php';
 				require_once CMPLZ_PATH . 'settings/wizard.php';
 				require_once CMPLZ_PATH . 'placeholders/class-placeholders.php';
@@ -363,6 +362,7 @@ if ( ! class_exists( 'COMPLIANZ' ) ) {
 			require_once CMPLZ_PATH . 'proof-of-consent/class-proof-of-consent.php';
 			require_once CMPLZ_PATH . 'cookiebanner/class-cookiebanner.php';
 			require_once CMPLZ_PATH . 'cookiebanner/class-banner-loader.php';
+			require_once CMPLZ_PATH . 'class-share.php';
 
 			require_once CMPLZ_PATH . 'class-company.php';
 			require_once CMPLZ_PATH . 'DNSMPD/class-DNSMPD.php';
@@ -395,12 +395,13 @@ if ( ! class_exists( 'COMPLIANZ' ) ) {
 				self::$sync            = new cmplz_sync();
 				self::$websitescan     = new cmplz_wsc();
 				self::$wsc_onboarding  = new cmplz_wsc_onboarding();
-				self::$share           = new cmplz_share();
 			}
 
 			if ( cmplz_admin_logged_in() || cmplz_scan_in_progress() ) {
 				self::$scan = new cmplz_scan();
 			}
+
+			self::$share = new cmplz_share();
 
 			self::$proof_of_consent = new cmplz_proof_of_consent();
 			self::$cookie_blocker   = new cmplz_cookie_blocker();
