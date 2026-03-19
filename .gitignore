@@ -14,3 +14,10 @@ prepros.config
 .idea/complianz.iml
 integrations/.DS_Store
 /vendor
+
+# Environment
+.env
+.env.local
+
+# Agentic session files
+docs/progress.md
