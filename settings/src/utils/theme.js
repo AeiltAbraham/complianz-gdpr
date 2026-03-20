@@ -8,11 +8,18 @@ import * as cmplz_api from './api';
 const useTheme = create((set, get) => ({
 	preference: cmplz_settings.theme_preference || 'system',
 	resolvedTheme: 'light',
+	_initialized: false,
 
 	/**
 	 * Initialize theme: apply saved preference and listen for OS changes.
+	 * Guarded against double-init to prevent stacking event listeners.
 	 */
 	init: () => {
+		if (get()._initialized) {
+			return;
+		}
+		set({_initialized: true});
+
 		const pref = get().preference;
 		get().applyTheme(pref);
 

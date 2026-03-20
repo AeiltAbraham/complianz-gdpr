@@ -46,6 +46,8 @@
   // White/black swap for elements that use them semantically
   --rsp-white: #1e1e2e;
   --rsp-black: #e0e0e8;
+  // Note: --rsp-text-color-white is intentionally NOT overridden here.
+  // It is used for text on colored buttons/badges where white remains correct in dark mode.
 
   // Toast overrides
   --toastify-toast-background: #2a2a3c;

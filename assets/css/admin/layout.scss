@@ -89,12 +89,24 @@
 			border: 1px solid var(--rsp-border-color);
 			border-radius: var(--rsp-border-radius-xs);
 			padding: 4px 8px;
-			font-size: var(--rsp-fs-500);
 			line-height: 1;
 			transition: background 0.2s ease;
+			display: flex;
+			align-items: center;
+			color: var(--rsp-text-color);
 
 			&:hover {
 				background: var(--rsp-grey-300);
+			}
+
+			&__icon {
+				display: flex;
+				align-items: center;
+
+				svg {
+					width: 16px;
+					height: 16px;
+				}
 			}
 		}
 	}

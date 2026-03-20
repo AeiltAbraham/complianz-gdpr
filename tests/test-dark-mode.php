@@ -81,9 +81,13 @@ class DarkModeTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test that non-admin users can save their own theme preference.
+	 * Test that the filter function saves preference for any logged-in user role.
+	 *
+	 * Note: this tests the filter function directly, not the REST endpoint.
+	 * The REST endpoint requires cmplz_user_can_manage() permission, so
+	 * subscribers cannot reach this code path via REST in practice.
 	 */
-	public function test_subscriber_can_save_own_preference() {
+	public function test_filter_saves_preference_for_any_logged_in_user() {
 		$user_id = $this->factory->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $user_id );
 

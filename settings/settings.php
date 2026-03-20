@@ -236,15 +236,17 @@ function cmplz_plugin_admin_scripts() {
                         'is_multisite'      => is_multisite(),
                         'is_multisite_plugin'=> defined('cmplz_premium_multisite'),
 						'onboarding_complete' => COMPLIANZ::$wsc_onboarding->wsc_is_dismissed(),
-				'theme_preference' => get_user_meta( get_current_user_id(), 'cmplz_theme_preference', true ) ?: 'system',
+						'theme_preference' => sanitize_key( get_user_meta( get_current_user_id(), 'cmplz_theme_preference', true ) ) ?: 'system',
 				] )
 		);
 
 		// Inline script to apply theme before React renders (prevents flash).
+		// Uses a MutationObserver to set data-theme as soon as #complianz appears,
+		// rather than waiting for DOMContentLoaded which fires after initial paint.
 		$theme_pref = get_user_meta( get_current_user_id(), 'cmplz_theme_preference', true ) ?: 'system';
 		$theme_pref = sanitize_key( $theme_pref );
 		wp_add_inline_script( $handle, sprintf(
-			'(function(){var p=%s;var d="dark";if(p==="system"){d=window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";}else{d=p;}if(d==="dark"){document.addEventListener("DOMContentLoaded",function(){var el=document.getElementById("complianz");if(el)el.setAttribute("data-theme","dark");});}})();',
+			'(function(){var p=%s;var d;if(p==="system"){d=window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";}else{d=p;}if(d==="dark"){var el=document.getElementById("complianz");if(el){el.setAttribute("data-theme","dark");}else{var o=new MutationObserver(function(m,obs){var e=document.getElementById("complianz");if(e){e.setAttribute("data-theme","dark");obs.disconnect();}});o.observe(document.documentElement,{childList:true,subtree:true});}}})();',
 			wp_json_encode( $theme_pref )
 		), 'before' );
 	}
