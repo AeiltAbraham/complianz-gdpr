@@ -21,7 +21,7 @@
 				font-weight: 700;
 				color: var(--rsp-text-color);
 				&.cmplz-active{
-					color: rgb(46 134 199); // @todo deze kleuren bespreken met Aert
+					color: var(--rsp-blue);
 					background-color: var(--rsp-blue-faded);
 				    box-shadow: var(--rsp-box-shadow);
 				}
@@ -40,7 +40,7 @@
 				line-height: var(--rsp-fs-500);
 
 				&.cmplz-active{
-					color: rgb(46 134 199);
+					color: var(--rsp-blue);
 				}
 			}
 

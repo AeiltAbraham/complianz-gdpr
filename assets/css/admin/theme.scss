@@ -61,6 +61,54 @@
   --button-contrast-color: #e0e0e8;
   --button-secondary-bg: #2a2a3c;
 
+  // Give "no-background" blocks a visible background in dark mode
+  .cmplz-grid-item.no-background {
+    background: var(--rsp-background-block-color);
+    border: 1px solid var(--rsp-border-color);
+    box-shadow: var(--rsp-box-shadow);
+  }
+
+  // Wizard/settings sidebar menu — add visible border in dark mode
+  .cmplz-grid-item:first-child {
+    border: 1px solid var(--rsp-border-color);
+  }
+
+  // Placeholder shimmer overrides
+  .cmplz-placeholder .cmplz-placeholder-line {
+    background-image: linear-gradient(90deg, #2e2e46 0, #3a3a55 40px, #2e2e46 80px);
+  }
+
+  // react-data-table-component overrides (inline styles need !important)
+  .rdt_Table {
+    background-color: var(--rsp-background-block-color) !important;
+    color: var(--rsp-text-color) !important;
+  }
+  .rdt_TableHeadRow {
+    background-color: var(--rsp-background-block-color) !important;
+    color: var(--rsp-text-color) !important;
+    border-bottom-color: var(--rsp-border-color) !important;
+  }
+  .rdt_TableRow {
+    background-color: var(--rsp-background-block-color) !important;
+    color: var(--rsp-text-color) !important;
+    border-bottom-color: var(--rsp-border-color) !important;
+    &:nth-child(odd) {
+      background-color: var(--rsp-grey-200) !important;
+    }
+  }
+  .rdt_TableCol, .rdt_TableCell {
+    color: var(--rsp-text-color) !important;
+  }
+  .rdt_Pagination {
+    background-color: var(--rsp-background-block-color) !important;
+    color: var(--rsp-text-color) !important;
+    border-top-color: var(--rsp-border-color) !important;
+    select {
+      background-color: var(--rsp-input-background-color) !important;
+      color: var(--rsp-text-color) !important;
+    }
+  }
+
   // Logo invert
   .cmplz-settings-header .cmplz-header-logo {
     filter: brightness(0) invert(1);
