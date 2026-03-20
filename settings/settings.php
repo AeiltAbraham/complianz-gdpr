@@ -236,8 +236,17 @@ function cmplz_plugin_admin_scripts() {
                         'is_multisite'      => is_multisite(),
                         'is_multisite_plugin'=> defined('cmplz_premium_multisite'),
 						'onboarding_complete' => COMPLIANZ::$wsc_onboarding->wsc_is_dismissed(),
+				'theme_preference' => get_user_meta( get_current_user_id(), 'cmplz_theme_preference', true ) ?: 'system',
 				] )
 		);
+
+		// Inline script to apply theme before React renders (prevents flash).
+		$theme_pref = get_user_meta( get_current_user_id(), 'cmplz_theme_preference', true ) ?: 'system';
+		$theme_pref = sanitize_key( $theme_pref );
+		wp_add_inline_script( $handle, sprintf(
+			'(function(){var p=%s;var d="dark";if(p==="system"){d=window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";}else{d=p;}if(d==="dark"){document.addEventListener("DOMContentLoaded",function(){var el=document.getElementById("complianz");if(el)el.setAttribute("data-theme","dark");});}})();',
+			wp_json_encode( $theme_pref )
+		), 'before' );
 	}
 }
 
@@ -1178,3 +1187,31 @@ function cmplz_conditions_apply( array $conditions ){
 
 	return $condition_applies;
 }
+
+/**
+ * Handle save_theme_preference action.
+ *
+ * @param array           $data    Response data.
+ * @param string          $action  Action name.
+ * @param WP_REST_Request $request Request object.
+ *
+ * @return array
+ */
+function cmplz_save_theme_preference( $data, $action, $request ) {
+	if ( 'save_theme_preference' !== $action ) {
+		return $data;
+	}
+
+	$allowed = array( 'light', 'dark', 'system' );
+	$pref    = sanitize_text_field( $request->get_param( 'theme_preference' ) );
+
+	if ( ! in_array( $pref, $allowed, true ) ) {
+		$pref = 'system';
+	}
+
+	update_user_meta( get_current_user_id(), 'cmplz_theme_preference', $pref );
+
+	$data['theme_preference'] = $pref;
+	return $data;
+}
+add_filter( 'cmplz_do_action', 'cmplz_save_theme_preference', 10, 3 );

@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import useMenu from "./Menu/MenuData";
 import {useEffect} from "@wordpress/element";
+import ThemeToggle from "./Settings/ThemeToggle";
 
 const Header = () => {
 	const {menu, selectedMainMenuItem, fetchSelectedMainMenuItem, fetchMenuData} = useMenu();
@@ -25,6 +26,7 @@ const Header = () => {
 					</nav>
 				</div>
 				<div className="cmplz-header-right">
+					<ThemeToggle />
 					<a className="cmplz-knowledge-base-link" href="https://complianz.io/docs" target="_blank" rel="noopener noreferrer">{__("Documentation", "complianz-gdpr")}</a>
 					{cmplz_settings.is_premium &&
 						<a href="#tools/support"

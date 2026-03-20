@@ -82,6 +82,21 @@
 			gap: var(--rsp-spacing-s);
 			min-height: 52px;
 		}
+
+		.cmplz-theme-toggle {
+			cursor: pointer;
+			background: var(--rsp-grey-200);
+			border: 1px solid var(--rsp-border-color);
+			border-radius: var(--rsp-border-radius-xs);
+			padding: 4px 8px;
+			font-size: var(--rsp-fs-500);
+			line-height: 1;
+			transition: background 0.2s ease;
+
+			&:hover {
+				background: var(--rsp-grey-300);
+			}
+		}
 	}
 
 	.cmplz-grid.cmplz-dashboard {

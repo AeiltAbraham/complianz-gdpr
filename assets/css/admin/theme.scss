@@ -4,59 +4,63 @@
   --rsp-brand-secondary: var(--rsp-blue);
   --rsp-brand-primary-faded: var(--rsp-blue-faded);
 }
-//@media (prefers-color-scheme: dark) {
-//  :root {
-//    // Borders and stuff;
-//    --rsp-border: 1px solid var(--rsp-border-color);
-//    --rsp-box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
-//    --rsp-box-shadow-dark: rgba(0, 0, 0, 0.2) 0px 4px 6px -1px, rgba(0, 0, 0, 0.12) 1px 0px 4px 1px;
-//    --rsp-border-color: #dfdfdf;
-//
-//    // RSP Brand Colors
-//    --rsp-black: #333;
-//    --rsp-white: #fff;
-//    --rsp-yellow: #f4bf3e;
-//    --rsp-blue: #009fff;
-//    --rsp-dark-blue: #1E73BE;
-//    --rsp-green: #2e8a37;
-//    --rsp-red: #D7263D;
-//    --rsp-pink: #E35899;
-//    --rsp-wp-blue: #007cba;
-//
-//    --rsp-yellow-faded: #f2e6c9;
-//    --rsp-blue-faded: #ebf2f9;
-//    --rsp-green-faded: #ecf4ed;
-//    --rsp-red-faded: #fbebed;
-//    --rsp-pink-faded: #fceff5;
-//    --rsp-wp-blue-faded: #c6e0ef;
-//
-//    --rsp-background-block-color: var(--rsp-black);
-//    --rsp-background-color: var(--rsp-grey-600);
-//
-//    //Input colors
-//    --rsp-input-background-color: #fff;
-//    --rsp-input-text-color: var(--rsp-text-color);
-//    --rsp-input-border-color: var(--rsp-grey-400);
-//
-//    --rsp-text-color: rgba(255, 255, 255, 0.95);
-//    --rsp-text-color-invert: rgba(26, 26, 26, 0.95);
-//    --rsp-text-color-white: rgba(255, 255, 255, 0.95);
-//    --rsp-text-color-light: rgba(69, 69, 82, 0.95);
-//
-//    --rsp-grey-100: #fafafa;
-//    --rsp-grey-200: #f9f9f9;
-//    --rsp-grey-300: #ededed;
-//    --rsp-grey-400: #c6c6c6;
-//    --rsp-grey-500: #737373;
-//    --rsp-grey-600: #696969;
-//
-//    // Notification colors
-//    --rsp-color-success: var(--rsp-green);
-//    --rsp-color-error: var(--rsp-red);
-//    --rsp-color-open: var(--rsp-yellow);
-//    --rsp-color-disabled: var(--rsp-grey-300);
-//  }
-//  .cmplz-settings-header .cmplz-header-logo{
-//    filter: brightness(0) invert(1);
-//  }
-//}
+
+// Dark mode overrides — scoped to #complianz via data-theme attribute.
+// Applied via JS: document.getElementById('complianz').dataset.theme = 'dark';
+#complianz[data-theme="dark"] {
+  // Backgrounds
+  --rsp-background-block-color: #1e1e2e;
+  --rsp-background-color: #141420;
+
+  // Input colors
+  --rsp-input-background-color: #2a2a3c;
+  --rsp-input-text-color: rgba(255, 255, 255, 0.90);
+  --rsp-input-border-color: #444466;
+
+  // Text colors
+  --rsp-text-color: rgba(255, 255, 255, 0.90);
+  --rsp-text-color-invert: rgba(15, 23, 42, 0.95);
+  --rsp-text-color-light: rgba(255, 255, 255, 0.70);
+
+  // Greys (inverted for dark)
+  --rsp-grey-100: #1a1a2e;
+  --rsp-grey-200: #22223a;
+  --rsp-grey-300: #2e2e46;
+  --rsp-grey-400: #444466;
+  --rsp-grey-500: #9999aa;
+  --rsp-grey-600: #bbbbcc;
+
+  // Borders
+  --rsp-border-color: #3a3a55;
+  --rsp-box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 6px -1px, rgba(0, 0, 0, 0.2) 0px 2px 4px -1px;
+
+  // Faded brand colors (darker for dark mode)
+  --rsp-yellow-faded: #3d3520;
+  --rsp-blue-faded: #1a2a3d;
+  --rsp-green-faded: #1a2e1e;
+  --rsp-red-faded: #3d1a22;
+  --rsp-pink-faded: #3d1a2e;
+  --rsp-orange-faded: #3d2e1a;
+  --rsp-wp-blue-faded: #1a2e3d;
+
+  // White/black swap for elements that use them semantically
+  --rsp-white: #1e1e2e;
+  --rsp-black: #e0e0e8;
+
+  // Toast overrides
+  --toastify-toast-background: #2a2a3c;
+  --toastify-color-light: #2a2a3c;
+  --toastify-text-color-light: rgba(255, 255, 255, 0.90);
+  --toastify-color-transparent: rgba(30, 30, 46, 0.7);
+  --toastify-spinner-color: #9999aa;
+  --toastify-spinner-color-empty-area: #444466;
+
+  // Button overrides
+  --button-contrast-color: #e0e0e8;
+  --button-secondary-bg: #2a2a3c;
+
+  // Logo invert
+  .cmplz-settings-header .cmplz-header-logo {
+    filter: brightness(0) invert(1);
+  }
+}

@@ -19,10 +19,10 @@ $animation-duration: 1.6s;
 	text-align: left;
 	margin: 0;
 	padding-bottom: 24px;
-	color: #1e1e1e;
+	color: var(--rsp-text-color);
 	-webkit-font-smoothing: subpixel-antialiased;
 	border-radius: 2px;
-	background-color: #fff;
+	background-color: var(--rsp-background-block-color);
 	flex-grow: 100;
 	.cmplz-placeholder-line {
 		float: left;

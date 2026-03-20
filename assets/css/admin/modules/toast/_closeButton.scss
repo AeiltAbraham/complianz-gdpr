@@ -1,5 +1,5 @@
 .#{$rt-namespace}__close-button {
-  color: #fff;
+  color: var(--rsp-text-color-white);
   background: transparent;
   outline: none;
   border: none;
@@ -10,7 +10,7 @@
   align-self: flex-start;
 
   &--light {
-    color: #000;
+    color: var(--rsp-text-color);
     opacity: 0.3;
   }
 

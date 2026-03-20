@@ -16,7 +16,7 @@ $rt-mobile: 'only screen and (max-width : 480px)' !default;
   --toastify-icon-color-error: var(--toastify-color-error);
 
   --toastify-toast-width: 320px;
-  --toastify-toast-background: #fff;
+  --toastify-toast-background: var(--rsp-background-block-color);
   --toastify-toast-min-height: 42px;
   --toastify-toast-max-height: 800px;
   --toastify-font-family: sans-serif;
@@ -26,13 +26,13 @@ $rt-mobile: 'only screen and (max-width : 480px)' !default;
   --toastify-text-color-dark: var(--rsp-text-color-white);
 
   //Used only for colored theme
-  --toastify-text-color-info: #fff;
-  --toastify-text-color-success: #fff;
-  --toastify-text-color-warning: #fff;
-  --toastify-text-color-error: #fff;
+  --toastify-text-color-info: var(--rsp-text-color-white);
+  --toastify-text-color-success: var(--rsp-text-color-white);
+  --toastify-text-color-warning: var(--rsp-text-color-white);
+  --toastify-text-color-error: var(--rsp-text-color-white);
 
-  --toastify-spinner-color: #616161;
-  --toastify-spinner-color-empty-area: #e0e0e0;
+  --toastify-spinner-color: var(--rsp-grey-500);
+  --toastify-spinner-color-empty-area: var(--rsp-grey-300);
 
   // Used when no type is provided
   --toastify-color-progress-light: linear-gradient(

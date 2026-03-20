@@ -17,14 +17,14 @@
 	position: fixed;
 	z-index: 20;
 	border-radius: 12px;
-	background-color: white;
+	background-color: var(--rsp-background-block-color);
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
 	margin: 25px;
 
 	.cmplz-modal-header {
-		background-color: white;
+		background-color: var(--rsp-background-block-color);
 		padding: 20px 20px 10px 20px;
 		justify-content: space-between;
 		align-items: center;
@@ -39,7 +39,7 @@
 		.modal-title {
 			font-size: 20px;
 			margin: 0;
-			background-color: white;
+			background-color: var(--rsp-background-block-color);
 		}
 		.cmplz-modal-close {
 			cursor: pointer;

@@ -21,7 +21,7 @@
   .cmplz-panel {
 	&__cookie_list {
 	  .cmplz-panel__list__item {
-		background-color: #fff;
+		background-color: var(--rsp-background-block-color);
 		margin: 10px 0;
 	  }
 	}

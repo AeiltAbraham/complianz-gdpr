@@ -13,12 +13,14 @@ import useProgress from "./Dashboard/Progress/ProgressData";
 import PreloadFields from "./Settings/Fields/PreloadFields";
 import {__, setLocaleData} from "@wordpress/i18n";
 import ErrorBoundary from "./utils/ErrorBoundary";
+import useTheme from "./utils/theme";
 
 const Page = () => {
 	const {progressLoaded, fetchProgressData} = useProgress();
 	const {error, fields, changedFields, fetchFieldsData, updateFieldsData, fieldsLoaded, lockedByUser} = useFields();
 	const {fetchMenuData, selectedMainMenuItem, selectedSubMenuItem } = useMenu();
 	const {loading, syncProgress, fetchSyncProgressData} = UseSyncData();
+	const {resolvedTheme} = useTheme();
 	const [Settings, setSettings] = useState(null);
 	const [DashboardPage, setDashboardPage] = useState(null);
 	const [Menu, setMenu] = useState(null);
@@ -158,7 +160,7 @@ const Page = () => {
 						closeOnClick
 						pauseOnFocusLoss
 						pauseOnHover
-						theme="light"
+						theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
 					/>
 				)}
 			</>

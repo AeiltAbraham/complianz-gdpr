@@ -34,7 +34,7 @@
 	position:absolute;
 	width: calc(100% - 70px);
 	bottom: 0;
-	background-color: #fff;
+	background-color: var(--rsp-background-block-color);
 	padding: 15px;
 	margin:20px;
 	box-shadow: var(--rsp-box-shadow);
