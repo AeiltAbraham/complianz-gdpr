@@ -355,6 +355,7 @@ if ( ! class_exists( 'COMPLIANZ' ) ) {
 			require_once CMPLZ_PATH . 'proof-of-consent/class-proof-of-consent.php';
 			require_once CMPLZ_PATH . 'cookiebanner/class-cookiebanner.php';
 			require_once CMPLZ_PATH . 'cookiebanner/class-banner-loader.php';
+			require_once CMPLZ_PATH . 'headless/class-headless.php';
 
 			require_once CMPLZ_PATH . 'class-company.php';
 			require_once CMPLZ_PATH . 'DNSMPD/class-DNSMPD.php';
