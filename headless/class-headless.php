@@ -103,6 +103,9 @@ class CMPLZ_HEADLESS {
 		if ( ! $this->origin_allowed() ) {
 			return new WP_Error( 'cmplz_origin_forbidden', 'This origin is not allowed to embed.', array( 'status' => 403 ) );
 		}
+		$site_id = sanitize_text_field( (string) $request->get_param( 'site_id' ) );
+		$this->ledger_touch( $this->request_host(), 'embeds', null, $site_id );
+
 		$banner_id    = cmplz_get_default_banner_id();
 		$banner       = cmplz_get_cookiebanner( $banner_id );
 		$consent_type = COMPLIANZ::$company->get_default_consenttype();
@@ -114,7 +117,9 @@ class CMPLZ_HEADLESS {
 			$config['cookie_domain'] = '';
 		}
 
-		$payload = array(
+		$css_file = cmplz_upload_dir( 'css' ) . "banner-{$banner_id}-{$consent_type}.css";
+		$payload  = array(
+			'version'     => CMPLZ_VERSION . '.' . ( file_exists( $css_file ) ? filemtime( $css_file ) : 0 ),
 			'config'      => $config,
 			'banner_html' => $this->get_banner_html( $banner, $consent_type ),
 			'css'         => array( cmplz_upload_url( 'css' ) . "banner-{$banner_id}-{$consent_type}.css" ),
@@ -124,7 +129,10 @@ class CMPLZ_HEADLESS {
 		if ( ob_get_length() ) {
 			ob_clean();
 		}
-		return $payload;
+		// Cacheable at the edge/CDN: config changes rarely and is versioned above.
+		$response = new WP_REST_Response( $payload );
+		$response->header( 'Cache-Control', 'public, max-age=300, stale-while-revalidate=86400' );
+		return $response;
 	}
 
 	/** Reproduce the on-site banner markup (mirrors banner_loader->cookiebanner_html()). */
@@ -176,8 +184,11 @@ class CMPLZ_HEADLESS {
 (function () {
 	if (window.__cmplzEmbedLoaded) { return; }
 	window.__cmplzEmbedLoaded = true;
+	var self = document.currentScript;
+	var siteId = self ? self.getAttribute("data-site-id") : null;
+	var url = "$endpoint" + (siteId ? "?site_id=" + encodeURIComponent(siteId) : "");
 	function start() {
-		fetch("$endpoint").then(function (r) { return r.json(); }).then(function (d) {
+		fetch(url).then(function (r) { return r.json(); }).then(function (d) {
 			if (!d || !d.config) { return; }
 			window.complianz = d.config;
 			(d.css || []).forEach(function (href) {
@@ -196,17 +207,49 @@ JS;
 	}
 
 	public function record_consent_origin( $categories, $services, $consenttype ) {
+		$cats = is_array( $categories ) ? array_map( 'sanitize_key', $categories ) : array();
+		$this->ledger_touch( $this->request_host(), 'consents', $cats );
+	}
+
+	/** Host of the embedding site, from Origin (or Referer fallback). */
+	private function request_host() {
 		$origin = get_http_origin();
-		$host   = $origin ? wp_parse_url( $origin, PHP_URL_HOST ) : '';
+		$source = $origin ? $origin : ( $_SERVER['HTTP_REFERER'] ?? '' );
+		$host   = $source ? (string) wp_parse_url( $source, PHP_URL_HOST ) : '';
+		return strtolower( $host );
+	}
+
+	/**
+	 * Per-domain consent ledger: embeds served + consents recorded + category tallies + site_id.
+	 * Stored in an option for simplicity (bounded); for high volume, switch to a custom table.
+	 */
+	private function ledger_touch( $host, $field, $cats = null, $site_id = '' ) {
 		if ( ! $host ) {
 			return;
 		}
-		$origins = get_option( 'cmplz_consent_origins', array() );
-		if ( ! is_array( $origins ) ) {
-			$origins = array();
+		$ledger = get_option( 'cmplz_consent_ledger', array() );
+		if ( ! is_array( $ledger ) ) {
+			$ledger = array();
 		}
-		$origins[ $host ] = time();
-		update_option( 'cmplz_consent_origins', $origins, false );
+		if ( ! isset( $ledger[ $host ] ) ) {
+			if ( count( $ledger ) >= 1000 ) {
+				return; // bound the option size; production: custom table.
+			}
+			$ledger[ $host ] = array( 'site_id' => '', 'embeds' => 0, 'consents' => 0, 'last' => 0, 'cats' => array() );
+		}
+		if ( '' !== $site_id ) {
+			$ledger[ $host ]['site_id'] = $site_id;
+		}
+		if ( $field && isset( $ledger[ $host ][ $field ] ) ) {
+			$ledger[ $host ][ $field ] = (int) $ledger[ $host ][ $field ] + 1;
+		}
+		$ledger[ $host ]['last'] = time();
+		if ( is_array( $cats ) ) {
+			foreach ( $cats as $c ) {
+				$ledger[ $host ]['cats'][ $c ] = (int) ( $ledger[ $host ]['cats'][ $c ] ?? 0 ) + 1;
+			}
+		}
+		update_option( 'cmplz_consent_ledger', $ledger, false );
 	}
 
 	/* ===================== SPOKE (client) ===================== */
@@ -259,7 +302,7 @@ JS;
 	public function render_admin_page() {
 		$s       = $this->settings();
 		$snippet = '<script src="' . esc_url( home_url( '/cmplz-embed.js' ) ) . '" async></script>';
-		$origins = get_option( 'cmplz_consent_origins', array() );
+		$ledger  = get_option( 'cmplz_consent_ledger', array() );
 		$cb      = function ( $name, $on ) {
 			return '<label style="display:block;margin:8px 0"><input type="checkbox" name="' . esc_attr( $name ) . '" value="1" ' . checked( $on, 1, false ) . '> ';
 		};
@@ -279,6 +322,7 @@ JS;
 		if ( $s['server_enabled'] ) {
 			echo '<p><strong>Embed snippet</strong> — add this one line to any site:</p>';
 			echo '<textarea readonly rows="2" style="width:100%;font-family:monospace;padding:10px;border-radius:8px" onclick="this.select()">' . esc_textarea( $snippet ) . '</textarea>';
+			echo '<p class="description">Optionally add <code>data-site-id="your-label"</code> to the tag to identify each embedding site in the ledger below.</p>';
 		}
 
 		echo '<hr style="margin:24px 0"><h2>Get consent from a hub (this is a root site)</h2>';
@@ -288,12 +332,21 @@ JS;
 		echo '<p style="margin-top:20px"><button class="button button-primary">Save changes</button></p>';
 		echo '</form>';
 
-		if ( $s['server_enabled'] && is_array( $origins ) && $origins ) {
-			echo '<h2>Sites sending consent</h2><ul>';
-			foreach ( $origins as $host => $time ) {
-				echo '<li><code>' . esc_html( $host ) . '</code> — ' . esc_html( human_time_diff( (int) $time ) ) . ' ago</li>';
+		if ( $s['server_enabled'] && is_array( $ledger ) && $ledger ) {
+			echo '<h2>Consent ledger</h2><table class="widefat striped" style="max-width:900px"><thead><tr><th>Domain</th><th>Site ID</th><th>Embeds</th><th>Consents</th><th>Categories</th><th>Last</th></tr></thead><tbody>';
+			foreach ( $ledger as $host => $row ) {
+				$cats = array();
+				foreach ( (array) ( $row['cats'] ?? array() ) as $c => $n ) {
+					$cats[] = esc_html( $c . ' (' . (int) $n . ')' );
+				}
+				echo '<tr><td><code>' . esc_html( $host ) . '</code></td>'
+					. '<td>' . esc_html( (string) ( $row['site_id'] ?? '' ) ) . '</td>'
+					. '<td>' . (int) ( $row['embeds'] ?? 0 ) . '</td>'
+					. '<td>' . (int) ( $row['consents'] ?? 0 ) . '</td>'
+					. '<td>' . implode( ', ', $cats ) . '</td>'
+					. '<td>' . esc_html( ( $row['last'] ?? 0 ) ? human_time_diff( (int) $row['last'] ) . ' ago' : '—' ) . '</td></tr>';
 			}
-			echo '</ul>';
+			echo '</tbody></table>';
 		}
 		echo '</div>';
 	}
