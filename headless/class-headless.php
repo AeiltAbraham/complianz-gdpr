@@ -222,12 +222,21 @@ JS;
 	 * pinned to a ~20px line box, so an inherited line-height shoves the knob
 	 * out of alignment, and the screen-reader-only category names render as
 	 * visible text. Pin only the few properties the layout depends on.
+	 *
+	 * Two utility classes the banner's own JS relies on also live outside the
+	 * per-banner stylesheet and so are undefined off-WordPress:
+	 *   - .screen-reader-text — keeps SR-only category labels visually hidden;
+	 *   - .cmplz-hidden — the JS hides every document link, then un-hides only
+	 *     the ones present in page_links. Defining it here makes that resolution
+	 *     dynamic: a Cookie/Privacy/Impressum doc that is premium-gated, opted
+	 *     out, or simply not created stays hidden instead of leaking "{title}".
 	 */
 	private function get_embed_reset_css() {
 		return <<<CSS
 .cmplz-cookiebanner,.cmplz-cookiebanner *,#cmplz-manage-consent,#cmplz-manage-consent *{box-sizing:border-box}
 .cmplz-cookiebanner,#cmplz-manage-consent .cmplz-manage-consent{font-size:14px;line-height:1.5}
 .cmplz-cookiebanner .cmplz-banner-checkbox .cmplz-label{font-size:12px;line-height:20px}
+.cmplz-cookiebanner .cmplz-hidden,#cmplz-manage-consent .cmplz-hidden{display:none!important}
 .cmplz-cookiebanner .screen-reader-text,#cmplz-manage-consent .screen-reader-text{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 CSS;
 	}
