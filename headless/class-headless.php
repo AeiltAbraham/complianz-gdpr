@@ -180,7 +180,8 @@ class CMPLZ_HEADLESS {
 	}
 
 	private function get_loader_js( $endpoint ) {
-		$endpoint = esc_url_raw( $endpoint );
+		$endpoint  = esc_url_raw( $endpoint );
+		$reset_css = wp_json_encode( $this->get_embed_reset_css(), JSON_UNESCAPED_SLASHES );
 		return <<<JS
 /* Complianz embed loader */
 (function () {
@@ -197,6 +198,9 @@ class CMPLZ_HEADLESS {
 				var l = document.createElement("link"); l.rel = "stylesheet"; l.href = href;
 				document.head.appendChild(l);
 			});
+			// Shield the banner from the host page's CSS (loaded last so it wins on source order).
+			var st = document.createElement("style"); st.id = "cmplz-embed-reset"; st.textContent = $reset_css;
+			document.head.appendChild(st);
 			var wrap = document.createElement("div"); wrap.innerHTML = d.banner_html;
 			while (wrap.firstChild) { document.body.appendChild(wrap.firstChild); }
 			var s = document.createElement("script"); s.src = d.js; s.defer = true;
@@ -206,6 +210,26 @@ class CMPLZ_HEADLESS {
 	if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", start); } else { start(); }
 })();
 JS;
+	}
+
+	/**
+	 * Defensive CSS for cross-domain embedding, scoped strictly to the banner.
+	 *
+	 * The banner stylesheet assumes a WordPress page: a theme baseline for
+	 * typography and WP core utility classes (e.g. .screen-reader-text). A
+	 * non-WordPress host has neither, so its own body font and box model leak
+	 * into the banner — the category switches are drawn with pseudo-elements
+	 * pinned to a ~20px line box, so an inherited line-height shoves the knob
+	 * out of alignment, and the screen-reader-only category names render as
+	 * visible text. Pin only the few properties the layout depends on.
+	 */
+	private function get_embed_reset_css() {
+		return <<<CSS
+.cmplz-cookiebanner,.cmplz-cookiebanner *,#cmplz-manage-consent,#cmplz-manage-consent *{box-sizing:border-box}
+.cmplz-cookiebanner,#cmplz-manage-consent .cmplz-manage-consent{font-size:14px;line-height:1.5}
+.cmplz-cookiebanner .cmplz-banner-checkbox .cmplz-label{font-size:12px;line-height:20px}
+.cmplz-cookiebanner .screen-reader-text,#cmplz-manage-consent .screen-reader-text{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+CSS;
 	}
 
 	public function record_consent_origin( $categories, $services, $consenttype ) {
