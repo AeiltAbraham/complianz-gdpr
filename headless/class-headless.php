@@ -155,8 +155,10 @@ class CMPLZ_HEADLESS {
 			$manage_tpl = str_replace( '{' . $field . '}', $value, $manage_tpl );
 		}
 		$manage_tpl = str_replace( '{consent_type}', $consent_type, $manage_tpl );
-		return '<div id="cmplz-cookiebanner-container">' . apply_filters( 'cmplz_banner_html', $banner_tpl ) . '</div>'
-			. '<div id="cmplz-manage-consent" data-nosnippet="true">' . apply_filters( 'cmplz_manage_consent_html', $manage_tpl ) . '</div>';
+		// Build the embed markup directly — independent of the local "suppress own banner"
+		// filters, which only govern whether THIS site shows its own banner.
+		return '<div id="cmplz-cookiebanner-container">' . $banner_tpl . '</div>'
+			. '<div id="cmplz-manage-consent" data-nosnippet="true">' . $manage_tpl . '</div>';
 	}
 
 	/** Serve the loader at /cmplz-embed.js (no rewrite rules needed). */
