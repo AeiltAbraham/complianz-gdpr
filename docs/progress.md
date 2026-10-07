@@ -39,3 +39,4 @@ One line per finished task; `tasks.md` holds the durable `outcome:` records.
 - 2026-10-07 T-006 done: the gate blocks coding-standard findings on changed PHP lines (measured against HEAD); legacy findings elsewhere pass.
 - 2026-10-07 T-007 done: wp-env runs WordPress 7.1.3 (8888) and 5.9 on PHP 7.4 (8889); Playwright defines the six projects and the setup creates the locale users.
 - 2026-10-07 T-008 done: outbound HTTP is stubbed in both test sites (unknown hosts logged) and an idempotent seed fixes the plugin state; fixture spec green.
+- 2026-10-07 T-009 done: smoke and axe layers cover all 37 screens; today: no console errors or failed REST calls, 77 serious/critical axe findings recorded.

@@ -185,8 +185,9 @@ outcome: `tests/e2e/mu-plugins/cmplz-e2e-stubs.php`, mapped into both instances 
 
 ## T-009 Smoke and axe layers over every screen
 mode: agentic
+status: done (2026-10-07)
 depends: T-008
-files: tests/e2e/admin/smoke.spec.js, tests/e2e/admin/axe.spec.js, tests/e2e/admin/helpers/menu.js, package.json, package-lock.json
+files: tests/e2e/admin/smoke.spec.js, tests/e2e/admin/axe.spec.js, tests/e2e/admin/helpers/menu.js, tests/e2e/admin/helpers/axe.js, package.json, package-lock.json
 proof: npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/smoke.spec.js tests/e2e/admin/axe.spec.js
 serves: SC-06, SC-05, DB-12, DB-16
 acceptance:
@@ -195,6 +196,9 @@ acceptance:
 - the axe layer (`@axe-core/playwright`) runs on every smoke page; on the legacy UI results are **recorded** to an artifact (JSON per page), not gated; the gating rule (zero serious/critical on migrated screens, §8.2 exemptions aside) is wired but activated per screen from Phase 3 on
 - selectors follow the contract: role/label/`data-testid` only — no `cmplz-*`, WP core, or utility classes anywhere in the specs
 - two consecutive full runs are green (determinism check)
+outcome: `smoke.spec.js` and `axe.spec.js` cover 37 screens across all six sections, discovered at runtime from the app's localized menu data (`cmplz_settings.menu`) plus the rendered menu. Each screen asserts rendered content (section link, sub-menu heading and a field heading), no console or uncaught JS errors, no `/complianz/v1/` response of 400 or more, and no error-boundary heading. Four premium screens (support, processing agreements, data breach reports, A/B testing) are asserted locked, with the upgrade badge and pricing link. axe results are written per page to the git-ignored test results; gating is wired through `helpers/axe.js` (`MIGRATED_SCREENS` empty, an exemptions hook for T-015). `@axe-core/playwright` is added to the root manifest.
+  Evidence: two consecutive runs by the implementer and a third by the dispatcher pass 5/5; each assertion was first seen failing for the right reason; specs and helpers contain no class selectors. Today's UI: zero console errors and zero failed REST calls; axe records 77 serious or critical rule instances (dashboard 4, wizard 22, banner 18, integrations 5, settings 4, tools 24), mostly colour contrast.
+  Deviations: the app has no menu REST route; its menu ships as localized script data, which is the app's own menu source. Extra file `helpers/axe.js` holds the gating policy. Browser-level network notices from rapid reloads (`net::ERR_…`, "Failed to load resource") are excluded structurally, not as an app-error allowlist. The premium lock overlay has no accessible hook, so "cannot edit" is proven through the lock badge; a `data-testid` there is a candidate for T-011.
 
 ## T-010 Visual and isolation baselines
 mode: agentic
