@@ -168,8 +168,9 @@ outcome: `.wp-env.json` runs two instances with the checkout mounted as `wp-cont
 
 ## T-008 Deterministic fixture and external-service stub mu-plugin
 mode: agentic
+status: done (2026-10-07)
 depends: T-007
-files: tests/e2e/mu-plugins/cmplz-e2e-stubs.php, tests/e2e/admin/fixtures/seed.php, tests/e2e/admin/fixture.spec.js, .wp-env.json
+files: tests/e2e/mu-plugins/cmplz-e2e-stubs.php, tests/e2e/admin/fixtures/seed.php, tests/e2e/admin/fixture.spec.js, .wp-env.json, tests/e2e/admin/helpers/seed.js, tests/e2e/admin/setup/latest.setup.js, tests/e2e/admin/setup/min-wp.setup.js
 proof: npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/fixture.spec.js
 serves: SC-06, DB-04, DB-16; settles: ADR-011 (stub strategy)
 acceptance:
@@ -178,6 +179,9 @@ acceptance:
 - the mu-plugin registers the third-party `admin_notices` callback used by the DB-04 page-rules spec
 - the mu-plugin is PHP 7.4-compatible, guarded by `defined( 'ABSPATH' )`, escapes/sanitizes per constitution §1, and is loaded only through the `.wp-env.json` mapping (never shipped: it lives under `tests/`)
 - `fixture.spec.js` proves: seeded app loads, the outbound-request log is empty after a dashboard + wizard visit
+outcome: `tests/e2e/mu-plugins/cmplz-e2e-stubs.php`, mapped into both instances through `.wp-env.json`'s `wp-content/mu-plugins` directory mapping, answers every outbound request made during a web request with a fixture: cookiedatabase.org `{"data":[]}`, notifications.complianz.io `{"notifications":[]}`, the other complianz.io hosts (scan, api, consent, mailinglist, www, translations) `{}`, WordPress.org version and update checks with empty collections, and the S3-hosted feed `{}`. Unknown hosts get a `WP_Error` and are logged to `cmplz_e2e_unstubbed_requests`; WP-CLI and same-site requests pass through, so setup can still install language packs. It also renders an escaped third-party `notice notice-info` (`#cmplz-e2e-thirdparty-notice`) on every admin screen. `tests/e2e/admin/fixtures/seed.php` sets `cmplz_options` (EU region, a fixture organisation and `fixture@cmplz.test`), marks the wizard completed with a fixed activation time, and creates one service (Google Maps), one cookie (`_ga`) and the default banner; both setup projects run it through the shared `helpers/seed.js`.
+  Evidence: the proof passes 4/4 (run twice in a row by the implementer, again by the dispatcher); seeding twice leaves 1 service, 1 cookie and 1 default banner on both instances; PHPCS reports zero findings for both PHP files; `php -l` is clean on PHP 8.5 and on the 8889 instance's PHP 7.4.
+  Deviations: extra file `tests/e2e/admin/helpers/seed.js` and edits to both setup files, because seeding runs from the setup projects. On WordPress 5.9 activation does not pre-create the default banner and the banner's save drops the default flag, so the seed sets it explicitly and reuses any existing banner. wp-env reads a bare mapping path as a GitHub repository, so the mapping uses `./`.
 
 ## T-009 Smoke and axe layers over every screen
 mode: agentic

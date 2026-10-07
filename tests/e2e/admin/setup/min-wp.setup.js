@@ -14,6 +14,7 @@ const { test, expect } = require( '@playwright/test' );
 const { execSync } = require( 'child_process' );
 const fs = require( 'fs' );
 const path = require( 'path' );
+const { seed } = require( '../helpers/seed' );
 
 const WP_CLI = process.env.WP_CLI_CMD_MIN || 'npx wp-env run tests-cli wp';
 const AUTH_DIR = path.join( __dirname, '..', '..', '.auth' );
@@ -61,6 +62,9 @@ test.beforeAll( () => {
 	// the development and tests instances, so we do not rely on it.
 	wp( `user update admin --user_pass=${ ADMIN_PASS }` );
 	wp( 'plugin activate complianz-gdpr', { allowFail: true } );
+	// Deterministic fixture (T-008): seed after activation so the plugin's classes/config are
+	// loaded. The stub mu-plugin leaves wp-cli unstubbed, so the seed itself makes no network.
+	seed( wp );
 } );
 
 test( 'authenticate admin (8889, WP 5.9 / PHP 7.4)', async ( { page } ) => {
