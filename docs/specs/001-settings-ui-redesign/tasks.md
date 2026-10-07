@@ -109,7 +109,7 @@ files: .agent/gate.json, .agent/conventions.md, CLAUDE.md
 proof: sh -c "$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(".agent/gate.json","utf8")).commit.join(" && "))')"
 serves: constitution §2 (WPCS enforced by the gate), C-1
 acceptance:
-- gate.json gains a check that runs `vendor/bin/phpcs --standard=.phpcs.xml.dist` on exactly the changed-or-untracked PHP files vs the `master` merge-base (same file-selection pipeline as the existing `php -l` check), skipping silently when `vendor/bin/phpcs` is not installed
+- gate.json gains a check that runs `vendor/bin/phpcs --standard=.phpcs.xml.dist` on exactly the changed-or-untracked PHP files vs the `master` merge-base (same file-selection pipeline as the existing `php -l` check); when PHP files changed but `vendor/bin/phpcs` is missing, the check fails with a message to run `composer install` (maintainer decision 2026-10-07)
 - the existing checks stay: `php -l` per changed PHP file (probed 2026-10-06: a parse error prints `PHP Parse error: syntax error, unexpected token …` and exits 255) and `git diff --cached --check` (staged changes vs the master merge-base)
 - failure mode: a changed PHP file with a WPCS error makes the gate command exit non-zero — probe-at-build (introduced by T-004): stage a scratch violation, run the gate command string, record output, remove the file
 - the full gate command sequence exits 0 on a clean tree (the proof)

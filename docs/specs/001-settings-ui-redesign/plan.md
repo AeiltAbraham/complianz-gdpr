@@ -164,6 +164,12 @@ Every item below was put to the maintainer at plan sign-off; the outcome leads e
    Phase 3; each section's HTML preview before that section's Phase 3/4 migration. The
    preview tasks produce proposals; nothing migrates without your approval recorded in
    the section's design note.
+8. **Task landing until CI: direct commits on the integration branch** (2026-10-07).
+   Each task lands as one atomic commit on `001-settings-ui-redesign`, unpushed; the C-9
+   pull-request flow starts once T-019 puts CI on GitHub.
+9. **T-006 gate behavior: fail, don't skip** (2026-10-07). When PHP files changed and
+   `vendor/bin/phpcs` is missing, the gate blocks with an install hint, so constitution
+   §2 stays enforced on every machine.
 
 ### Review fixes applied at sign-off
 
