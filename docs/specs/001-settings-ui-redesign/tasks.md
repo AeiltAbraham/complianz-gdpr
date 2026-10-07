@@ -129,13 +129,14 @@ outcome: `phpunit.xml.dist` now discovers `tests/test-*.php` and excludes the `e
 ## T-006 Gate: coding standards on changed PHP
 mode: agentic
 depends: T-004
-files: .agent/gate.json, .agent/conventions.md, CLAUDE.md
+files: .agent/gate.json, scripts/phpcs-changed-lines.js, .agent/conventions.md, CLAUDE.md
 proof: sh -c "$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(".agent/gate.json","utf8")).commit.join(" && "))')"
 serves: constitution §2 (WPCS enforced by the gate), C-1
 acceptance:
-- gate.json gains a check that runs `vendor/bin/phpcs --standard=.phpcs.xml.dist` on exactly the changed-or-untracked PHP files vs the `master` merge-base (same file-selection pipeline as the existing `php -l` check); when PHP files changed but `vendor/bin/phpcs` is missing, the check fails with a message to run `composer install` (maintainer decision 2026-10-07)
+- gate.json gains a check (`scripts/phpcs-changed-lines.js`) that runs `vendor/bin/phpcs --standard=.phpcs.xml.dist` on the staged content of every staged PHP file and fails only on findings located on lines the staged diff adds or changes against the `master` merge-base (constitution §2 as clarified 2026-10-07); when staged PHP changes exist but `vendor/bin/phpcs` is missing, the check fails with a message to run `composer install` (maintainer decision 2026-10-07)
 - the existing checks stay: `php -l` per changed PHP file (probed 2026-10-06: a parse error prints `PHP Parse error: syntax error, unexpected token …` and exits 255) and `git diff --cached --check` (staged changes vs the master merge-base)
-- failure mode: a changed PHP file with a WPCS error makes the gate command exit non-zero — probe-at-build (introduced by T-004): stage a scratch violation, run the gate command string, record output, remove the file
+- failure mode: a WPCS error on a changed line of a staged PHP file makes the gate command exit non-zero, naming the file, line and sniff — probe-at-build (introduced by T-004): stage a scratch violation, run the gate command string, record output, unstage and remove the file
+- a legacy finding on an unchanged line of a staged file does not fail the check: stage a clean one-line edit to a file with existing findings (e.g. `settings/config/menu.php`), run the gate command string, record the pass, then unstage and restore the file — probe-at-build
 - the full gate command sequence exits 0 on a clean tree (the proof)
 - conventions.md "Gate" and CLAUDE.md "Checks" updated to match reality
 

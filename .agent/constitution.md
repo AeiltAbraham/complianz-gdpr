@@ -9,8 +9,10 @@ maintainer's answers. Change them only by an explicit decision recorded here wit
 1. **Security review on every PHP change.** Output is escaped, input is sanitized, and
    nonces and capabilities are verified. Every PHP change is reviewed for this before it
    merges.
-2. **WordPress Coding Standards on touched PHP.** Enforced in review until the commit
-   gate can enforce it (tracked in `conventions.md`, section "Gate").
+2. **WordPress Coding Standards on touched PHP.** "Touched" means the lines a change adds
+   or edits; existing findings elsewhere in the same file are not part of this rule
+   (clarified 2026-10-07). Enforced in review until the commit gate can enforce it
+   (tracked in `conventions.md`, section "Gate").
 3. **Stable public API.** The plugin's `cmplz_` filters and actions, its REST routes and
    its saved options never break without a deprecation path.
 
