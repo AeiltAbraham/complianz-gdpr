@@ -30,3 +30,5 @@ Session handoff log. `/flow:handoff` rewrites the "Current" section before `/cle
 ## Build log (001)
 
 One line per finished task; `tasks.md` holds the durable `outcome:` records.
+
+- 2026-10-07 T-001 done: settings app builds from source (npm, @wordpress/scripts 30.27.0, Node 24); asset check made format-agnostic.

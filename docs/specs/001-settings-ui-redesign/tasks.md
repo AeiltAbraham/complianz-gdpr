@@ -36,8 +36,9 @@ Conventions for this file:
 
 ## T-001 Reconstruct the settings app's npm manifest
 mode: agentic
+status: done (2026-10-07)
 files: settings/package.json, settings/package-lock.json, .nvmrc
-proof: (cd settings && npm ci && npm run build && npm run lint:js -- --version) && grep -qF "array('lodash', 'react', 'react-dom', 'react-jsx-runtime', 'wp-api-fetch', 'wp-components', 'wp-data', 'wp-element', 'wp-i18n')" "$(ls -t settings/build/index*.asset.php | head -1)"
+proof: (cd settings && npm ci && npm run build && npm run lint:js -- --version) && php -r '$f = glob("settings/build/index.*.asset.php"); usort($f, function ($a, $b) { return filemtime($b) - filemtime($a); }); $a = require $f[0]; exit($a["dependencies"] === array("lodash", "react", "react-dom", "react-jsx-runtime", "wp-api-fetch", "wp-components", "wp-data", "wp-element", "wp-i18n") ? 0 : 1);'
 serves: C-1, SC-06 (enables every later build); settles: ADR-010
 acceptance:
 - `npm ci` on Node 24 installs from the committed lockfile with zero `npm` errors; `@wordpress/scripts` is on the 30.x line (input-spec non-goal)
@@ -46,6 +47,10 @@ acceptance:
 - the `react-jsx-runtime` polyfill bundle is emitted to `settings/assets/js/react-jsx-runtime.js` as today
 - `package.json` defines `build`, `start`, `lint:js` scripts; `.nvmrc` contains `24`; `engines.node` is `>=24`
 - after the proof, the working tree is clean: tracked `settings/build/` restored, new untracked build files removed
+outcome: `settings/package.json` + `package-lock.json` (npm, lockfile v3) and `.nvmrc` (24) shipped; `@wordpress/scripts` 30.27.0; React 18.3.1 is dev-only (externalized at runtime).
+  Versions were inferred from how `settings/src` uses each API: immer 9 (default export), zustand 4.5 (named `create`, React 17 peer), react-toastify 9, react-shepherd 4.3 (`^17.0.2 || 18.x`), MUI 5.18, Radix 1.x. Required peers beyond the planned import list: `@emotion/react` and `@emotion/styled` (MUI), styled-components 6 (data table), ace-builds (react-ace), path-browserify.
+  Evidence: build exits 0 with no unresolved imports; `lint:js -- --version` prints eslint v8.57.1; the emitted asset dependencies equal the shipped list.
+  Deviation: the proof now evaluates the asset file with `php -r` instead of grepping one line, because `@wordpress/dependency-extraction-webpack-plugin` 6.56+ pretty-prints it; an implementer-added version override that only served the old grep was removed. The rebuilt bundle hash and jsx-runtime polyfill bytes differ from the shipped ones (toolchain output target); visual parity is T-032's job.
 
 ## T-002 Root npm manifest for the gulp CSS build
 mode: agentic
