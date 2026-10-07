@@ -321,6 +321,7 @@ acceptance:
 
 ## T-031 Write and test the token-rename script (no rename yet)
 mode: agentic
+status: done (2026-10-07)
 files: scripts/rename-rsp-tokens.sh, scripts/test-rename-rsp-tokens.sh
 proof: sh scripts/test-rename-rsp-tokens.sh
 serves: ADR-004; makes script-mode T-017 runnable (signed off 2026-10-06)
@@ -330,6 +331,9 @@ acceptance:
 - running the rename a second time on the same copy changes nothing (the test asserts an empty diff after the second run)
 - in a directory without `assets/css/`, the script exits non-zero with a message and changes nothing
 - the real tree is not renamed by this task: the count of `--rsp-` occurrences under `assets/css/admin/` is the same before and after the proof
+outcome: `scripts/rename-rsp-tokens.sh` (POSIX sh driving `perl -pi -e`, with `$` escaped in both pattern and replacement) rewrites only the files that contain a token under `assets/css/**/*.scss` and `settings/src/**/*.{js,scss}`, deletes the two orphaned compiled files, refuses to run without `assets/css/`, and prints a summary. `scripts/test-rename-rsp-tokens.sh` builds an inline fixture tree in a temporary directory and asserts exact output, untouched `upgrade/`, `settings/build/` and `docs/` files, idempotency and the failure path.
+  Evidence: the test failed against a stub script, then passed (`PASS: all assertions held`, re-run by the dispatcher); a deliberately unescaped `$` was caught by the `$rsp-break-m` fixture line; the real tree's `--rsp-` count is unchanged before and after the proof, and both orphans are still present.
+  Note: the local `grep` is ugrep, which consumes `--include` after a `--` terminator, so file selection uses `find`. Ran in parallel with the T-010 rework; the two share no files or services.
 
 ## T-017 Rename `--rsp-*` → `--cmplz-legacy-*` and `$rsp-break-*` → `$cmplz-legacy-break-*`
 mode: script
