@@ -73,6 +73,7 @@ outcome: Root `package.json` + `package-lock.json` (npm, lockfile v3) shipped: g
 
 ## T-003 Record the SC-03/SC-04 weight baselines
 mode: agentic
+status: done (2026-10-07)
 depends: T-001, T-002
 files: scripts/report-asset-weight.sh, docs/specs/001-settings-ui-redesign/baselines.md
 proof: sh scripts/report-asset-weight.sh
@@ -82,6 +83,10 @@ acceptance:
 - it is POSIX sh (no bashisms, flags written out) and exits non-zero with a message naming the missing path when a build artifact is absent (probed by running it before T-001's build output exists — record the message in baselines.md)
 - `baselines.md` records the numbers from a fresh build, the commit hash and date, and names SC-03/SC-04 as their consumers
 - the script makes no network calls and writes nothing outside stdout
+outcome: `scripts/report-asset-weight.sh` (POSIX sh, read-only, optional ROOT argument) and `baselines.md` shipped.
+  Baseline from a fresh build at `8f2861c1` (bytes, raw/gzip): admin CSS 98434/16572; chunk CSS 81330/22598; entry JS 260658/86367; other JS 3677301/1056828. The shipped 7.5.5 bundle is recorded for context: 97916/16460; 81514/22640; 236028/79807; 3517272/1029785.
+  Evidence: the proof exits 0; `sh -n` is clean and the script runs under dash; pointing ROOT at an empty directory exits 1 with `report-asset-weight: missing build artifact: <ROOT>/assets/css/admin.min.css`.
+  Note: the reconstructed toolchain makes the JS about 160 KB (raw) heavier than the shipped bundle, so SC-03/SC-04 compare against the fresh build, which keeps toolchain drift out of the migration's numbers.
 
 ---
 
