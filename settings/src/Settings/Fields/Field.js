@@ -277,7 +277,7 @@ const Field = ({field, highLightField, isCustomField, customChangeHandler}) => {
 			}
 		}
 		return (
-			<div className={fieldClass}>
+			<div className={fieldClass} data-testid={'field-' + field.id}>
 				{ field.parent_label &&
 					<LabelWrapper
 						id={field.id}

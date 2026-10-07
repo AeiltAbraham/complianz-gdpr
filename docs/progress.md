@@ -43,3 +43,4 @@ One line per finished task; `tasks.md` holds the durable `outcome:` records.
 - 2026-10-07 T-031 done: the token-rename script and its fixture test are ready for script-mode T-017; real tree untouched.
 - 2026-10-07 T-010 done (after dispatcher takeover): visual + isolation baselines deterministic — seeded real legal documents for the banner preview, hardened the setup login with retries, accepted under the plan CI retry policy (3x green, retries unused). Follow-up T-033 added for the class-selector cleanup.
 - 2026-10-07 T-032 done: a fresh source build reproduces the shipped app; two dependency drifts pinned to the shipped versions (styled-components 5.3.11, chart.js 4.5.0). Suite 10/10 clean. Every e2e proof now builds first.
+- 2026-10-07 T-011 done: field + condition layers cover every free-reachable field type (53 types from live /fields/get); one behavior-free data-testid added to Field.js, visual baseline unchanged. 16/16 twice.

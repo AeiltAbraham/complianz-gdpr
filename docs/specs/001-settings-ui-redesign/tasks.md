@@ -237,9 +237,10 @@ outcome: A fresh `npm run build:all` from the reconstructed manifests reproduces
 
 ## T-011 Field and condition layers (every free-reachable field type)
 mode: agentic
+status: done (2026-10-07)
 depends: T-008, T-032
 files: tests/e2e/admin/fields.spec.js, tests/e2e/admin/conditions.spec.js, settings/src (only aria-label/htmlFor/data-testid additions where the legacy UI lacks an accessible name)
-proof: npm run build:all && npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/fields.spec.js tests/e2e/admin/conditions.spec.js
+proof: npm run build:all && npx wp-env start && npm run e2e -- --project=admin --retries=2 tests/e2e/admin/fields.spec.js tests/e2e/admin/conditions.spec.js
 serves: SC-06, DB-16, DB-03 groundwork; ADR-003 (document-field contract)
 acceptance:
 - for every field `type` present in this repo's `settings/config/` (~45 types incl. all 16 base inputs and the four `document` fields): render; for editable free fields also change → save → reload → value persisted; validation/error state exercised where the type has one
@@ -247,6 +248,10 @@ acceptance:
 - `react_conditions` spec: toggling a controlling field shows/hides its dependants for seeded known pairs
 - any change to `settings/src` in this task is behavior-free (only `aria-label`, `htmlFor`, `data-testid`); the task outcome lists each touched file and attribute, and the visual baseline (T-010) still passes
 - the `document` field spec records today's `DocumentControl` behavior as the ADR-003 contract: single value, not clearable, options via `get_pages_list`, loading/empty states
+outcome: `fields.spec.js` and `conditions.spec.js` cover the field layer, discovering types at runtime from the live `/complianz/v1/fields/get` response (53 types / 202 fields) crossed with menu discovery, asserting the free-edition topology as explicit constants. Every free-reachable type renders; a representative editable field per input kind (number, checkbox, radio, text, textarea, email, phone, select) is changed → saved → reloaded → asserted persisted → restored; `url` is rendered and validated without mutating shared statistics config; invalid email/phone show inline validation. Premium is asserted rendered-but-locked (the `import` field disabled with an Upgrade link; the data-breach-reports group locked with the upsell). `conditions.spec.js` proves three real `react_conditions` pairs toggle their dependants (send_notifications_email, set_cookies_on_root, uses_thirdparty_services). The document field's behavior is recorded as the ADR-003 contract.
+  Source change: ONE behavior-free attribute — `data-testid={'field-' + field.id}` on the field wrapper in `settings/src/Settings/Fields/Field.js`; no markup/structure change, and the T-010 visual baseline still passes (dispatcher re-ran it: 4/4, zero pixel change).
+  Evidence: the proof passed twice (16/16, no flaky), re-run by the dispatcher (16/16) plus the visual spec (4/4); the specs use no class selectors.
+  Topology assertions to ratify at review (encoded as constants, not faked): the `password` type's only instance (the website-scan secret) is server-gated and never in the free response; `documents_menu_region_redirect`'s controller is premium-hidden; the Records-of-Consent page is absent from the free menu — so those have no free render path and are asserted absent rather than exercised.
 
 ## T-012 Flow layers: wizard, dashboard, dialogs, tools, app states, page rules
 mode: agentic
