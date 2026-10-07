@@ -128,17 +128,21 @@ outcome: `phpunit.xml.dist` now discovers `tests/test-*.php` and excludes the `e
 
 ## T-006 Gate: coding standards on changed PHP
 mode: agentic
+status: done (2026-10-07)
 depends: T-004
 files: .agent/gate.json, scripts/phpcs-changed-lines.js, .agent/conventions.md, CLAUDE.md
 proof: sh -c "$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(".agent/gate.json","utf8")).commit.join(" && "))')"
 serves: constitution §2 (WPCS enforced by the gate), C-1
 acceptance:
-- gate.json gains a check (`scripts/phpcs-changed-lines.js`) that runs `vendor/bin/phpcs --standard=.phpcs.xml.dist` on the staged content of every staged PHP file and fails only on findings located on lines the staged diff adds or changes against the `master` merge-base (constitution §2 as clarified 2026-10-07); when staged PHP changes exist but `vendor/bin/phpcs` is missing, the check fails with a message to run `composer install` (maintainer decision 2026-10-07)
+- gate.json gains a check (`scripts/phpcs-changed-lines.js`) that runs `vendor/bin/phpcs --standard=.phpcs.xml.dist` on the staged content of every staged PHP file and fails only on findings located on lines the staged diff adds or changes against `HEAD`, the commit being made (constitution §2 as clarified 2026-10-07); when staged PHP changes exist but `vendor/bin/phpcs` is missing, the check fails with a message to run `composer install` (maintainer decision 2026-10-07)
 - the existing checks stay: `php -l` per changed PHP file (probed 2026-10-06: a parse error prints `PHP Parse error: syntax error, unexpected token …` and exits 255) and `git diff --cached --check` (staged changes vs the master merge-base)
 - failure mode: a WPCS error on a changed line of a staged PHP file makes the gate command exit non-zero, naming the file, line and sniff — probe-at-build (introduced by T-004): stage a scratch violation, run the gate command string, record output, unstage and remove the file
 - a legacy finding on an unchanged line of a staged file does not fail the check: stage a clean one-line edit to a file with existing findings (e.g. `settings/config/menu.php`), run the gate command string, record the pass, then unstage and restore the file — probe-at-build
 - the full gate command sequence exits 0 on a clean tree (the proof)
 - conventions.md "Gate" and CLAUDE.md "Checks" updated to match reality
+outcome: `scripts/phpcs-changed-lines.js` (Node 24, no dependencies) is the gate's third check: it runs PHPCS on the staged content of each staged PHP file (skipping vendor, node_modules and settings/build) and blocks on any error or warning on a line the staged diff adds or changes against HEAD; with staged PHP but no `vendor/bin/phpcs` it exits 1 with a `composer install` hint. `conventions.md` (Gate) and `CLAUDE.md` (Checks) describe all three checks.
+  Evidence, through the real flow hook: a staged new file with `echo $_GET["x"];` is blocked, naming `Squiz.Commenting.FileComment.Missing`, `WordPress.Security.EscapeOutput.OutputNotEscaped`, `WordPress.Security.ValidatedSanitizedInput.InputNotValidated` and a `WordPress.Security.NonceVerification.Recommended` warning; a clean edit to a comment in `settings/config/menu.php` (9 legacy errors) passes; the proof exits 0.
+  Deviation: changed lines are measured against HEAD instead of the master merge-base (criterion corrected), so lines committed earlier on this branch, such as T-005's space-indented test lines, are never re-judged. PHPCS runs with `-q --no-colors` because the ruleset's progress and colour arguments otherwise corrupt the JSON report.
 
 ---
 

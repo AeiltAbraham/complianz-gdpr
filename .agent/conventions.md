@@ -93,16 +93,24 @@ unknowns are marked `TODO: confirm`. Update this file when a convention changes.
 
 ## Gate
 
-`.agent/gate.json` runs on every `git commit` and `git push`, against the merge-base with
-`master`:
+`.agent/gate.json` runs on every `git commit` and `git push`:
 
-1. `php -l` on every changed or untracked PHP file;
+1. `php -l` on every changed (vs the `master` merge-base) or untracked PHP file;
 2. `git diff --cached --check` (conflict markers, whitespace errors) on the staged
-   changes, so unstaged rebuilt artifacts never block a commit.
+   changes vs the `master` merge-base, so unstaged rebuilt artifacts never block a commit;
+3. `node scripts/phpcs-changed-lines.js`: WordPress Coding Standards
+   (`vendor/bin/phpcs --standard=.phpcs.xml.dist`) on the staged content of every staged
+   PHP file, blocking only on findings whose line the staged diff adds or changes against
+   `HEAD` — so the ~12k legacy findings on untouched lines never block (constitution §2 as
+   clarified 2026-10-07). It measures against `HEAD`, not the `master` merge-base, so lines
+   already committed on the branch are not re-judged at each later commit. It skips the
+   ruleset's excludes (`vendor/`, `node_modules/`, `settings/build/`), counts ERROR and
+   WARNING alike (WARNING carries security sniffs such as nonce verification), and — when
+   PHP is staged but `vendor/bin/phpcs` is absent — fails telling you to run
+   `composer install`.
 
-Stage files in a separate call before committing: check 2 only sees staged content.
-Planned additions (plan 001): coding standards on changed PHP (T-006) and the
-permanent token checks (T-018).
+Stage files in a separate call before committing: checks 2 and 3 only see staged content.
+Planned addition (plan 001): the permanent token checks (T-018).
 
 ## CI
 

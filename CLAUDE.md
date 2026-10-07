@@ -14,11 +14,15 @@ of the React settings app.
 
 ## Checks
 
-- The commit and push gate (`.agent/gate.json`, run by the flow hook) checks against the
-  merge-base with `master`: `php -l` on changed PHP files, then `git diff --cached
-  --check` on staged changes. Stage in a separate call before committing.
-- Not runnable here yet: coding standards, PHPUnit, JS lint and build (no `package.json`,
-  outdated PHP dev tools). Plan 001 Stages A and B add them; see conventions.
+- The commit and push gate (`.agent/gate.json`, run by the flow hook) runs three checks:
+  `php -l` on changed/untracked PHP files and `git diff --cached --check`, both against the
+  `master` merge-base; then `node scripts/phpcs-changed-lines.js`, which runs WordPress
+  Coding Standards (`vendor/bin/phpcs`) on the lines each staged PHP change adds or edits
+  against `HEAD` — never the ~12k legacy findings on untouched lines (run `composer install`
+  first). Stage in a separate call before committing; see `.agent/conventions.md` "Gate".
+- Runnable after plan 001 Stages A–B: `composer install` (PHPCS, PHPUnit) and `npm ci`
+  with the builds and JS lint (root and `settings/package.json`). Still to come: the
+  end-to-end suite (Stage C) and GitHub Actions CI (T-019). See conventions.
 
 ## Key paths
 
