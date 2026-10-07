@@ -42,18 +42,23 @@ class CmplzInstallerTest extends WP_UnitTestCase {
         }
     }
 
+    /**
+     * Downloads and activates a plugin from wordpress.org; excluded from the default run.
+     *
+     * @group external-http
+     */
     public function test_plugin_installation() {
 
-        $burst_installer           = new cmplz_installer( 'burst-statistics' );
+        $installer = new cmplz_installer( 'complianz-terms-conditions' );
 
-        $this->assertTrue( $burst_installer->download_plugin(), 'Download of burst-statistics plugin failed.' );
+        $this->assertTrue( $installer->download_plugin(), 'Download of complianz-terms-conditions plugin failed.' );
         // Get clean after every download, otherwise issues with ob_level going up
         ob_get_clean();
 
-        $this->assertTrue( $burst_installer->plugin_is_downloaded(), 'burst-statistics plugin is not downloaded.' );
+        $this->assertTrue( $installer->plugin_is_downloaded(), 'complianz-terms-conditions plugin is not downloaded.' );
 
-        $this->assertTrue( $burst_installer->activate_plugin(), 'Activation of burst-statistics plugin failed.' );
+        $this->assertTrue( $installer->activate_plugin(), 'Activation of complianz-terms-conditions plugin failed.' );
 
-        $this->assertTrue( $burst_installer->plugin_is_activated(), 'burst-statistics plugin is not activated.' );
+        $this->assertTrue( $installer->plugin_is_activated(), 'complianz-terms-conditions plugin is not activated.' );
     }
 }

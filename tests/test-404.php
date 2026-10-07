@@ -2,6 +2,11 @@
 
 class CmplzTestUrls extends WP_UnitTestCase {
 
+    /**
+     * Hits live external URLs with wp_remote_get(); excluded from the default run.
+     *
+     * @group external-http
+     */
     public function test_external_links() {
         // Set the base directory path where your plugin files are located
         $plugin_dir = dirname( __FILE__, 2 );

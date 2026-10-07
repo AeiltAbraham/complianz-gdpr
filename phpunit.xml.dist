@@ -6,14 +6,23 @@
 	convertErrorsToExceptions="true"
 	convertNoticesToExceptions="true"
 	convertWarningsToExceptions="true"
+	cacheResult="false"
 	>
 	<testsuites>
-		<!-- Live-WP tests only. CI should run the WP_Mock suite via phpunit-mock.xml
-		     and the integration suite via phpunit-integration.xml separately. Scoped
-		     to tests/legacy/ so bare vendor/bin/phpunit never mixes WP_Mock tests
-		     (which expect bootstrap-mock.php) into this live-WP bootstrap. -->
-		<testsuite name="complianzphp composer.phar require --dev phpunit/phpunit ^9">
-			<directory prefix="test-" suffix=".php">./tests/legacy/</directory>
+		<!-- Live-WP tests in tests/ (prefix test-, suffix .php), bootstrapped by
+		     tests/bootstrap.php against the WordPress test library. Provision it with
+		     bin/install-wp-tests.sh; see docs/developers/testing.md. -->
+		<testsuite name="complianz">
+			<directory prefix="test-" suffix=".php">./tests/</directory>
 		</testsuite>
 	</testsuites>
+	<!-- Network-dependent tests are tagged @group external-http (WordPress core's own
+	     convention) and excluded from the default run here; the composer test script
+	     excludes the same group. Run them explicitly by selecting the external-http group
+	     on the command line. -->
+	<groups>
+		<exclude>
+			<group>external-http</group>
+		</exclude>
+	</groups>
 </phpunit>

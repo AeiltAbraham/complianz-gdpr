@@ -20,6 +20,9 @@
   "scripts": {
     "phpcs": [
       "phpcs -p -s *.php"
+    ],
+    "test": [
+      "phpunit --configuration phpunit.xml.dist --exclude-group external-http"
     ]
   },
   "config": {

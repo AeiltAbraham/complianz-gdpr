@@ -111,6 +111,7 @@ outcome: Dev tools upgraded: PHP_CodeSniffer 3.13.6, WPCS 3.4.1, PHPCompatibilit
 
 ## T-005 Make the PHPUnit suite runnable
 mode: agentic
+status: done (2026-10-07)
 depends: T-004
 files: phpunit.xml.dist, docs/developers/testing.md, composer.json
 proof: vendor/bin/phpunit --configuration phpunit.xml.dist --list-tests
@@ -121,6 +122,9 @@ acceptance:
 - a full run against the WordPress test library (provisioned per `bin/install-wp-tests.sh` with a Docker MySQL) is documented step-by-step in `docs/developers/testing.md` and executed once; tests that call the network (the external-links test) are tagged with a PHPUnit group named `external-http` and excluded in the default run
 - `composer test` script runs the suite; exit 0 on the current tree
 - no test assertion is changed (CLAUDE.md rule); only configuration and annotations
+outcome: `phpunit.xml.dist` now discovers `tests/test-*.php` and excludes the `external-http` group; `composer test` runs the default suite; `docs/developers/testing.md` documents the MariaDB 11.4 container (`cmplz-phpunit-db`, 127.0.0.1:13306), the WordPress test library install (WordPress 7.1.3) and the run and teardown steps exactly as executed.
+  Evidence: `--list-tests` lists `CmplzTestUrls::test_external_links` and `CmplzInstallerTest::test_plugin_installation`; `composer test` exits 0 with "No tests executed!" because both existing tests need the network; `--group external-http --filter test_plugin_installation` passes all 4 assertions (flagged risky for the test's own `ob_get_clean()`).
+  Deviations: the installer test targeted `burst-statistics`, a slug `class-installer.php` never supported, so it failed on every run; with maintainer approval it now targets `complianz-terms-conditions`, assertions unchanged, and both tests carry `@group external-http` (annotations in `tests/test-404.php` and `tests/test-installer.php`, outside the listed files). The host's MySQL 9.6 client cannot authenticate to MariaDB, so the user and database are created inside the container and the installer runs with its skip-database-creation flag.
 
 ## T-006 Gate: coding standards on changed PHP
 mode: agentic
