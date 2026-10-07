@@ -55,15 +55,16 @@ unknowns are marked `TODO: confirm`. Update this file when a convention changes.
 - Server-provided HTML is sanitized with DOMPurify (11 files).
 - Per-component SCSS (17 files) and `assets/css/admin/` are being retired by feature 001
   (ADR-005).
+- No one-time Prettier reformat of `settings/src` (plan 001 §4, confirmed 2026-10-06).
 
 ## Build
 
 - Settings app: `settings/webpack.config.js` extends `@wordpress/scripts` (content-hashed
   chunks plus a `react-jsx-runtime` polyfill bundle). Root CSS: `gulpfile.js` (sass,
   rtlcss, uglify).
-- **There is no `package.json` in this repo**, so neither can be built here yet.
-  `TODO: confirm` the package manager (npm, as in the input technical spec, or pnpm);
-  the design task that bootstraps the tooling settles it.
+- **There is no `package.json` in this repo yet**, so neither can be built here. Plan 001
+  tasks T-001 and T-002 create both manifests with npm on Node 24 (ADR-010, confirmed
+  2026-10-06).
 - Build output is tracked: `settings/build/`, `assets/css/*.min.css`, `assets/css/rtl/`.
 
 ## Tests
@@ -71,15 +72,15 @@ unknowns are marked `TODO: confirm`. Update this file when a convention changes.
 - PHPUnit 9 against the WordPress test library (`bin/install-wp-tests.sh`, needs MySQL);
   tests live in `tests/test-*.php`.
 - `phpunit.xml.dist` points at `tests/legacy/`, which does not exist here, so the suite
-  runs nothing. `TODO: confirm` the fix in design (Phase 0 tooling).
+  runs nothing. Plan 001 task T-005 fixes it.
 - No JavaScript or end-to-end tests yet; feature 001 adds the end-to-end suite (SC-06).
 
 ## Lint
 
 - `.phpcs.xml.dist` is an unfilled template: prefix and text domain `my-plugin`, PHP
   testVersion `5.6-`, minimum WordPress 4.6. `composer.lock` pins WPCS 2.3.0, PHPCS 3.7.1
-  and PHPCompatibility 9.3.5, which likely don't run on PHP 8.5. The first design task
-  upgrades and fixes them, then adds coding standards to the gate.
+  and PHPCompatibility 9.3.5, which likely don't run on PHP 8.5. Plan 001 tasks T-004
+  and T-006 upgrade and fix them, then add coding standards to the gate.
 - `.stylelintrc.json` extends `@wordpress/stylelint-config/scss-stylistic` (needs the JS
   tooling).
 
@@ -99,7 +100,8 @@ permanent token checks (T-018).
 ## CI
 
 - `.gitlab-ci.yml` (PHPUnit on PHP 7.4–8.2) and `.travis.yml` are inherited from upstream
-  and do not run on this GitHub fork. `TODO: confirm` whether to add GitHub Actions.
+  and do not run on this GitHub fork. CI moves to GitHub Actions (ADR-012, accepted
+  2026-10-06); the workflow is plan 001 task T-019.
 
 ## Git
 

@@ -18,7 +18,7 @@ of the React settings app.
   merge-base with `master`: `php -l` on changed PHP files, then `git diff --cached
   --check` on staged changes. Stage in a separate call before committing.
 - Not runnable here yet: coding standards, PHPUnit, JS lint and build (no `package.json`,
-  outdated PHP dev tools). The first design tasks add them; see conventions.
+  outdated PHP dev tools). Plan 001 Stages A and B add them; see conventions.
 
 ## Key paths
 
@@ -28,7 +28,7 @@ of the React settings app.
 - `assets/css/admin/`: legacy admin SCSS, retired by feature 001 (ADR-005)
 - `cookiebanner/`, `class-cookie-blocker.php`: website-side banner and script blocking
 - `integrations/`: third-party plugin and service integrations
-- `docs/specs/001-settings-ui-redesign/`: spec and clarifications (plan and tasks next)
+- `docs/specs/001-settings-ui-redesign/`: spec, clarifications, plan and tasks
 - `docs/adr/`: decision records
 
 ## Critical rules
