@@ -77,10 +77,17 @@ unknowns are marked `TODO: confirm`. Update this file when a convention changes.
 
 ## Lint
 
-- `.phpcs.xml.dist` is an unfilled template: prefix and text domain `my-plugin`, PHP
-  testVersion `5.6-`, minimum WordPress 4.6. `composer.lock` pins WPCS 2.3.0, PHPCS 3.7.1
-  and PHPCompatibility 9.3.5, which likely don't run on PHP 8.5. Plan 001 tasks T-004
-  and T-006 upgrade and fix them, then add coding standards to the gate.
+- `.phpcs.xml.dist` is filled for this plugin: prefixes `cmplz`/`CMPLZ`, text domain
+  `complianz-gdpr`, PHP `testVersion` `7.4-`, minimum WordPress 5.9; it excludes `vendor/`,
+  `node_modules/` and generated `settings/build/` (webpack `*.asset.php`). `composer.lock`
+  pins the dev tools that install and run on PHP 8.5 (T-004): PHP_CodeSniffer 3.13.6,
+  WPCS 3.4.1, PHPCompatibilityWP 2.1.8 (PHPCompatibility 9.3.5), PHPUnit 9.6.38 (kept on 9
+  for the WordPress test library), yoast/phpunit-polyfills 1.1.5 and
+  wp-cli/wp-cli-bundle 2.12.0. WPCS 3's sniff registration needs the
+  `dealerdirect/phpcodesniffer-composer-installer` plugin, allowed in `composer.json`
+  `config.allow-plugins`. Run `composer install`, then `vendor/bin/phpcs
+  --standard=.phpcs.xml.dist`. T-006 adds coding standards to the gate on changed files
+  only; the whole-repo baseline it will NOT enforce is ~12k errors / 2.6k warnings.
 - `.stylelintrc.json` extends `@wordpress/stylelint-config/scss-stylistic` (needs the JS
   tooling).
 

@@ -34,3 +34,4 @@ One line per finished task; `tasks.md` holds the durable `outcome:` records.
 - 2026-10-07 T-001 done: settings app builds from source (npm, @wordpress/scripts 30.27.0, Node 24); asset check made format-agnostic.
 - 2026-10-07 T-002 done: root gulp toolchain rebuilds the admin CSS (sass pinned at 1.76.0 for parity). Flag for T-032: the shipped admin.css is stale against its SCSS, and placeholder widths are random per build.
 - 2026-10-07 T-003 done: weight baselines recorded; the fresh build is the SC-03/SC-04 reference, with the shipped bundle listed for context.
+- 2026-10-07 T-004 done: PHPCS 3.13.6, WPCS 3.4.1 and PHPUnit 9.6.38 run on PHP 8.5; ruleset filled for this plugin. Repo baseline: 12,135 WPCS errors (not enforced).

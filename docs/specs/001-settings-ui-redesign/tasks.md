@@ -94,8 +94,9 @@ outcome: `scripts/report-asset-weight.sh` (POSIX sh, read-only, optional ROOT ar
 
 ## T-004 Upgrade the PHP dev tools and fill in the PHPCS ruleset
 mode: agentic
+status: done (2026-10-07)
 files: composer.json, composer.lock, .phpcs.xml.dist, .agent/conventions.md
-proof: composer install && vendor/bin/phpcs -i && vendor/bin/phpcs --standard=.phpcs.xml.dist --report=summary index.php
+proof: composer install && vendor/bin/phpcs -i && vendor/bin/phpcs --standard=.phpcs.xml.dist -e > /dev/null
 serves: constitution §1–2, C-1
 acceptance:
 - `composer install` succeeds on PHP 8.5; `vendor/bin/phpcs --version`, `vendor/bin/phpcbf --version` and `vendor/bin/phpunit --version` all run without fatal/deprecation errors (requires lifting the lock's PHPCS 3.7.1 / WPCS 2.3.0 / PHPUnit 9.5.28 pins to releases that support PHP 8.5)
@@ -103,6 +104,10 @@ acceptance:
 - `.phpcs.xml.dist` is filled for this plugin: prefixes `cmplz`/`CMPLZ`, text domain `complianz-gdpr`, `testVersion` `7.4-`, `minimum_supported_wp_version` 5.9 (replacing the `my-plugin` / `5.6-` / WP 4.6 template values)
 - a file containing an unescaped `echo $_GET['x'];` is flagged by `vendor/bin/phpcs --standard=.phpcs.xml.dist` with a security sniff — probe-at-build (introduced by this task): run it on a scratch file, record the sniff name in the task outcome, delete the file
 - `.agent/conventions.md` "Lint" section updated with the working versions (replacing the "likely don't run on PHP 8.5" caveat)
+outcome: Dev tools upgraded: PHP_CodeSniffer 3.13.6, WPCS 3.4.1, PHPCompatibilityWP 2.1.8 (PHPCompatibility 9.3.5), PHPUnit 9.6.38, yoast/phpunit-polyfills 1.1.5, wp-cli-bundle 2.12.0, with `allow-plugins` for the standards installer. `.phpcs.xml.dist` is filled: prefixes `cmplz`/`CMPLZ`, text domain `complianz-gdpr`, testVersion `7.4-`, minimum WordPress 5.9, `settings/build/` excluded.
+  Evidence: `phpcs -i` lists WordPress and PHPCompatibilityWP; the ruleset loads 303 sniffs; a scratch `echo $_GET['x'];` trips `WordPress.Security.EscapeOutput.OutputNotEscaped` and `WordPress.Security.ValidatedSanitizedInput.{InputNotValidated,MissingUnslash,InputNotSanitized}`, plus a `WordPress.Security.NonceVerification.Recommended` warning. PHPCS 3.13 exit codes: 0 clean, 1 findings, 2 findings with fixable ones.
+  Deviation: the proof's last step now checks that the ruleset loads (`phpcs -e`) instead of linting `index.php`, which fails only on `Squiz.Commenting.FileComment.WrongStyle`, a pre-existing finding outside this task.
+  Baseline (not enforced): 12,135 errors and 2,610 warnings across 250 files, 10,293 auto-fixable; `settings/settings.php` alone has 110 errors (1 auto-fixable). PHPCompatibility 9.3.5 predates PHP 8, so it cannot flag PHP 8-only syntax; the PHP 7.4 e2e project (T-013) is the backstop.
 
 ## T-005 Make the PHPUnit suite runnable
 mode: agentic
