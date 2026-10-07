@@ -192,6 +192,57 @@ saves one `storageState` per user; `setup-min-wp` activates the plugin on 8889 a
 > node -e "const c=require('./tests/e2e/playwright.config.js'); for (const p of c.projects) console.log(p.name, '<-', JSON.stringify(p.dependencies||[]))"
 > ```
 
+### Build from source before every e2e proof (the T-032 rule)
+
+**From T-032 onward, every e2e proof command runs `npm run build:all` first.** The tracked
+build output (`settings/build/`, `assets/css/admin*.css`, `settings/assets/js/`) can lag its
+own source, so the characterization suite must validate what the **current source + committed
+manifests** produce, not a possibly-stale committed artifact. The proof commands in `tasks.md`
+from T-032 on are written as `npm run build:all && npx wp-env start && npm run e2e -- …`, and
+`package.json`'s `build:all` script (`gulp build:css:admin`, then `npm --prefix settings run
+build`) is the single entry point. Restore the tracked build output afterwards (ADR-006):
+nothing built is committed.
+
+#### Fresh-build parity (T-032 investigation)
+
+T-010 captured the visual/isolation/smoke baselines against the **shipped, tracked** bundle.
+T-032 proved a **fresh source build** reproduces that app pixel-for-pixel. The reconstructed
+npm toolchain (T-001/T-002) resolved two JS libraries to newer patch/major versions than the
+shipped bundle was built with, each causing a deterministic diff. Both were fixed by pinning
+the library to the shipped version in `settings/package.json` + `settings/package-lock.json`
+— never by touching a spec, mask, threshold or baseline. The shipped versions were read
+directly out of the committed `settings/build/` chunks.
+
+| Diffing screen(s) | Layer | Category | Root cause | Resolution |
+|---|---|---|---|---|
+| `#tools/data-requests`, `#tools/processing-agreements`, `#tools/data-breach-reports`, `#tools/proof-of-consent` | smoke (console) | B — JS dependency version | `react-data-table-component` forwards `minWidth`/`maxWidth`/`button`/… as non-transient props to a `styled.div`. styled-components **v5** filtered unknown props off the DOM; **v6** forwards them, so React logs `Received … for a non-boolean attribute minwidth` / `does not recognize the minWidth prop`. The fresh install pulled styled-components 6.5.3; the shipped bundle was built with 5.3.11. | Pin `styled-components` to **5.3.11**. |
+| `#tools/ab-testing` @1440 and @768 | visual | B — JS dependency version | The A/B-testing Statistics bar chart renders to a chart.js `<canvas>`. chart.js 4.5.1 changed canvas rendering vs the shipped 4.5.0, giving a deterministic antialiasing delta confined to the chart region (ratio 0.0026 @1440, 0.0055 @768 vs the 0.001 threshold; identical on all retries → not nondeterminism). | Pin `chart.js` to **4.5.0**. |
+
+After both pins, `npm run build:all` + the three proof specs (`smoke`, `visual`, `isolation`)
+pass against the **committed T-010 baselines** with **no baseline, spec, mask or threshold
+change**. One screen (`#banner/banner-general` @768) can flake on a `react_conditions`
+cascade re-layout; it is the pre-existing T-010 banner flake (independent of the build), is
+absorbed by the CI retry policy (plan §8.1.4: green with `--retries=2`, a retry-only pass
+flagged flaky), and is not a build-parity diff.
+
+Version pins recorded for parity (all exact, like sass 1.76.0 in the root manifest):
+
+- **`settings/package.json` `chart.js` = `4.5.0`** — matches the shipped bundle's chart.js;
+  4.5.1 shifts canvas antialiasing on the A/B-testing chart.
+- **`settings/package.json` `styled-components` = `5.3.11`** — matches the shipped bundle;
+  v6 forwards `react-data-table-component`'s layout props to the DOM, which React warns on.
+
+Not fixed by pins — a known, benign **stale-CSS** drift (category A), reported for a reviewed
+decision, **not** a parity regression: the shipped `admin.css` predates its own SCSS, so a
+rebuild correctly **adds** rules the committed file lacks — a Burst Statistics "other plugins"
+colour (`.cmplz-burst-statistics` → `--rsp-other-plugins-color: var(--rsp-green)`), a `pulse`
+keyframe + `.burst-icon-live` animation, and a `.dashboard_page_burst` overlay rule. sass is
+already pinned at 1.76.0 and these are real, more-correct CSS, so no pin removes them. In the
+seeded e2e state they surface on **no** baselined screen (the dashboard "other plugins" block
+does not render a Burst element, and the visual spec freezes animations), so they produce
+**zero** visual diff and need no re-baseline today; they are flagged here for the dispatcher's
+look-preserving-net call if a later seed makes them visible.
+
 ### Update visual baselines
 
 Screenshot baselines live under `tests/e2e/admin/__screenshots__/` and are updated only by

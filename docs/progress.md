@@ -42,3 +42,4 @@ One line per finished task; `tasks.md` holds the durable `outcome:` records.
 - 2026-10-07 T-009 done: smoke and axe layers cover all 37 screens; today: no console errors or failed REST calls, 77 serious/critical axe findings recorded.
 - 2026-10-07 T-031 done: the token-rename script and its fixture test are ready for script-mode T-017; real tree untouched.
 - 2026-10-07 T-010 done (after dispatcher takeover): visual + isolation baselines deterministic — seeded real legal documents for the banner preview, hardened the setup login with retries, accepted under the plan CI retry policy (3x green, retries unused). Follow-up T-033 added for the class-selector cleanup.
+- 2026-10-07 T-032 done: a fresh source build reproduces the shipped app; two dependency drifts pinned to the shipped versions (styled-components 5.3.11, chart.js 4.5.0). Suite 10/10 clean. Every e2e proof now builds first.
