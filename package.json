@@ -9,9 +9,12 @@
     "node": ">=24"
   },
   "scripts": {
-    "build:all": "gulp build:css:admin && npm --prefix settings run build"
+    "build:all": "gulp build:css:admin && npm --prefix settings run build",
+    "e2e": "playwright test --config tests/e2e/playwright.config.js"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@wordpress/env": "^11.16.0",
     "gulp": "^5.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-cssbeautify": "^3.0.1",

@@ -150,17 +150,21 @@ outcome: `scripts/phpcs-changed-lines.js` (Node 24, no dependencies) is the gate
 
 ## T-007 wp-env + Playwright scaffold with locale projects
 mode: agentic
+status: done (2026-10-07)
 depends: T-002
-files: .wp-env.json, tests/e2e/playwright.config.js, tests/e2e/admin/setup/latest.setup.js, tests/e2e/admin/setup/min-wp.setup.js, package.json, package-lock.json, .gitignore, docs/developers/testing.md
-proof: npx wp-env start && npm run e2e -- --list
+files: .wp-env.json, tests/e2e/playwright.config.js, tests/e2e/admin/setup/latest.setup.js, tests/e2e/admin/setup/min-wp.setup.js, tests/e2e/admin/disable-animations.css, package.json, package-lock.json, .gitignore, docs/developers/testing.md
+proof: npx wp-env start && npm run e2e -- --project=setup-latest --project=setup-min-wp && node -e "const c=require('./tests/e2e/playwright.config.js');const got=c.projects.map(p=>p.name+'<-'+(p.dependencies||[]).join(','));const want=['setup-latest<-','setup-min-wp<-','admin<-setup-latest','admin-rtl<-setup-latest','admin-min-wp<-setup-min-wp','admin-i18n<-setup-latest'];process.exit(JSON.stringify(got)===JSON.stringify(want)?0:1)"
 serves: SC-06, DB-15, DB-13, DB-14; settles: ADR-011
 acceptance:
 - `.wp-env.json` defines the default instance (latest WordPress, port 8888) and `env.tests` (core pinned to WordPress 5.9, `phpVersion` "7.4", port 8889), both mapping this checkout as the plugin
-- `npm run e2e -- --list` (root script `e2e` = `playwright test --config tests/e2e/playwright.config.js`; Playwright only finds a config in the working directory) shows projects `setup-latest`, `setup-min-wp`, `admin`, `admin-rtl`, `admin-min-wp`, `admin-i18n` with the dependency wiring of ADR-011 (setup projects create `admin-rtl` (`he_IL`) and `admin-de` (`de_DE`) users and per-user storageState)
+- `npm run e2e` (root script `e2e` = `playwright test --config tests/e2e/playwright.config.js`; Playwright only finds a config in the working directory) runs a config that defines projects `setup-latest`, `setup-min-wp`, `admin`, `admin-rtl`, `admin-min-wp`, `admin-i18n` with the dependency wiring of ADR-011 (setup projects create `admin-rtl` (`he_IL`) and `admin-de` (`de_DE`) users and per-user storageState)
 - wp-cli and webServer invocations go through environment variables defaulting to the wp-env forms, so CI (ADR-012) can substitute its own (no hard-coded `npx wp-env run` inside specs)
 - config sets `workers: 1`, `retries: process.env.CI ? 2 : 0`, `reducedMotion: 'reduce'` plus an injected animation-disabling style, trace retain-on-failure in CI, screenshots dir `tests/e2e/admin/__screenshots__/`
 - `.gitignore` gains Playwright outputs (`test-results/`, `tests/e2e/playwright-report/`, auth state files)
 - `docs/developers/testing.md` documents start/run/update-snapshot commands
+outcome: `.wp-env.json` runs two instances with the checkout mounted as `wp-content/plugins/complianz-gdpr` (the production folder name): latest WordPress (7.1.3, PHP 8.3) on 8888 and WordPress 5.9 on PHP 7.4 on 8889. `tests/e2e/playwright.config.js` (CommonJS) defines the six projects with ADR-011 wiring, one worker, CI-only retries, reduced motion plus `admin/disable-animations.css`, and per-spec, per-project baselines under `tests/e2e/admin/__screenshots__/`. The setup projects install the he_IL and de_DE language packs, create `admin-rtl` and `admin-de`, and save four git-ignored storageStates. The root manifest gains `@playwright/test` 1.63.0, `@wordpress/env` 11.16.0 and the `e2e` script; `testing.md` documents the workflow and its environment variables.
+  Evidence: the amended proof passes: wp-env starts, the setup projects pass 4/4, and the wiring assertion confirms all six projects and their dependencies; `wp core version` reports 7.1.3 on 8888 and 5.9 / PHP 7.4.33 on 8889.
+  Deviations: `--list` only shows projects that already contain specs, so the proof now runs the setup projects and asserts the project wiring. `disable-animations.css` is an extra file because Playwright's screenshot `stylePath` needs a stylesheet. The core pin `WordPress/WordPress#5.9` collided with the latest instance's clone in wp-env 11.16.0 (both became 7.1.3), so the 5.9 instance uses the official 5.9 zip. wp-env gives the 8889 instance a different default admin password, so its setup resets it. wp-env 11.16.0 warns that `env` and `testsPort` are deprecated in favour of separate config files; kept because ADR-011 specifies them. Setup waits for the login cookie rather than the dashboard, which waits on external HTTP until T-008's stubs land.
 
 ## T-008 Deterministic fixture and external-service stub mu-plugin
 mode: agentic

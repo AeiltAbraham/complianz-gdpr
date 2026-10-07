@@ -134,5 +134,90 @@ docker rm cmplz-phpunit-db
 
 ## End-to-end / JavaScript tests
 
-Added by a later feature-001 task (SC-06). This section will document the Playwright
-end-to-end and screenshot suites once that task lands.
+The characterization e2e suite for the React settings app (SC-06) runs on **Playwright**
+against **two WordPress instances** provided by `@wordpress/env` (ADR-011). It is written
+against today's UI and kept green through the migration. The harness lives in `tests/e2e/`
+(`playwright.config.js`, `admin/setup/`); the specs and baselines land in later tasks
+(T-008..T-013). The config is found only in the working directory, so every command below
+runs from the repository root.
+
+### Prerequisites
+
+- Docker running (OrbStack is fine). The suite uses fixed ports **8888** and **8889**, so
+  only one run per machine at a time.
+- Node 24 and the root dependencies: `npm install`.
+- The Playwright Chromium browser: `npx playwright install chromium` (one-time; re-run
+  after a Playwright upgrade).
+
+### The two instances (`.wp-env.json`)
+
+| wp-env env | Port | WordPress | PHP | Used by projects |
+|------------|------|-----------|-----|------------------|
+| `development` (default) | 8888 | latest | default | `admin`, `admin-rtl`, `admin-i18n` |
+| `tests` | 8889 | 5.9 (pinned) | 7.4 | `admin-min-wp` |
+
+Both map this checkout as `wp-content/plugins/complianz-gdpr`. RTL (`he_IL`) and German
+(`de_DE`) come from the logged-in user's WordPress locale, created by the setup projects —
+not from a browser option.
+
+### Start the environment
+
+```bash
+npx wp-env start
+```
+
+The **first** start downloads the Docker images and WordPress 5.9 (pinned as
+`WordPress/WordPress#5.9`) and can take several minutes; later starts are fast. It brings
+up both instances and only returns once both are healthy. Leave it running between suite
+runs; Playwright's `webServer` reuses it.
+
+### Run the suite
+
+```bash
+npm run e2e                              # = playwright test --config tests/e2e/playwright.config.js
+npm run e2e -- --project=admin           # one project
+npm run e2e -- --list                    # list discovered tests
+```
+
+The **setup projects** run first (as dependencies): `setup-latest` activates the plugin,
+installs the `he_IL`/`de_DE` language packs, creates the `admin-rtl`/`admin-de` users and
+saves one `storageState` per user; `setup-min-wp` activates the plugin on 8889 and saves the
+`admin` state. Authentication state is written to the git-ignored `tests/e2e/.auth/`.
+
+> `--list` only shows projects that currently contain spec files, so until T-009+ add the
+> specs it lists only `setup-latest`/`setup-min-wp`. To see all six projects and their
+> dependency wiring without a run:
+>
+> ```bash
+> node -e "const c=require('./tests/e2e/playwright.config.js'); for (const p of c.projects) console.log(p.name, '<-', JSON.stringify(p.dependencies||[]))"
+> ```
+
+### Update visual baselines
+
+Screenshot baselines live under `tests/e2e/admin/__screenshots__/` and are updated only by
+an explicit, reviewed change:
+
+```bash
+npm run e2e -- --update-snapshots
+```
+
+### CI / environment indirection
+
+Every wp-cli and web-server invocation reads an environment variable that defaults to the
+wp-env form, so CI (ADR-012) can substitute its own server without editing the config or
+the specs:
+
+| Variable | Default |
+|----------|---------|
+| `WP_BASE_URL_LATEST` | `http://localhost:8888` |
+| `WP_BASE_URL_MIN` | `http://localhost:8889` |
+| `E2E_WEBSERVER_CMD` | `npx wp-env start` |
+| `WP_CLI_CMD_LATEST` | `npx wp-env run cli wp` |
+| `WP_CLI_CMD_MIN` | `npx wp-env run tests-cli wp` |
+
+### Stop the environment
+
+```bash
+npx wp-env stop            # stop; keeps data
+npx wp-env destroy         # remove containers and data
+```

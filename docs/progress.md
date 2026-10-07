@@ -37,3 +37,4 @@ One line per finished task; `tasks.md` holds the durable `outcome:` records.
 - 2026-10-07 T-004 done: PHPCS 3.13.6, WPCS 3.4.1 and PHPUnit 9.6.38 run on PHP 8.5; ruleset filled for this plugin. Repo baseline: 12,135 WPCS errors (not enforced).
 - 2026-10-07 T-005 done: PHPUnit runs against the WordPress test library (MariaDB in Docker); the stale installer test now targets a supported slug (maintainer-approved), and both network tests sit in the external-http group.
 - 2026-10-07 T-006 done: the gate blocks coding-standard findings on changed PHP lines (measured against HEAD); legacy findings elsewhere pass.
+- 2026-10-07 T-007 done: wp-env runs WordPress 7.1.3 (8888) and 5.9 on PHP 7.4 (8889); Playwright defines the six projects and the setup creates the locale users.

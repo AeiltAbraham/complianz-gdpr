@@ -1,0 +1,29 @@
+/*
+ * Injected before every screenshot via expect.toHaveScreenshot.stylePath
+ * (tests/e2e/playwright.config.js). Together with reducedMotion: 'reduce' and Playwright's
+ * own `animations: 'disabled'`, this makes the visual layer deterministic (§8.1.2).
+ *
+ * `animations: 'disabled'` freezes CSS animations/transitions; this file additionally kills
+ * anything CSS-timed that survives, and neutralises JS-driven motion the browser does not
+ * class as an animation (toasts, confetti, scan-progress bars). The specific dynamic
+ * regions are masked per-screenshot by the visual spec (T-010); this is the global floor.
+ */
+
+*,
+*::before,
+*::after {
+	animation-duration: 0s !important;
+	animation-delay: 0s !important;
+	animation-iteration-count: 1 !important;
+	transition-duration: 0s !important;
+	transition-delay: 0s !important;
+	scroll-behavior: auto !important;
+	caret-color: transparent !important;
+}
+
+/* JS-driven motion that is not a CSS animation. */
+.Toastify,
+.react-confetti-explosion,
+canvas[class*="confetti"] {
+	display: none !important;
+}
