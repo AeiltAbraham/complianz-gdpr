@@ -89,11 +89,12 @@ unknowns are marked `TODO: confirm`. Update this file when a convention changes.
 `master`:
 
 1. `php -l` on every changed or untracked PHP file;
-2. `git diff --check` (conflict markers, whitespace errors) on tracked changes.
+2. `git diff --cached --check` (conflict markers, whitespace errors) on the staged
+   changes, so unstaged rebuilt artifacts never block a commit.
 
-Untracked files are only seen by check 1, so stage new files before committing. Next
-additions (design): coding standards on changed PHP, JS lint and build, and the
-permanent checks of feature 001.
+Stage files in a separate call before committing: check 2 only sees staged content.
+Planned additions (plan 001): coding standards on changed PHP (T-006) and the
+permanent token checks (T-018).
 
 ## CI
 

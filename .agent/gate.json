@@ -1,6 +1,6 @@
 {
   "commit": [
     "{ git diff --name-only --diff-filter=ACMR \"$(git merge-base HEAD master)\"; git ls-files --others --exclude-standard; } | grep -E '\\.php$' | sort -u | tr '\\n' '\\0' | xargs -0 -r -n1 php -l",
-    "git diff --check \"$(git merge-base HEAD master)\""
+    "git diff --cached --check \"$(git merge-base HEAD master)\""
   ]
 }

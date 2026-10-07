@@ -15,7 +15,8 @@ of the React settings app.
 ## Checks
 
 - The commit and push gate (`.agent/gate.json`, run by the flow hook) checks against the
-  merge-base with `master`: `php -l` on changed PHP files, then `git diff --check`.
+  merge-base with `master`: `php -l` on changed PHP files, then `git diff --cached
+  --check` on staged changes. Stage in a separate call before committing.
 - Not runnable here yet: coding standards, PHPUnit, JS lint and build (no `package.json`,
   outdated PHP dev tools). The first design tasks add them; see conventions.
 
