@@ -41,12 +41,25 @@ function cmplz_e2e_seed() {
 
 	// Settings (cmplz_options): a small, fixed, representative set written through the
 	// plugin's own writer (no hooks, so nothing tries to sync over the network under CLI).
+	// consent_type is pinned to the EU opt-in model this fixture represents (regions => eu). It is
+	// normally DERIVED by the app from the region/banner and set into the fields on the banner screens
+	// by the React preview AFTER load — an async step that briefly reloaded the fields and flickered the
+	// consent_type-gated rows (e.g. "Categories"), making those screens' height non-deterministic for
+	// the visual baseline (T-010). Seeding the settled value makes it stable from first paint; it is the
+	// same value the app settles to, so no baseline changes, only the transient is removed.
+	// country_company drives COMPLIANZ::$company->get_company_region_code(), which the banner PREVIEW
+	// uses to pick its slice of pageLinks ($page_links[$region], cookiebanner/admin/cookiebanner.php).
+	// It defaults to 'US' -> region 'us', which has no documents here, so the preview's links stayed
+	// unresolved `{title}`. Pinning an EU country (NL) makes the region 'eu', matching the generated EU
+	// documents below, so the preview resolves real document-link titles deterministically.
 	$options = array(
 		'regions'           => 'eu',
+		'country_company'   => 'NL',
 		'organisation_name' => 'Complianz E2E Fixture',
 		'email_company'     => 'fixture@cmplz.test',
 		'use_cdb_api'       => 'yes',
 		'use_cdb_links'     => 'yes',
+		'consent_type'      => 'optin',
 	);
 	foreach ( $options as $option_id => $option_value ) {
 		cmplz_update_option_no_hooks( $option_id, $option_value );
@@ -57,6 +70,7 @@ function cmplz_e2e_seed() {
 	update_option( 'cmplz_activation_time', $seed_time );
 
 	cmplz_e2e_seed_cookies_services( $seed_time );
+	cmplz_e2e_seed_documents();
 	cmplz_e2e_seed_banner();
 
 	if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -115,6 +129,56 @@ function cmplz_e2e_seed_cookies_services( $seed_time ) {
 		$cookie->{$property} = $value;
 	}
 	$cookie->save( false );
+}
+
+/**
+ * Generate Complianz's own legal-document pages so the banner has real document links.
+ *
+ * The consent banner lists links to the legal documents (privacy statement, cookie policy, ...). The
+ * React preview injects those links reading the literal placeholder `{title}`, then setUpBanner()
+ * (CookieBannerPreview.js) resolves each to the real page title ONLY when a matching page exists in
+ * the server-provided pageLinks, otherwise it hides the link. With no pages the preview had an empty,
+ * briefly-`{title}` links row — a non-deterministic resting state. Generating the required pages gives
+ * the preview a stable RESOLVED state (real titles) that the specs can wait on.
+ *
+ * Built through the plugin's own document machinery (get_required_pages() + create_page(), which
+ * stamps the `[cmplz-document]` shortcode), never hand-inserted posts, so the links resolve exactly as
+ * on a configured site. Idempotent: a page already carrying the shortcode is reused, so re-running the
+ * seed adds nothing. Local only — create_page() inserts a post and needs no network (the HTTP stub
+ * stays intact). Works identically on WP 5.9 and current WP.
+ *
+ * @return void
+ */
+function cmplz_e2e_seed_documents() {
+	if ( ! class_exists( 'COMPLIANZ' ) || ! isset( COMPLIANZ::$document ) || ! isset( COMPLIANZ::$documents_admin ) ) {
+		return;
+	}
+
+	$required = COMPLIANZ::$document->get_required_pages();
+	if ( ! is_array( $required ) ) {
+		return;
+	}
+
+	foreach ( $required as $region => $types ) {
+		if ( ! is_array( $types ) ) {
+			continue;
+		}
+		foreach ( $types as $type => $page ) {
+			// Idempotent: reuse any existing page that already carries this document's shortcode
+			// (cache off, so we read the live database, not a stale lookup).
+			if ( COMPLIANZ::$document->get_shortcode_page_id( $type, $region, false ) ) {
+				continue;
+			}
+			$title = COMPLIANZ::$document->get_page_title( $type, $region );
+			COMPLIANZ::$documents_admin->create_page( $type, $region, $title );
+		}
+	}
+
+	// Drop the cached shortcode->page lookups (the idempotency probe above stamps a 'none' marker for
+	// pages that did not exist yet) and the banner's page-link cache, so the new pages resolve into
+	// pageLinks on the very next request.
+	cmplz_delete_transients_by_prefix( 'cmplz_shortcode_' );
+	cmplz_delete_transients_by_prefix( 'page_links_' );
 }
 
 /**

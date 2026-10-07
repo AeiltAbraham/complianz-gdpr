@@ -196,7 +196,7 @@ of which there are none worth splitting.
   approved. Output: both manifests, reproducible builds, SC-03/SC-04 baselines.
 - **Stage B — PHP toolchain and gate** (T-004..T-006). Output: PHPCS/WPCS and PHPUnit
   run on PHP 8.5; gate runs coding standards on changed PHP.
-- **Stage C — Characterization e2e suite, S3** (T-007..T-010, T-032, T-011..T-013).
+- **Stage C — Characterization e2e suite, S3** (T-007..T-010, T-032, T-011..T-013, T-033).
   T-032 proves the fresh source build matches the shipped bundle. Output: suite green on
   the legacy UI (SC-06 "before work starts"), visual + preview + wp-admin + RTL
   baselines, axe inventory. Gate out: full suite green twice in a row locally.

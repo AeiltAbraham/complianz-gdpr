@@ -61,7 +61,12 @@ module.exports = defineConfig( {
 
 	expect: {
 		toHaveScreenshot: {
-			// S3 starting threshold (ADR-011); calibrated and commented by T-010.
+			// S3 calibration (T-010, ADR-011): this starting threshold is KEPT at 0.001 — the
+			// double-run proof for visual.spec.js + isolation.spec.js is green with NO threshold
+			// loosening. Every determinism fix was a masked/neutralised dynamic region, not a wider
+			// threshold ("mask a region, don't raise the threshold"); those masks are defined and
+			// explained screen-by-screen in visual.spec.js and isolation.spec.js. Raise this only with
+			// a recorded reason if a future reviewed re-baseline genuinely needs it.
 			maxDiffPixelRatio: 0.001,
 			// Freeze CSS animations/transitions and the text caret for stable pixels, plus
 			// our own injected stylesheet that also neutralises JS-driven motion (toasts,

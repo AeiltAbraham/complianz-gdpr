@@ -36,23 +36,35 @@ function wp( args, { allowFail = false } = {} ) {
 }
 
 async function login( page, user, pass ) {
-	await page.goto( '/wp-login.php' );
-	await page.fill( '#user_login', user );
-	await page.fill( '#user_pass', pass );
-	await page.click( '#wp-submit' );
-	// A successful login sets the auth cookie in the 302 response, before wp-admin renders.
-	// We assert on the cookie rather than the rendered dashboard because on the minimum-WP
-	// floor (PHP 7.4) Complianz's admin_init makes real external calls until the stub
-	// mu-plugin lands (T-008), so the first authenticated render can exceed the timeout.
-	await expect
-		.poll(
-			async () => {
-				const cookies = await page.context().cookies();
-				return cookies.some( ( c ) => c.name.startsWith( 'wordpress_logged_in_' ) );
-			},
-			{ message: `login did not set the auth cookie for ${ user }`, timeout: 60_000 }
-		)
-		.toBe( true );
+	// A successful login sets the auth cookie in the 302 response, before wp-admin renders; we assert
+	// on the cookie rather than the rendered dashboard because on the minimum-WP floor (PHP 7.4)
+	// Complianz's admin_init makes real external calls until the stub mu-plugin resolves them, so the
+	// first authenticated render can be slow. Retry a few times: a single transient failure (a
+	// just-updated password not yet in effect, or a redirect race) must not fail the whole run.
+	for ( let attempt = 1; attempt <= 3; attempt++ ) {
+		await page.goto( '/wp-login.php' );
+		await page.fill( '#user_login', user );
+		await page.fill( '#user_pass', pass );
+		await page.click( '#wp-submit' );
+		await page.waitForLoadState( 'load' ).catch( () => {} );
+		try {
+			await expect
+				.poll(
+					async () => {
+						const cookies = await page.context().cookies();
+						return cookies.some( ( c ) => c.name.startsWith( 'wordpress_logged_in_' ) );
+					},
+					{ timeout: 20_000 }
+				)
+				.toBe( true );
+			return;
+		} catch ( err ) {
+			if ( attempt === 3 ) {
+				throw new Error( `login did not set the auth cookie for ${ user } after ${ attempt } attempts` );
+			}
+			await page.waitForTimeout( 1_500 );
+		}
+	}
 }
 
 test.describe.configure( { mode: 'serial', timeout: 120_000 } );
