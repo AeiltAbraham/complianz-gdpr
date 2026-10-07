@@ -32,3 +32,4 @@ Session handoff log. `/flow:handoff` rewrites the "Current" section before `/cle
 One line per finished task; `tasks.md` holds the durable `outcome:` records.
 
 - 2026-10-07 T-001 done: settings app builds from source (npm, @wordpress/scripts 30.27.0, Node 24); asset check made format-agnostic.
+- 2026-10-07 T-002 done: root gulp toolchain rebuilds the admin CSS (sass pinned at 1.76.0 for parity). Flag for T-032: the shipped admin.css is stale against its SCSS, and placeholder widths are random per build.

@@ -54,6 +54,7 @@ outcome: `settings/package.json` + `package-lock.json` (npm, lockfile v3) and `.
 
 ## T-002 Root npm manifest for the gulp CSS build
 mode: agentic
+status: done (2026-10-07)
 depends: T-001
 files: package.json, package-lock.json
 proof: npm ci && npx gulp 'build:css:admin' && test -s assets/css/admin.css && grep -q -e '--rsp-' assets/css/admin.css && npx gulp 'build:css:all' && npx gulp 'build:js:all' && npm run build:all
@@ -65,6 +66,10 @@ acceptance:
 - `npx gulp 'build:css:all'` and `npx gulp 'build:js:all'` exit 0
 - `package.json` defines `build:all` (`gulp build:css:admin`, then `npm --prefix settings run build`), the build that every e2e proof from T-032 on runs first
 - tree restored after the proof (tracked compiled CSS unchanged in git)
+outcome: Root `package.json` + `package-lock.json` (npm, lockfile v3) shipped: gulp 5.0.1, gulp-sass 5.1.0, sass pinned exactly at 1.76.0, plus gulp-concat, gulp-cssbeautify, gulp-rtlcss, gulp-uglify and gulp-uglifycss; `build:all` script added.
+  Evidence: the full proof exits 0 (re-run by the dispatcher); `admin.css` rebuilds with its `--rsp-` references intact; the cookieblocker CSS and `cookiebanner/js/complianz.min.js` rebuild byte-identical.
+  sass is pinned exactly because 1.77+ reorders mixed declarations; 1.76.0 cuts the rebuilt `admin.css` diff from 207 to 69 lines.
+  Flags for T-010/T-032: the shipped `admin.css` predates its SCSS (a rebuild adds the Burst Statistics other-plugins colour and a pulse animation), so that drift may surface as a real dashboard diff that version pins cannot remove; SCSS `random()` gives placeholder lines new widths on every build, so screenshots must mask them. `npm audit` reports high-severity advisories in the dev-only gulp/uglify stack (never shipped). `build:css:all` reformats front-end CSS cosmetically (cssbeautify 3), so release builds keep using `build:all`, which leaves front-end CSS untouched.
 
 ## T-003 Record the SC-03/SC-04 weight baselines
 mode: agentic
