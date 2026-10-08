@@ -331,6 +331,7 @@ outcome: ADR-014 (Status: Accepted) and spikes/s1.md land; no spike code in the 
 
 ## T-015 Retained-widget accessibility audit (S1 part 2)
 mode: agentic
+status: done (2026-10-08)
 depends: T-009, T-032
 files: docs/specs/001-settings-ui-redesign/a11y-exemptions.md
 proof: npm run build:all && npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/axe.spec.js
@@ -342,6 +343,10 @@ acceptance:
 - the exemption table follows the input spec's §8.2 shape: axe rule ID, impact, widget root selector, reason — each exemption scoped to exactly that rule on exactly that selector
 - the axe spec's exclusion wiring consumes this table (no page-wide exclusions)
 - findings in our own wrappers/labels are listed as must-fix, never as exemptions
+outcome: a11y-exemptions.md lands with per-widget axe + keyboard findings (markup/ARIA analysis, not a live AT pass — each widget flagged for whether a manual NVDA/VoiceOver pass is still needed). 6 of 7 widgets audited live; CKEditor and a live react-toastify toast could not render on a fresh install (gated features) → LIVE AUDIT PENDING. Every widget-INTERNAL serious/critical is fixable via library props/config or our vendor CSS (react-color label contrast → `styles` prop; react-date-range button/select names → `ariaLabels` prop, date-input contrast → vendored date-range.scss; react-shepherd footer contrast → `.cmplz-shepherd` theming). **NO replacement candidates (C-5 gate) at this time**; one CONDITIONAL: if CKEditor's forthcoming live audit finds an unfixable serious/critical in its own DOM, that becomes the sole candidate — raise with the maintainer then.
+  Two OUR-OWN-CODE must-fixes (tracked for Phase 2/4, NEVER exempted): (1) `button-name` critical — the data-table select-all/per-row checkbox (our `Settings/Inputs/CheckboxGroup.js` used by the react-data-table-component controls) renders `id="undefined_true"` + an empty `<label>`; fix: require a unique id + real aria-label. (2) `label` critical — the HTML-view `<textarea>` in `Settings/Editor/Editor.js` has no label. These must be fixed before their screens enter MIGRATED_SCREENS.
+  Wiring: `helpers/axe.js` `EXEMPTIONS` holds 6 rows (one per rule+widget-root selector); `unexemptedViolations` drops a node only when a row matches the screen (hash OR section) AND the rule AND `element.closest(selector)` confirms the live node is inside that widget root — so an our-own-code node sharing a rule id survives. `MIGRATED_SCREENS` stays empty (legacy UI is recorded-only; ~76 serious/critical across 37 screens, mostly our-own must-fixes), so the gate is inert today and current CI axe behavior is unchanged. Proof `--project=admin axe.spec.js` → 4 passed; a standalone harness validated the scoping 5/5 (incl. the date-range button-name exemption NOT silencing our select-all checkbox).
+  Note for Phase 3+: react-date-range and react-shepherd portal their open overlays to `<body>` today (outside `#complianz`), so the at-rest `.include('#complianz')` scan does not see them; the exemptions take effect once the portals move to the ADR-014 host.
 
 ## T-016 Spike S2: build, enqueue and vendor-pipeline composition; physical-utilities check
 mode: agentic

@@ -19,10 +19,53 @@
 // when its redesign lands (Phase 3+). Example once migrated: [ '#tools/support', 'banner' ].
 const MIGRATED_SCREENS = [];
 
-// §8.2 exemption table for retained third-party widgets. Empty until the T-015 audit. Each row:
+// §8.2 exemption table for retained third-party widgets (filled by the T-015 audit; see
+// docs/specs/001-settings-ui-redesign/a11y-exemptions.md). Each row:
 //   { screen: '#hash' | 'section', rule: '<axe-rule-id>', selector: '<widget root>', reason: '…' }
-// A row excuses exactly one axe rule on exactly one migrated screen (never a page-wide mute).
-const EXEMPTIONS = [];
+// A row excuses exactly one axe rule on exactly one widget-root selector on one migrated
+// screen — NEVER page-wide and NEVER a whole-widget mute of all rules. A finding is dropped
+// only when its offending DOM node is INSIDE `selector` (checked with element.closest in the
+// live DOM), so a node in our own markup is never silenced even if it shares a rule id.
+// Every row is a widget-internal, fixable-in-Phase-4 finding; remove the row when its fix
+// lands. Our-own-code findings are deliberately absent (they are must-fix, not exemptions).
+const EXEMPTIONS = [
+	{
+		screen: '#banner/colors/colors-general',
+		rule: 'color-contrast',
+		selector: '.chrome-picker',
+		reason: 'react-color inline-styles the HEX/RGB field labels at 2.95:1; widget-internal DOM, overridable only via the ChromePicker styles prop (Phase 4).',
+	},
+	{
+		screen: '#tools/data-requests/datarequest-entries',
+		rule: 'button-name',
+		selector: '.rdrMonthAndYearWrapper',
+		reason: 'react-date-range prev/next month icon buttons render <button><i></i></button> with no name; fixable via the library ariaLabels prop (Phase 4).',
+	},
+	{
+		screen: '#tools/data-requests/datarequest-entries',
+		rule: 'select-name',
+		selector: '.rdrMonthAndYearPickers',
+		reason: 'react-date-range month/year selects render without a label; fixable via the library ariaLabels prop (Phase 4).',
+	},
+	{
+		screen: '#tools/data-requests/datarequest-entries',
+		rule: 'color-contrast',
+		selector: '.rdrDateDisplayWrapper',
+		reason: 'react-date-range start/end date inputs at ~1.3:1; fixable in the vendored date-range.scss (Phase 4).',
+	},
+	{
+		screen: '#tools/data-requests/datarequest-entries',
+		rule: 'color-contrast',
+		selector: '.rdrDefinedRangesWrapper',
+		reason: 'react-date-range preset-range labels at ~1.29:1; fixable in the vendored date-range.scss (Phase 4).',
+	},
+	{
+		screen: 'dashboard',
+		rule: 'color-contrast',
+		selector: '.shepherd-footer',
+		reason: 'Shepherd footer buttons at 2.25:1 from the .cmplz-shepherd theme on the widget\'s internal button DOM; fixable by re-theming (Phase 4).',
+	},
+];
 
 // The axe impacts that gate a migrated screen (§8.1). Lower impacts are recorded only.
 const GATING_IMPACTS = [ 'serious', 'critical' ];
@@ -48,18 +91,80 @@ function gatingViolations( violations ) {
 }
 
 /**
- * Gating violations for a page MINUS the ones exempted for that screen (§8.2).
+ * Whether an axe violation node lives inside a widget-root selector, verified against the live
+ * DOM. axe node targets are valid CSS selectors for the offending element; we re-select it and
+ * ask `element.closest(selector)` so a descendant of the widget root (not just the root itself)
+ * counts. Returns false (so the node stays a failure) for cross-frame targets or any lookup
+ * error — the safe direction, never over-exempting.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {{target:Array}}                  node     An axe violation node.
+ * @param {string}                          selector The exemption's widget-root selector.
+ * @return {Promise<boolean>}
+ */
+async function nodeWithinSelector( page, node, selector ) {
+	const target = node && node.target;
+	// Same-frame targets are a single-element array; cross-frame has >1 and is not supported here.
+	const sel = Array.isArray( target ) ? ( target.length === 1 ? target[ 0 ] : null ) : target;
+	if ( typeof sel !== 'string' ) {
+		return false;
+	}
+	return page.evaluate(
+		( { sel: s, selector: root } ) => {
+			try {
+				const el = document.querySelector( s );
+				return !! ( el && el.closest( root ) );
+			} catch ( e ) {
+				return false;
+			}
+		},
+		{ sel, selector }
+	);
+}
+
+/**
+ * Gating violations for a page MINUS the exempted nodes (§8.2), scoped per (rule, selector).
+ *
+ * For each serious/critical violation, a node is dropped only when a table row matches this
+ * screen (hash OR section) AND the rule AND the node is inside the row's widget-root selector
+ * (checked in the live DOM). A violation with any surviving node still fails — so a finding in
+ * our own markup is never silenced by a widget exemption that shares its rule id. No page-wide
+ * `exclude` is ever used.
  *
  * @param {Array}                         violations axe `results.violations`.
  * @param {{hash:string,section:string}}  pageInfo
- * @return {Array} Violations that should fail the gate.
+ * @param {import('@playwright/test').Page} page
+ * @return {Promise<Array>} Violations (with only their non-exempt nodes) that should fail the gate.
  */
-function unexemptedViolations( violations, pageInfo ) {
-	return gatingViolations( violations ).filter( ( v ) => {
-		return ! EXEMPTIONS.some(
+async function unexemptedViolations( violations, pageInfo, page ) {
+	const failing = [];
+	for ( const v of gatingViolations( violations ) ) {
+		const rows = EXEMPTIONS.filter(
 			( e ) => ( e.screen === pageInfo.hash || e.screen === pageInfo.section ) && e.rule === v.id
 		);
-	} );
+		if ( rows.length === 0 ) {
+			failing.push( v );
+			continue;
+		}
+		const selectors = rows.map( ( r ) => r.selector );
+		const survivingNodes = [];
+		for ( const node of v.nodes || [] ) {
+			let covered = false;
+			for ( const selector of selectors ) {
+				if ( await nodeWithinSelector( page, node, selector ) ) {
+					covered = true;
+					break;
+				}
+			}
+			if ( ! covered ) {
+				survivingNodes.push( node );
+			}
+		}
+		if ( survivingNodes.length ) {
+			failing.push( { ...v, nodes: survivingNodes } );
+		}
+	}
+	return failing;
 }
 
 module.exports = {
@@ -68,5 +173,6 @@ module.exports = {
 	GATING_IMPACTS,
 	isGated,
 	gatingViolations,
+	nodeWithinSelector,
 	unexemptedViolations,
 };

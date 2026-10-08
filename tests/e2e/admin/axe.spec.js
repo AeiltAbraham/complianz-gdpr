@@ -74,7 +74,9 @@ test( 'axe accessibility over every screen (recorded; gated only on migrated scr
 			} );
 
 			if ( gated ) {
-				const failing = unexemptedViolations( axeResults.violations, info );
+				// Scoped per (rule, selector) against the live DOM, so widget exemptions never
+				// silence our own markup (helpers/axe.js consumes the §8.2 table).
+				const failing = await unexemptedViolations( axeResults.violations, info, page );
 				if ( failing.length ) {
 					gatedFailures.push( `${ info.hash }: ${ failing.map( ( v ) => v.id ).join( ', ' ) }` );
 				}
