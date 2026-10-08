@@ -35,6 +35,7 @@ add_filter( 'pre_http_request', 'cmplz_e2e_pre_http_request', 1, 3 );
 add_action( 'init', 'cmplz_e2e_ensure_log_option', 0 );
 add_action( 'admin_notices', 'cmplz_e2e_third_party_notice' );
 add_action( 'admin_notices', 'cmplz_e2e_complianz_style_notice' );
+add_filter( 'pre_transient_cmplz_wizard_locked_by_user', 'cmplz_e2e_wizard_lock_owner' );
 
 /**
  * Ensure the outbound-request log option always exists (as an empty array).
@@ -305,4 +306,27 @@ function cmplz_e2e_complianz_style_notice() {
 		'<div class="notice notice-info really-simple-plugins" id="cmplz-e2e-rsp-notice"><p>%s</p></div>',
 		esc_html( 'Example Complianz-style notice (Complianz e2e fixture).' )
 	);
+}
+
+/**
+ * Report the wizard lock as owned by the current user, so the wizard never shows the
+ * "temporarily locked" placeholder in e2e.
+ *
+ * Fetching the wizard's data calls lock_wizard() (settings/wizard.php), which stores a 2-minute
+ * `cmplz_wizard_locked_by_user` transient with the viewing user's id. The Playwright projects run
+ * sequentially against one shared database, each as a different admin user, so the first project
+ * (e.g. the en_US `admin`, user 1) leaves the lock set and the next project's user (he_IL
+ * `admin-rtl`) then loads the wizard inside the 2-minute window and gets the lock placeholder
+ * instead of the wizard — a cross-project test-isolation artifact, never a real product state.
+ *
+ * Short-circuiting the transient read with the *current* user's id makes wizard_is_locked() false
+ * for everyone (`$lock_user_id !== $user_id` can never hold), so the wizard always renders. This is
+ * a read-only override of the transient; lock_wizard() still writes the real transient, harmlessly.
+ * app-states.spec.js still exercises the genuine lock placeholder by stubbing the
+ * `/complianz/v1/fields/get` response in the browser, which this server-side filter does not touch.
+ *
+ * @return int The current user's id (short-circuits get_transient()).
+ */
+function cmplz_e2e_wizard_lock_owner() {
+	return get_current_user_id();
 }
