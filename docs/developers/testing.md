@@ -252,6 +252,58 @@ an explicit, reviewed change:
 npm run e2e -- --update-snapshots
 ```
 
+**Always capture and verify visual baselines on a freshly reset database.** CI (GitHub
+Actions, T-019) runs against a clean WordPress install, so the baselines must reproduce
+there. Reset first, then start, rebuild and (re)capture:
+
+```bash
+npx wp-env reset        # NOT the deprecated `clean`; the setup project reseeds on next run
+npx wp-env start
+npm run build:all
+# Capture by running the SAME spec set the CI/verification run uses, not visual.spec.js alone:
+npm run e2e -- --project=admin --update-snapshots=changed \
+  tests/e2e/admin/smoke.spec.js tests/e2e/admin/visual.spec.js tests/e2e/admin/isolation.spec.js \
+  tests/e2e/admin/fields.spec.js tests/e2e/admin/conditions.spec.js tests/e2e/admin/wizard.spec.js \
+  tests/e2e/admin/dashboard.spec.js tests/e2e/admin/dialogs.spec.js tests/e2e/admin/tools.spec.js \
+  tests/e2e/admin/app-states.spec.js tests/e2e/admin/page-rules.spec.js
+```
+
+Capturing against an accumulated database bakes incidental, machine-specific plugin state
+into the PNGs, which then fails on a fresh CI database. Use `--update-snapshots=changed` so
+only the baselines whose pixels actually moved are rewritten (a bare `--update-snapshots`
+/ `=all` rewrites every executed PNG with sub-threshold re-encoding noise).
+
+**Capture with the full suite, not `visual.spec.js` alone.** The suite shares one wp-env DB
+(single worker, serial), so specs that run before `visual.spec.js` leave deterministic state
+behind — e.g. the wizard/progress, cookie-descriptions and integrations screens reflect
+earlier saves/scans. Baselines captured by running `visual.spec.js` on its own miss that
+state and then mismatch during a full-suite run. Capture with the same spec set you verify
+with, so the pre-`visual` state is identical at capture and verify time.
+
+**The Notifications sidebar is masked AND height-pinned.** The right-hand `.cmplz-wizard-help`
+panel (Settings.js) renders live, non-deterministic plugin state — notification dates, warnings,
+scan results and incidental review notices — so it cannot be baselined. Two measures make the
+app-container shot deterministic:
+
+1. **Mask** — `visual.spec.js` adds it to `dynamicMasks()`, hiding the varying content (the same
+   "mask the dynamic region, don't loosen the threshold" approach as the scan-progress and
+   placeholder masks).
+2. **Height pin** — masking the content is not enough on its own: the panel's *height* still
+   jitters a few pixels run-to-run (and on a fresh vs accumulated DB), and because it is often the
+   tallest column it changed the `#complianz` element's pixel height, so `toHaveScreenshot` failed
+   on a hard image-*dimension* mismatch (which bypasses `maxDiffPixelRatio` and cannot be absorbed
+   by retries). `tests/e2e/admin/disable-animations.css` (injected before every screenshot via
+   `toHaveScreenshot.stylePath`, so it applies identically at capture and compare) pins
+   `.cmplz-wizard-help { height: 1100px !important; overflow: hidden; }`. 1100px is above the
+   largest natural sidebar height across the settings/wizard/tools/integrations screens (max
+   measured 1017px); the layout is a CSS grid, so this sets only the sidebar's row height without
+   reflowing the main content.
+
+The panel is inside `#complianz`, so it is part of the app-container shot on every non-dashboard
+screen (the Settings component — banner, integrations, settings, tools and wizard — renders it;
+the Dashboard does not), which is why those baselines carry the masked, fixed-height region and the
+two `dashboard-*.png` shots do not.
+
 ### CI / environment indirection
 
 Every wp-cli and web-server invocation reads an environment variable that defaults to the

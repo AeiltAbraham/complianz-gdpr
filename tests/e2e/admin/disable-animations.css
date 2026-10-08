@@ -27,3 +27,23 @@
 canvas[class*="confetti"] {
 	display: none !important;
 }
+
+/*
+ * Pin the Notifications sidebar to a fixed height so the app-container screenshot has
+ * deterministic pixel DIMENSIONS. `.cmplz-wizard-help` (Settings.js) renders a variable set of
+ * live `helpNotices`; even with its content masked in the visual spec, its natural height jitters
+ * a few px run-to-run (and on a fresh vs accumulated DB), which changed the `#complianz` element's
+ * height and made `toHaveScreenshot` fail on a hard image-DIMENSION mismatch -- not a pixel diff,
+ * so neither the threshold nor same-DB retries could absorb it. A fixed `height` + `overflow:hidden`
+ * makes the element's box fully deterministic regardless of notice count/height; the dynamicMasks()
+ * entry still hides the (now fixed-size) content. 1100px is above the largest natural sidebar height
+ * across the settings/wizard/tools/integrations screens (max measured 1017px at
+ * tools/placeholders@1440). The surrounding layout is a CSS grid (layout.scss:
+ * grid-template-columns 28ch 1fr 1fr 1fr), so this only sets the sidebar's own row height -- it does
+ * not reflow the main content, which keeps rendering identically. Injected here (not masked-only) so
+ * it applies the same way at capture and compare time; it matches nothing in the isolation shots.
+ */
+.cmplz-wizard-help {
+	height: 1100px !important;
+	overflow: hidden !important;
+}

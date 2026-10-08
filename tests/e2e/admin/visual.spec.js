@@ -59,6 +59,14 @@ function dynamicMasks( page ) {
 		// Settings footer scroll-position indicator: its width tracks the scroll offset (Settings.js),
 		// which depends on content height and so drifts between widths/renders.
 		page.locator( '.cmplz-grid-item-footer-scroll-progress' ),
+		// Notifications sidebar (the right-hand `.cmplz-wizard-help` panel, Settings.js): its
+		// `helpNotices` are live plugin state (dates, warnings, scan results, incidental review
+		// notices), so its content is non-deterministic and differs on a freshly reset database vs an
+		// accumulated one — the exact fresh-DB drift CI hits. Same rationale as the scan-progress and
+		// placeholder masks above: mask the dynamic region, don't loosen the threshold. It is inside
+		// `#complianz`, so it is part of the app-container shot on every Settings/Tools/Wizard/Banner
+		// screen (Dashboard and Integrations do not render it).
+		page.locator( '.cmplz-wizard-help' ),
 	];
 }
 

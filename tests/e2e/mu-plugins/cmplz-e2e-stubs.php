@@ -8,8 +8,11 @@
  * not recognise is blocked and recorded in the `cmplz_e2e_unstubbed_requests` option, which
  * the suite asserts is empty — the "no real network" guarantee.
  *
- * It also injects a plain third-party `admin_notices` callback used by the DB-04 page-rules
- * spec (a notice that Complianz's own screens must hide while keeping their own notices).
+ * It also injects two `admin_notices` callbacks used by the DB-04 page-rules spec: a plain
+ * third-party notice (which Complianz screens must hide) and a Complianz-style notice carrying
+ * the `really-simple-plugins` class, scoped to Complianz screens, which the page rule keeps
+ * visible. The second notice stands in for Complianz's own live notices deterministically, so
+ * the spec no longer depends on an incidental review notice that is absent on a fresh database.
  *
  * TEST-ONLY. This file is never shipped: it lives under tests/ and is loaded solely through
  * the `.wp-env.json` `wp-content/mu-plugins` mapping. WP-CLI requests are deliberately left
@@ -31,6 +34,7 @@ const CMPLZ_E2E_UNSTUBBED_OPTION = 'cmplz_e2e_unstubbed_requests';
 add_filter( 'pre_http_request', 'cmplz_e2e_pre_http_request', 1, 3 );
 add_action( 'init', 'cmplz_e2e_ensure_log_option', 0 );
 add_action( 'admin_notices', 'cmplz_e2e_third_party_notice' );
+add_action( 'admin_notices', 'cmplz_e2e_complianz_style_notice' );
 
 /**
  * Ensure the outbound-request log option always exists (as an empty array).
@@ -261,5 +265,44 @@ function cmplz_e2e_third_party_notice() {
 	printf(
 		'<div class="notice notice-info" id="cmplz-e2e-thirdparty-notice"><p>%s</p></div>',
 		esc_html( 'Example third-party plugin notice (Complianz e2e fixture).' )
+	);
+}
+
+/**
+ * Whether the current admin screen is a Complianz settings screen.
+ *
+ * The Complianz app is a single top-level admin page (settings/settings.php: add_menu_page with
+ * the `complianz` slug, hash-routed client-side), so its screen id contains `complianz`. Core
+ * screens such as the Dashboard (`dashboard`) and Settings > General (`options-general`) do not,
+ * which is how the Complianz-style notice below is kept off the non-Complianz isolation baselines.
+ *
+ * @return bool True on a Complianz admin screen.
+ */
+function cmplz_e2e_is_complianz_admin_screen() {
+	if ( ! function_exists( 'get_current_screen' ) ) {
+		return false;
+	}
+	$screen = get_current_screen();
+	return $screen instanceof WP_Screen && false !== strpos( (string) $screen->id, 'complianz' );
+}
+
+/**
+ * Inject a Complianz-style admin notice on Complianz screens only.
+ *
+ * Carries the `really-simple-plugins` class, so the legacy page rule
+ * (`.notice:not(.really-simple-plugins){display:none}` in assets/css/admin/base.scss) keeps it
+ * visible while hiding the plain third-party notice above. The DB-04 page-rules spec asserts on it
+ * instead of Complianz's incidental live review notice, which is absent on a freshly reset database.
+ * It is scoped to Complianz screens so it never renders on the non-Complianz isolation baselines.
+ *
+ * @return void
+ */
+function cmplz_e2e_complianz_style_notice() {
+	if ( ! cmplz_e2e_is_complianz_admin_screen() ) {
+		return;
+	}
+	printf(
+		'<div class="notice notice-info really-simple-plugins" id="cmplz-e2e-rsp-notice"><p>%s</p></div>',
+		esc_html( 'Example Complianz-style notice (Complianz e2e fixture).' )
 	);
 }
