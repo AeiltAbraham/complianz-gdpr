@@ -350,6 +350,7 @@ outcome: a11y-exemptions.md lands with per-widget axe + keyboard findings (marku
 
 ## T-016 Spike S2: build, enqueue and vendor-pipeline composition; physical-utilities check
 mode: agentic
+status: done (2026-10-08)
 depends: T-013, T-014
 files: docs/specs/001-settings-ui-redesign/spikes/s2.md, settings/scripts/check-physical-utilities.js
 proof: node settings/scripts/check-physical-utilities.js --self-test
@@ -362,6 +363,9 @@ acceptance:
 - `check-physical-utilities.js` extracts class tokens from `className` and clsx/variant maps, strips prefix (ADR-014 syntax), leading `-` and variant segments, and fails on the ADR-007 banned list unless the variant chain contains `rtl:`/`ltr:`
 - the script's `--self-test` runs bundled fixtures: exits non-zero naming file/line for a banned `ml-4`-style token, exits 0 for its `rtl:`-variant form and for logical forms — probe-at-build (introduced by this task): record the actual failure message in s2.md
 - no production file outside `settings/scripts/` changes; spike configs land for real in T-020
+outcome: `settings/scripts/check-physical-utilities.js` lands (CommonJS, Node 24, no deps) + `spikes/s2.md`; `git status` showed only those two. Script enforces the full ADR-007 §4.6 banned family (`ml/mr/pl/pr-*` + `scroll-` forms, `left/right-*` insets, `text-left/right`, `float-left/right`, `clear-left/right`, `border-l/r*`, corner radii `rounded-l/r/tl/tr/bl/br`, `space-x-*`, `divide-x-*`, left/right `origin-*`, `bg-left/right*`, left/right gradient dirs), strips the ADR-014 `tw-` prefix (not `tw:`) + a leading `-` + variant segments, and exempts a token whose variant chain carries `rtl:`/`ltr:`. Extracts from `className="…"`, `className={'…'}`/templates and `clsx()/classnames()/cva()` variant-map objects via a comment/string/template-aware scanner. TDD red captured (empty BANNED → self-test fails). Proof `--self-test` → PASS (6 fixtures, exit 0); over today's tree → 189 files, no banned utilities (exit 0); 40+ banned tokens fire, ~45 allowed pass, no false positives.
+  S2 composition findings (throwaway builds; tailwindcss 3.4.17, cssnano 6.1.2, @wordpress/postcss-plugins-preset 5.57.0, postcss-prefix-selector 1.16.1, postcss-rtlcss 5.7.1): the WP preset exports an ARRAY and must be SPREAD (`...wpPreset`) or PostCSS throws — follow-up for T-020. Pipeline `tailwindcss → ...wpPreset → cssnano(prod)` builds clean (3902B→3155B min, 0 `!important`, autoprefixer on). A `tw-me-8` used only in a dynamically-imported chunk still lands in the single `index.css` (Tailwind content-scans files, not chunks). Logical + `rtl:` on one file verified (`tw-ms-4`→`margin-inline-start`, `rtl:tw--scale-x-100`→`[dir="rtl"]`-gated in-file). Enqueue probe: `filemtime()` on a missing `index.css` raises a real PHP warning; needs a `file_exists()` guard — follow-up for T-021. Vendor pipeline on real react-date-range CSS: `postcss-prefix-selector` + `postcss-rtlcss` on `styles/vendors/` only zone-prefixes every selector, maps `:root`/`html`/`body` to the zone element, emits in-file `[dir="rtl"]` variants, preserves `@keyframes`, and `@import`-inlines into one `index.css` with the Tailwind utilities (0 residual `@import`) — settles ADR-009's pending composition check.
+  Follow-ups surfaced: WP-preset spread (T-020), enqueue `file_exists` guard (T-021), CI/pre-commit wiring of this script (T-018).
 
 ---
 
