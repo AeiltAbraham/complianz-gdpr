@@ -312,6 +312,7 @@ deferred: After T-013 made the full-screen visual layer NON-BLOCKING (maintainer
 
 ## T-014 Spike S1: Tailwind version, scoping, specificity, portals → ADR-014
 mode: agentic
+status: done (2026-10-08)
 depends: T-001, T-010, T-032
 files: docs/adr/ADR-014-tailwind-version-scope-selector-portals.md, docs/specs/001-settings-ui-redesign/spikes/s1.md
 proof: npm run build:all && npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/visual.spec.js tests/e2e/admin/isolation.spec.js
@@ -324,6 +325,9 @@ acceptance:
 - portal evidence: Radix Dialog/Popover/Tooltip and a Shepherd step render in the candidate portal host; stacking verified against admin bar, admin menu, media modal, toasts; CKEditor dropdown exception rules drafted
 - ADR-014 is written (Status: Accepted) naming: the chosen Tailwind version, exact prefix and scope-selector syntax, portal-host placement, and the exact scoped-base rule list; ADR-001's "pending S1" notes are reconciled by cross-reference, never by editing ADR-001's decision
 - no spike code remains in the tree (spike branch discarded; only the two docs land)
+outcome: ADR-014 (Status: Accepted) and spikes/s1.md land; no spike code in the tree (`git status` showed only the two docs). Decisions: **Tailwind v3.4** (v4 rejected — browser probe showed a v4 `@layer utilities` utility at 1,1,0 LOSES to unlayered wp-admin `forms.css`, while the flat v3 utility WINS; v4 also emits global `*`/`@property` rules, violating FR-002); prefix **`tw-`** (variants precede it; the T-016 check strips `tw-`); scope **`:is(#complianz, #complianz-portal)`** applied via Tailwind `important:` so utilities are 1,1,0 with no `!important`; portal host **`#complianz > #complianz-portal > #complianz-portal-root[data-cmplz-ui]`** (sibling of `#complianz-app`, z-index 100001, `isolation:isolate`, body-end fallback); scoped base B1–B5 at 1,0,0 (scope ID + `:where()`), matching only `data-cmplz-ui`, isolate-exclusion INSIDE `:where()`; CKEditor `.ck-body-wrapper` unscoped exception drafted. Per-variant CSS sizes recorded (v3 scoped 5179B/4623B vs v4 7352B/5954B).
+  R1 gate input: NO finding overturns ADR-001/007/009 — all CONFIRMED; ADR-001's Decision section was not edited (pending-S1 notes reconciled by cross-reference in ADR-014 only).
+  Proof caveat (dispatcher): the agent's local run showed the BLOCKING isolation signals green (banner-preview ✓, wp-admin-chrome ✓, website-banner ✓) with the spike CSS loaded; the media-modal isolation test failed, but a control run on the clean committed tree (no spike CSS) failed identically → PRE-EXISTING media-modal interaction issue, not the spike (its shot is already maintainer-classified non-blocking). Visual layer non-blocking; drift recorded on the known dynamic screens, not chased. Separately, the first Linux CI run (not this proof) surfaced two environment issues in the e2e gate — cross-OS screenshot baselines and an admin-rtl smoke timeout — tracked for a maintainer test-contract decision, independent of T-014.
 
 ## T-015 Retained-widget accessibility audit (S1 part 2)
 mode: agentic
