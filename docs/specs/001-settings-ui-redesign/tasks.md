@@ -294,6 +294,7 @@ outcome: admin-min-wp passes 19/19 on WordPress 5.9 / PHP 7.4 / React 17 (the `c
 
 ## T-033 Move the visual specs' legacy class selectors to test hooks
 mode: agentic
+status: deferred into Phase 2-4 (2026-10-08) — see note below
 depends: T-011
 files: tests/e2e/admin/visual.spec.js, tests/e2e/admin/isolation.spec.js, settings/src (only `data-testid` additions on the loading placeholder, progress bar, scroll-progress indicator, banner-preview container, logo select and logo uploader)
 proof: npm run build:all && npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/visual.spec.js tests/e2e/admin/isolation.spec.js
@@ -303,6 +304,7 @@ acceptance:
 - every `data-testid` added to `settings/src` is behavior-free and listed in the outcome
 - the visual and isolation baselines pass unchanged; no snapshot is updated
 - a search of `tests/e2e/admin/*.spec.js` for `locator( '.cmplz` and `#cmplz-preview` finds nothing
+deferred: After T-013 made the full-screen visual layer NON-BLOCKING (maintainer decision), the only `.cmplz-*` selectors left in the specs are visual-region MASKS (placeholder, progress bar, scroll-progress, notifications sidebar, cookie-database controls) plus a couple of isolation handles — not navigation selectors, and the visual.spec header already documents them as "necessarily tied to today's rendered markup." A broken mask can no longer fail CI (non-blocking); it only reduces masking quality. These components get stable `data-testid`/role hooks naturally as they are rebuilt in Phase 2-4 (§4.3.4 replaces JS/test hooks with `data-*`), at which point the matching mask selector is updated in the same MR. Doing it now is premature churn, so it is folded into the per-section migration work rather than run as a standalone task. Not a Stage C blocker.
 
 ---
 
