@@ -255,6 +255,7 @@ outcome: `fields.spec.js` and `conditions.spec.js` cover the field layer, discov
 
 ## T-012 Flow layers: wizard, dashboard, dialogs, tools, app states, page rules
 mode: agentic
+status: done (2026-10-08)
 depends: T-008, T-032
 files: tests/e2e/admin/wizard.spec.js, tests/e2e/admin/dashboard.spec.js, tests/e2e/admin/dialogs.spec.js, tests/e2e/admin/tools.spec.js, tests/e2e/admin/app-states.spec.js, tests/e2e/admin/page-rules.spec.js
 proof: npm run build:all && npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/wizard.spec.js tests/e2e/admin/dashboard.spec.js tests/e2e/admin/dialogs.spec.js tests/e2e/admin/tools.spec.js tests/e2e/admin/app-states.spec.js tests/e2e/admin/page-rules.spec.js
@@ -266,6 +267,10 @@ acceptance:
 - tools: export/import settings, debug data, support form; async actions assert loading → success and loading → forced error (route interception), DB-10 baseline
 - app states: locked-by-another-user placeholder, REST-error state, toast on save success/failure
 - page rules: the mu-plugin's third-party notice is hidden on every Complianz screen while Complianz's own notice shows; app edge offset matches baseline (DB-04)
+outcome: Six flow specs added — `wizard.spec.js` (Next/Previous stepping, progress indicator, Finish-step gated state), `dashboard.spec.js` (progress + task dismiss/restore + the five blocks; DB-17 block layout recorded), `dialogs.spec.js` (open/confirm/cancel/Escape/focus-return on the live ConfirmDialog + onboarding modal; written to role/keyboard so it survives the Phase-2 Radix migration), `tools.spec.js` (export, debug, support; DB-10 loading→success and loading→forced-error via route interception), `app-states.spec.js` (locked-by-another-user, REST-error, save toasts — all via `/complianz/v1/` interception), `page-rules.spec.js` (DB-04). Every mutating flow is stubbed, so no spec writes to the shared DB. Two attribute-only source hooks: `data-testid` on `Dashboard/TaskElement.js`, `aria-current="step"` on `Menu/MenuItem.js` (both pixel-neutral; visual baseline unchanged).
+  Determinism fix (committed just before this): the suite's baselines did not reproduce on a freshly reset DB (= CI) because Complianz's notices are not pinned by the seed. Fixed by masking the Notifications sidebar (`.cmplz-wizard-help`) in `visual.spec.js` AND pinning its height in `disable-animations.css` (its ~3px row-height jitter was changing the captured element's dimensions); `page-rules.spec.js` now asserts a `really-simple-plugins`-classed notice registered by the test mu-plugin (scoped to Complianz screens) instead of the incidental review notice; the visual baselines were regenerated on a reset DB (72 PNGs; isolation baselines unchanged).
+  Evidence: two full fresh-DB iterations (`wp-env reset` → reseed → build → all admin specs, `--retries=2`) both exit 0 — fv1 52 passed / 1 flaky, fv2 51 passed / 2 flaky, every flake retry-absorbed. Known-flaky: the DB-05 logged-out website-banner shot (frontend timing, unrelated to this fix) flakes then passes on retry; recorded, not chased.
+  Deferred (maintainer-approved): the wizard Finish step is characterized in its real gated/disabled state because the minimal seed leaves ~19 required questions unanswered; fully running Finish would need the seed to complete the wizard. Process rule adopted: verify on a reset DB, one pass per task.
 
 ## T-013 RTL, minimum-WordPress and German projects
 mode: agentic

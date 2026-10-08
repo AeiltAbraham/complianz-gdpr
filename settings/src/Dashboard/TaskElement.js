@@ -45,7 +45,7 @@ const TaskElement = ({notice, index}) => {
 	let urlIsExternal = notice.url && notice.url.indexOf('complianz.io') !== -1;
 	let statusNice =  notice.status.charAt(0).toUpperCase() +  notice.status.slice(1);
 	return(
-		<div key={index} className="cmplz-task-element">
+		<div key={index} className="cmplz-task-element" data-testid={'cmplz-task-' + notice.id}>
 			<span className={'cmplz-task-status cmplz-' + notice.status}>{ statusNice }</span>
 			<p className="cmplz-task-message"
 		    	dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(notice.message) }}></p>{/* nosemgrep: react-dangerouslysetinnerhtml */}

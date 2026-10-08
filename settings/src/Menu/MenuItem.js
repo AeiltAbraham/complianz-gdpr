@@ -71,7 +71,7 @@ const MenuItem = ({ index, menuItem, isMain }) => {
 		) {
 		return (
 			<>
-				<a {...attributes} className={`cmplz-wizard-menu-item ${menuClass}`}>
+				<a {...attributes} aria-current={menuItem.id === selectedSubMenuItem ? 'step' : undefined} className={`cmplz-wizard-menu-item ${menuClass}`}>
 					{!isMain && <Icon name={icon} size={11} color={iconColor} />}
 					{menuItem.title}
 					{menuItem.featured && (
