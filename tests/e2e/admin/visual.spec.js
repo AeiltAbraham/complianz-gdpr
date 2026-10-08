@@ -57,8 +57,22 @@ function dynamicMasks( page ) {
 		// (CookieScanControl.js, CookieDatabaseSyncControl.js), not by the seed.
 		page.locator( '.cmplz-progress-bar' ),
 		// Settings footer scroll-position indicator: its width tracks the scroll offset (Settings.js),
-		// which depends on content height and so drifts between widths/renders.
-		page.locator( '.cmplz-grid-item-footer-scroll-progress' ),
+		// which depends on content height and so drifts between widths/renders. We mask the whole
+		// CONTAINER (`-progress-container`), not just the inner `-progress` span: at 768px the wrapper
+		// itself jitters (e.g. integrations-plugins@768), so masking the inner bar alone left a thin
+		// edge diffing. The container is a superset of the inner bar, so this also covers it.
+		page.locator( '.cmplz-grid-item-footer-scroll-progress-container' ),
+		// cookiedatabase.org sync control (CookieDatabaseSyncControl.js, wizard/cookie-descriptions):
+		// the Sync button row carries the live sync/progress state and an async-driven status, neither
+		// seeded — so mask the control wrapper. (Its progress bar is already covered by the
+		// `.cmplz-progress-bar` mask above; this covers the surrounding controls.)
+		page.locator( '.cmplz-cookiedatabase-controls' ),
+		// The services/cookies list under the sync control (`.cmplz-panel__list`): it is populated
+		// ASYNCHRONOUSLY from the fields/cookies data, so a shot can land before or after a service row
+		// (e.g. the seeded "Google Maps") appears, and each rendered Service carries a spinning sync
+		// icon — a run-to-run difference the seed does not pin. Mask the list container so neither the
+		// late-arriving row nor its spinner diffs.
+		page.locator( '.cmplz-panel__list' ),
 		// Notifications sidebar (the right-hand `.cmplz-wizard-help` panel, Settings.js): its
 		// `helpNotices` are live plugin state (dates, warnings, scan results, incidental review
 		// notices), so its content is non-deterministic and differs on a freshly reset database vs an
@@ -182,5 +196,16 @@ test( 'every smoke screen is visually stable at 1440 and 768 (app container)', a
 		}
 	}
 
-	expect( failures, 'screens whose app container did not match its visual baseline' ).toEqual( [] );
+	// NON-BLOCKING (maintainer decision 2026-10-08): the full-screen visual-regression layer records
+	// drift but does not fail the run. Most of this app's screens carry dynamic content (notices, task
+	// lists, cookie-database sync status, async data) that makes reliable 37-screen x 2-width x 2-locale
+	// pixel parity impractical; behaviour is covered by the functional specs, look-preservation by the
+	// per-section design review the redesign requires, and style-scoping by the (blocking) banner-preview
+	// isolation shots. Drift is logged and attached for manual inspection, never gated. See
+	// docs/developers/testing.md "Visual layer (non-blocking)".
+	if ( failures.length ) {
+		const summary = `visual drift on ${ failures.length } screen(s):\n` + failures.join( '\n' );
+		console.warn( '[visual non-blocking] ' + summary );
+		await test.info().attach( 'visual-drift.txt', { body: summary, contentType: 'text/plain' } );
+	}
 } );

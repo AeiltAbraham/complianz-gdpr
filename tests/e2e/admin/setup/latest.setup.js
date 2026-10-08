@@ -96,6 +96,14 @@ test.beforeAll( () => {
 	// loaded. The stub mu-plugin leaves wp-cli unstubbed, so the seed itself makes no network.
 	seed( wp );
 	wp( 'language core install he_IL de_DE', { allowFail: true } );
+	// The de_DE CORE pack above only translates WordPress itself. Complianz's own strings (menu
+	// titles, field labels) live in the plugin's translation set, which is NOT shipped in this repo
+	// (languages/ has only the .pot). Fetch the plugin's German pack from wordpress.org through
+	// wp-cli — which the e2e stub mu-plugin leaves UNSTUBBED (unlike admin/front-end web requests) —
+	// so the de_DE admin (DB-14) actually sees the Complianz UI in German. wp-cli pins it to the
+	// installed plugin version; allowFail so an offline re-run on an already-populated DB still
+	// proceeds (and admin-i18n then asserts the German strings are really present).
+	wp( 'language plugin install complianz-gdpr de_DE', { allowFail: true } );
 	ensureUser( 'admin-rtl', 'admin-rtl@cmplz.test', RTL_PASS, 'he_IL' );
 	ensureUser( 'admin-de', 'admin-de@cmplz.test', DE_PASS, 'de_DE' );
 } );

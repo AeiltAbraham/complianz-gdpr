@@ -245,6 +245,20 @@ look-preserving-net call if a later seed makes them visible.
 
 ### Update visual baselines
 
+### Visual layer is non-blocking (advisory)
+
+**The full-screen visual-regression layer (`visual.spec.js`) does not fail the run** (maintainer
+decision 2026-10-08). Most screens of this app carry dynamic content — the notifications sidebar,
+task lists, cookie-database sync status, async data — which makes reliable pixel parity across 37
+screens × 2 widths × 2 locales impractical; chasing it repeatedly blocked progress. The spec still
+runs and records per-screen drift (logged and attached as `visual-drift.txt`) for manual review,
+but a mismatch never gates CI. The same applies to the two timing-sensitive **isolation** shots —
+the logged-out frontend `website-banner` and the WordPress `media-modal`. What stays **blocking**:
+every functional spec (smoke, fields, conditions, flows, dialogs, tour, i18n), the minimum-WP
+React-17 run, and the high-value `banner-preview` + `wp-admin chrome` isolation shots that prove
+style-scoping. Look-preservation during the migration is confirmed by the per-section design review
+the redesign already requires.
+
 Screenshot baselines live under `tests/e2e/admin/__screenshots__/` and are updated only by
 an explicit, reviewed change:
 

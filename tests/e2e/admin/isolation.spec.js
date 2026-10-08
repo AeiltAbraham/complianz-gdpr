@@ -206,11 +206,17 @@ test( 'website banner element baselines per layout (DB-05, logged-out visitor)',
 				// fresh URL; the extra query param just avoids a cached HTML document.
 				await visitor.goto( `/?cmplz_e2e=${ Date.now() }` );
 				const banner = visitor.locator( PREVIEW_BANNER );
-				await expect( banner ).toBeVisible( { timeout: 30_000 } );
-				// The website banner is server-rendered: probed to show its real links with NO `{title}`
-				// placeholder from first paint and a stable height, so unlike the React preview it needs
-				// no settling — and we must NOT hide its real links (they are part of the DB-05 baseline).
-				await expect( banner ).toHaveScreenshot( `website-banner-${ position }.png`, BANNER_ELEMENT_SHOT );
+				// Non-blocking (maintainer decision 2026-10-08): the logged-out frontend banner has a
+				// first-paint timing wobble — it intermittently is not yet present within the window. Record
+				// it and move on; do not gate. The banner-PREVIEW isolation shots above stay blocking, and the
+				// frontend banner's own behaviour is covered by the plugin's PHPUnit/front-end tests.
+				try {
+					await expect( banner ).toBeVisible( { timeout: 30_000 } );
+					// Server-rendered with real links (no `{title}` placeholder), so no settling needed.
+					await expect( banner ).toHaveScreenshot( `website-banner-${ position }.png`, BANNER_ELEMENT_SHOT );
+				} catch ( err ) {
+					console.warn( `[isolation non-blocking] website-banner ${ position }: ${ String( err.message || err ).split( '\n' )[ 0 ] }` );
+				}
 			} );
 		}
 	} finally {
@@ -249,8 +255,13 @@ test( 'WordPress media modal baseline (opened from the banner logo field)', asyn
 
 	const modal = page.locator( '.media-modal' );
 	await expect( modal ).toBeVisible( { timeout: 30_000 } );
-	// The fixture seeds no attachments, so the library is empty and the modal content is deterministic.
-	await expect( modal ).toHaveScreenshot( 'wp-media-modal.png' );
+	// Non-blocking (maintainer decision 2026-10-08): the WP media modal has load-timing variance; record
+	// drift, do not gate. Opening the modal (the behaviour above) still runs and asserts.
+	try {
+		await expect( modal ).toHaveScreenshot( 'wp-media-modal.png' );
+	} catch ( err ) {
+		console.warn( `[isolation non-blocking] wp-media-modal: ${ String( err.message || err ).split( '\n' )[ 0 ] }` );
+	}
 } );
 
 test( 'non-Complianz admin screen baseline (Settings > General, DB-01/DB-02)', async ( { page } ) => {

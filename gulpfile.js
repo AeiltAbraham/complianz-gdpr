@@ -62,6 +62,7 @@ function buildCssAll(cb) {
 		buildCssDocument,
 		buildCssDocumentGrid,
 		buildCssAdmin,
+		buildCssAdminRtlExpanded,
 		buildCssCookieblocker,
 	)(cb);
 }
@@ -112,7 +113,27 @@ function buildCssAdmin() {
 		.pipe(rtlcss())
 		.pipe(gulp.dest('./assets/css/rtl'));
 }
-exports['build:css:admin'] = buildCssAdmin;
+
+/**
+ * Builds the NON-minified RTL admin CSS (assets/css/rtl/admin.css).
+ *
+ * buildCssAdmin above only emits the MINIFIED RTL file (assets/css/rtl/admin.min.css). But the admin
+ * enqueue (class-admin.php enqueue_assets) requests the non-minified assets/css/rtl/admin.css whenever
+ * SCRIPT_DEBUG is on — which it is on every wp-env dev/test site, and on debug production sites —
+ * mirroring the non-minified assets/css/admin.css shipped for LTR. Without this file the RTL admin gets
+ * the dir=rtl flow but NO admin stylesheet, so the dashboard grid and layout collapse (RTL-parity bug,
+ * constitution §6). This step is additive: it writes only rtl/admin.css and leaves admin.css,
+ * admin.min.css and rtl/admin.min.css byte-identical.
+ */
+function buildCssAdminRtlExpanded() {
+	return 	gulp.src('./assets/css/admin.scss')
+		.pipe(sass(({outputStyle: 'expanded'})).on('error', sass.logError))
+		.pipe(cssbeautify()) // Beautify the CSS
+		.pipe(rtlcss())
+		.pipe(gulp.dest('./assets/css/rtl'));
+}
+
+exports['build:css:admin'] = gulp.series(buildCssAdmin, buildCssAdminRtlExpanded);
 
 /**
  * Builds the Cookieblocker CSS by compiling SCSS to CSS, beautifying, minifying.
