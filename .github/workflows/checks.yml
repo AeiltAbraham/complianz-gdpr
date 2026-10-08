@@ -1,0 +1,87 @@
+# CI for the settings-UI redesign (feature 001, ADR-012).
+#
+# Runs what the local commit gate CANNOT: a from-source build and the whole-app
+# characterization e2e suite on a FRESH WordPress environment — the condition that caught
+# the fresh-DB determinism bug during Stage C. Coding standards (WPCS) and php -l are already
+# enforced on every commit by the flow gate (.agent/gate.json), so they are not repeated here.
+#
+# Scope today: build + e2e. The token/physical-utilities/stylelint checks are added as the
+# tasks that introduce them land (T-016, T-018, T-020). The e2e job needs Actions enabled on
+# the fork (Settings -> Actions) and a Docker-capable runner (ubuntu-latest has Docker for
+# @wordpress/env). Mark this workflow a required status check in branch protection (manual).
+name: checks
+
+on:
+  push:
+    branches: [ '001-settings-ui-redesign' ]
+  pull_request:
+    branches: [ '001-settings-ui-redesign' ]
+
+# A newer push to the same ref cancels the older in-flight run.
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build from source
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install root dependencies
+        run: npm ci
+      - name: Install settings dependencies
+        run: npm ci --prefix settings
+      - name: Build admin CSS and the settings bundle
+        run: npm run build:all
+      - name: Confirm the settings bundle externalises React and the WP packages
+        # Guards FR-023: React/wp-* must stay external (provided by WordPress), never bundled.
+        run: >-
+          php -r '$f = glob("settings/build/index.*.asset.php"); $a = require $f[0];
+          $want = array("lodash","react","react-dom","react-jsx-runtime","wp-api-fetch","wp-components","wp-data","wp-element","wp-i18n");
+          exit($a["dependencies"] === $want ? 0 : 1);'
+
+  e2e:
+    name: Admin e2e suite (fresh WordPress)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install root dependencies
+        run: npm ci
+      - name: Install settings dependencies
+        run: npm ci --prefix settings
+      - name: Install the Playwright Chromium browser
+        run: npx playwright install --with-deps chromium
+      - name: Build admin CSS and the settings bundle
+        run: npm run build:all
+      - name: Start the WordPress environments (latest + 5.9 floor)
+        run: npx wp-env start
+      - name: Run the admin Playwright projects
+        # CI=true (set by Actions) switches on retries: 2 and forbidOnly in playwright.config.js.
+        # The full-screen visual layer records drift non-blocking; functional specs gate the run.
+        run: >-
+          npm run e2e --
+          --project=admin
+          --project=admin-rtl
+          --project=admin-min-wp
+          --project=admin-i18n
+      - name: Upload the Playwright report and traces
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            tests/e2e/playwright-report/
+            tests/e2e/test-results/
+          retention-days: 14
+          if-no-files-found: ignore
