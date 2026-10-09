@@ -7,13 +7,13 @@
 			grid-template-areas:
       "input1 input2 input3 input4 button" /* first row */
       "label1 label2 label3 label4 ."; /* second row */
-			row-gap: var(--rsp-spacing-xxs);
+			row-gap: var(--cmplz-legacy-spacing-xxs);
 		}
 
 		&-border-input {
 			input {
 				width: 8ch;
-				border: 1px solid var(--rsp-input-border-color);
+				border: 1px solid var(--cmplz-legacy-input-border-color);
 				margin-right: -1px;
 				border-radius: 0;
 			}
@@ -21,7 +21,7 @@
 			&-side {
 				&:nth-child(1) {
 					grid-area: input1;
-					border-radius: var(--rsp-border-radius-xs) 0 0 var(--rsp-border-radius-xs);
+					border-radius: var(--cmplz-legacy-border-radius-xs) 0 0 var(--cmplz-legacy-border-radius-xs);
 				}
 
 				&:nth-child(3) {
@@ -38,27 +38,27 @@
 			}
 
 			&-link {
-				background-color: var(--rsp-white);
+				background-color: var(--cmplz-legacy-white);
 				grid-area: button;
-				border: 1px solid var(--rsp-input-border-color);
-				border-radius: 0 var(--rsp-border-radius-xs) var(--rsp-border-radius-xs) 0;
+				border: 1px solid var(--cmplz-legacy-input-border-color);
+				border-radius: 0 var(--cmplz-legacy-border-radius-xs) var(--cmplz-legacy-border-radius-xs) 0;
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				line-height: 1;
 
 				svg path {
-					fill: var(--rsp-text-color-light);
+					fill: var(--cmplz-legacy-text-color-light);
 				}
 
 				&.linked {
-					background-color: var(--rsp-blue-faded);
+					background-color: var(--cmplz-legacy-blue-faded);
 				}
 			}
 
 			&-side-label {
-				color: var(--rsp-text-color-light);
-				font-size: var(--rsp-fs-100);
+				color: var(--cmplz-legacy-text-color-light);
+				font-size: var(--cmplz-legacy-fs-100);
 				text-align: center;
 
 				&:nth-child(2) {
@@ -79,8 +79,8 @@
 			}
 
 			&-unit{
-				font-size: var(--rsp-fs-100);
-				color: var(--rsp-text-color-light);
+				font-size: var(--cmplz-legacy-fs-100);
+				color: var(--cmplz-legacy-text-color-light);
 				text-align: center;
 				display: flex;
 				justify-content: center;
@@ -93,15 +93,15 @@
 						no-repeat
 						right 0px
 						top 55%;
-					font-size: var(--rsp-fs-100);
+					font-size: var(--cmplz-legacy-fs-100);
 					line-height: 1.5;
-					color: var(--rsp-text-color-light);
+					color: var(--cmplz-legacy-text-color-light);
 					border-color: unset;
 					border: unset;
 					box-shadow: none;
 					border-radius: unset;
 					padding: 0 16px 0 0;
-					min-height: var(--rsp-fs-100);
+					min-height: var(--cmplz-legacy-fs-100);
 					max-width: 25rem;
 					-webkit-appearance: none;
 					background-size: 16px 16px;

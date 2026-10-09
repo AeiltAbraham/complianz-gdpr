@@ -4,7 +4,7 @@ button {
 }
 /* Global Variables */
 :root {
-	--button-font-size: var(--rsp-fs-300);
+	--button-font-size: var(--cmplz-legacy-fs-300);
 	--button-font-weight: 300;
 	--button-line-height: 2;
 	--button-letter-spacing: 0.5px;
@@ -46,33 +46,33 @@ a.button, button.button, input.button {
 		border: 1px solid var(--button-accent-color);
 
 		&:hover {
-			background: var(--rsp-grey-200);
+			background: var(--cmplz-legacy-grey-200);
 			color: var(--button-accent-color);
 			border-color: var(--button-accent-color);
 		}
 	}
 
 	&--tertiary {
-		background: var(--rsp-grey-200);
+		background: var(--cmplz-legacy-grey-200);
 		color: var(--button-accent-color);
-		border: 1px solid var(--rsp-grey-300);
+		border: 1px solid var(--cmplz-legacy-grey-300);
 
 		&:hover {
-			background: var(--rsp-grey-100);
+			background: var(--cmplz-legacy-grey-100);
 			color: var(--button-accent-color);
-			border-color: var(--rsp-grey-400);
+			border-color: var(--cmplz-legacy-grey-400);
 		}
 
 	}
 	&--error {
 		// red button
-		background: var(--rsp-red);
-		color: var(--rsp-text-color-white);
-		border: 1px solid var(--rsp-red);
+		background: var(--cmplz-legacy-red);
+		color: var(--cmplz-legacy-text-color-white);
+		border: 1px solid var(--cmplz-legacy-red);
 		&:hover {
-			background: var(--rsp-red-faded);
-			color: var(--rsp-red);
-			border-color: var(--rsp-red);
+			background: var(--cmplz-legacy-red-faded);
+			color: var(--cmplz-legacy-red);
+			border-color: var(--cmplz-legacy-red);
 			box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.3);
 		}
 	}
@@ -86,7 +86,7 @@ a.button, button.button, input.button {
 
 .cmplz-button-icon {
 	background: transparent;
-	background: var(--rsp-grey-300);
+	background: var(--cmplz-legacy-grey-300);
 	color: #2271b1;
 	border: 1px solid transparent;
 	border-radius: 50%;
@@ -108,9 +108,9 @@ a.button, button.button, input.button {
 	}
 	&--delete{
 		&:hover{
-			background: var(--rsp-red-faded);
+			background: var(--cmplz-legacy-red-faded);
 			svg path{
-				fill: var(--rsp-red);
+				fill: var(--cmplz-legacy-red);
 			}
 		}
 	}

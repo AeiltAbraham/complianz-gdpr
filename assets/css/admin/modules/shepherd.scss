@@ -1,12 +1,12 @@
 .cmplz-shepherd {
-  --rsp-black: #333;
-  background: var(--rsp-black);
-  color: var(--rsp-white);
+  --cmplz-legacy-black: #333;
+  background: var(--cmplz-legacy-black);
+  color: var(--cmplz-legacy-white);
   box-shadow: 0 5px 5px -3px rgb(0 0 0 / 20%), 0 8px 10px 1px rgb(0 0 0 / 14%), 0 3px 14px 2px rgb(0 0 0 / 12%);
   width: min(45ch, 100%);
-  border-radius: var(--rsp-border-radius-input);
+  border-radius: var(--cmplz-legacy-border-radius-input);
   z-index: 999;
-  margin: var(--rsp-spacing-s) !important; // this is only used to overwrite an inline style
+  margin: var(--cmplz-legacy-spacing-s) !important; // this is only used to overwrite an inline style
 
   .shepherd-arrow, .shepherd-arrow:before {
 	position: absolute;
@@ -18,7 +18,7 @@
   .shepherd-arrow:before {
 	content: "";
 	transform: rotate(45deg);
-	background: var(--rsp-black);
+	background: var(--cmplz-legacy-black);
   }
 
   &[data-popper-placement^=top] > .shepherd-arrow {
@@ -46,11 +46,11 @@
 	align-items: center;
 	justify-content: space-between;
 	min-height: 30px;
-	padding-inline: var(--rsp-spacing-s);
-	padding-block: var(--rsp-spacing-xs);
+	padding-inline: var(--cmplz-legacy-spacing-s);
+	padding-block: var(--cmplz-legacy-spacing-xs);
 	.shepherd-title {
 	  margin: 0;
-	  color: var(--rsp-white);
+	  color: var(--cmplz-legacy-white);
 	}
 
 	button.shepherd-cancel-icon {
@@ -58,25 +58,25 @@
 	  border: none;
 	  outline: none;
 	  cursor: pointer;
-	  color: var(--rsp-grey-500);
+	  color: var(--cmplz-legacy-grey-500);
 	  font-size: 20px;
 	  position: relative;
 	  top: -2px;
 
 	  &:hover {
-		color: var(--rsp-text-color-hover);
+		color: var(--cmplz-legacy-text-color-hover);
 	  }
 	}
   }
 
   .shepherd-text {
-	padding-inline: var(--rsp-spacing-s);
-	padding-block: var(--rsp-spacing-xxs);
+	padding-inline: var(--cmplz-legacy-spacing-s);
+	padding-block: var(--cmplz-legacy-spacing-xxs);
 
 	p {
 	  margin: 0;
-	  margin-top: var(--rsp-spacing-xxs);
-	  color: var(--rsp-white);
+	  margin-top: var(--cmplz-legacy-spacing-xxs);
+	  color: var(--cmplz-legacy-white);
 
 	  &:first-of-type {
 		margin-top: 0;
@@ -89,9 +89,9 @@
 	align-items: center;
 	justify-content: flex-end;
 	min-height: 30px;
-	gap: var(--rsp-spacing-xs);
-	padding-inline: var(--rsp-spacing-s);
-	padding-block: var(--rsp-spacing-xs);
+	gap: var(--cmplz-legacy-spacing-xs);
+	padding-inline: var(--cmplz-legacy-spacing-s);
+	padding-block: var(--cmplz-legacy-spacing-xs);
   }
 }
 .dashboard_page_burst .shepherd-modal-overlay-container{

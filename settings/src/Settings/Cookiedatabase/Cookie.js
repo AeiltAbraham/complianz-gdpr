@@ -259,7 +259,7 @@ const Cookie = ({cookie, id}) => {
 
 		return Object.assign(
 			{},
-			{"backgroundColor": "var(--rsp-red-faded)"},
+			{"backgroundColor": "var(--cmplz-legacy-red-faded)"},
 		);
 	}
 

@@ -2,12 +2,12 @@
 	font-variant-numeric: tabular-nums; // https://css-tricks.com/almanac/properties/f/font-variant-numeric/
 	margin: 0;
 	margin-left: -20px;
-	font-size: var(--rsp-fs-300);
+	font-size: var(--cmplz-legacy-fs-300);
 	box-sizing: border-box;
-	color: var(--rsp-text-color);
+	color: var(--cmplz-legacy-text-color);
 	font-weight: 400;
 	line-height: 1.5;
-	@media only screen and ( max-width: $rsp-break-xs)  {
+	@media only screen and ( max-width: $cmplz-legacy-break-xs)  {
 		margin-left: -9px;
 	}
 	*, *:before, *:after {
@@ -25,68 +25,68 @@
 	}
 
 	h1, h2, h3, h4, h5, h6 {
-		color: var(--rsp-text-color);
+		color: var(--cmplz-legacy-text-color);
 		line-height: 1.5;
 	}
 
 	.cmplz-h0 {
-		font-size: var(--rsp-fs-900);
+		font-size: var(--cmplz-legacy-fs-900);
 		font-weight: 700;
 		letter-spacing: 0.025rem;
 	}
 
 	h1, .cmplz-h1 {
-		font-size: var(--rsp-fs-800);
+		font-size: var(--cmplz-legacy-fs-800);
 		line-height: 1.5;
 		font-weight: 500;
 		letter-spacing: 0.025rem;
 	}
 
 	h2, .cmplz-h2 {
-		font-size: var(--rsp-fs-700);
+		font-size: var(--cmplz-legacy-fs-700);
 		font-weight: 700;
 		letter-spacing: 0.025rem;
 	}
 
 	h3, .cmplz-h3 {
-		font-size: var(--rsp-fs-600);
+		font-size: var(--cmplz-legacy-fs-600);
 		font-weight: 600;
 		letter-spacing: 0.0125rem;
 	}
 
 	h4, .cmplz-h4 {
-		font-size: var(--rsp-fs-500);
+		font-size: var(--cmplz-legacy-fs-500);
 		font-weight: 600;
 		letter-spacing: 0.0125rem;
 
 	}
 
 	h5, .cmplz-h5 {
-		font-size: var(--rsp-fs-400);
+		font-size: var(--cmplz-legacy-fs-400);
 		font-weight: 500;
 		letter-spacing: 0.1px;
 	}
 
 	h6, .cmplz-h6 {
-		font-size: var(--rsp-fs-300);
+		font-size: var(--cmplz-legacy-fs-300);
 		letter-spacing: 0.1px;
 	}
 
 	p {
-		color: var(--rsp-text-color);
+		color: var(--cmplz-legacy-text-color);
 		font-weight: 400;
-		font-size: var(--rsp-fs-300);
+		font-size: var(--cmplz-legacy-fs-300);
 		line-height: 1.5;
 	}
 
 	.cmplz-small-text {
-		font-size: var(--rsp-fs-200);
+		font-size: var(--cmplz-legacy-fs-200);
 		line-height: 1.5;
-		color: var(--rsp-text-color-light);
+		color: var(--cmplz-legacy-text-color-light);
 	}
 
 	a {
-		font-size: var(--rsp-fs-300);;
+		font-size: var(--cmplz-legacy-fs-300);;
 	}
 
 	//wordpress inserts notices after the first h1 or h2. To prevent breaking layout we insert an empty h1 tag at the start of our page, where WP can insert the notice.
@@ -100,6 +100,6 @@
 		display: none !important;
 	}
 	&.really-simple-plugins{
-		margin: var(--rsp-grid-gap);
+		margin: var(--cmplz-legacy-grid-gap);
 	}
 }

@@ -4,14 +4,14 @@ import { Tooltip } from "react-tooltip";
 const IconHtml = React.forwardRef(function IconHtml(props, ref){
 	const {name, color, size} = props;
 	const iconColors = {
-		'black': 'var(--rsp-black)',
-		'green': 'var(--rsp-green)',
-		'blue': 'var(--rsp-blue)',
-		'dark-blue': 'var(--rsp-dark-blue)',
-		'yellow': 'var(--rsp-yellow)',
-		'orange': 'var(--rsp-orange)',
-		'red': 'var(--rsp-red)',
-		'grey': 'var(--rsp-grey-400)',
+		'black': 'var(--cmplz-legacy-black)',
+		'green': 'var(--cmplz-legacy-green)',
+		'blue': 'var(--cmplz-legacy-blue)',
+		'dark-blue': 'var(--cmplz-legacy-dark-blue)',
+		'yellow': 'var(--cmplz-legacy-yellow)',
+		'orange': 'var(--cmplz-legacy-orange)',
+		'red': 'var(--cmplz-legacy-red)',
+		'grey': 'var(--cmplz-legacy-grey-400)',
 	};
 	let renderedIcon = '';
 

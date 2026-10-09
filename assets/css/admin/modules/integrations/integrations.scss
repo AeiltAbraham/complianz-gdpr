@@ -1,7 +1,7 @@
 .cmplz-integrations-placeholder {
   height:150px;
   div {
-	background-color:var(--rsp-grey-200);
+	background-color:var(--cmplz-legacy-grey-200);
 	margin:10px 0;
 	height:30px;
   }
@@ -37,7 +37,7 @@
 	background-color: #fff;
 	padding: 15px;
 	margin:20px;
-	box-shadow: var(--rsp-box-shadow);
+	box-shadow: var(--cmplz-legacy-box-shadow);
   }
 }
 @media screen and (max-width: 960px) {

@@ -1,10 +1,10 @@
 #complianz {
 	.components-form-file-upload {
 		button {
-			color: var(--rsp-text-color-light);
-			border: 1px solid var(--rsp-input-border-color);
-			background: var(--rsp-grey-200);
-			padding: 0 var(--rsp-spacing-xs);
+			color: var(--cmplz-legacy-text-color-light);
+			border: 1px solid var(--cmplz-legacy-input-border-color);
+			background: var(--cmplz-legacy-grey-200);
+			padding: 0 var(--cmplz-legacy-spacing-xs);
 			min-height: 30px;
 			height: min-content;
 		}
@@ -16,16 +16,16 @@
 
 	div[class^="cmplz-wizard-"] { // starts with selector
 		.cmplz-parent-label {
-			padding-bottom: var(--rsp-spacing-m);
+			padding-bottom: var(--cmplz-legacy-spacing-m);
 
 			label {
-				font-size: var(--rsp-fs-500);
+				font-size: var(--cmplz-legacy-fs-500);
 			}
 		}
 
 		.cmplz-required {
-			font-size: var(--rsp-fs-100);
-			color: var(--rsp-text-color-light);
+			font-size: var(--cmplz-legacy-fs-100);
+			color: var(--cmplz-legacy-text-color-light);
 			font-weight: 400;
 		}
 
@@ -35,11 +35,11 @@
 			display: flex;
 			gap: 10px;
 			font-weight: 600;
-			font-size: var(--rsp-fs-300);
-			color: var(--rsp-text-color);
+			font-size: var(--cmplz-legacy-fs-300);
+			color: var(--cmplz-legacy-text-color);
 
 			&.cmplz-parent {
-				font-size: var(--rsp-fs-500);
+				font-size: var(--cmplz-legacy-fs-500);
 			}
 		}
 
@@ -107,15 +107,15 @@
 		}
 
 		.components-form-toggle.is-checked .components-form-toggle__track {
-			background-color: var(--rsp-green);
+			background-color: var(--cmplz-legacy-green);
 		}
 
 		.cmplz-grid-item {
 			.cmplz-grid-item-content {
-				margin-block: var(--rsp-spacing-l);
+				margin-block: var(--cmplz-legacy-spacing-l);
 				display: flex;
 				flex-direction: column;
-				gap: var(--rsp-spacing-l);
+				gap: var(--cmplz-legacy-spacing-l);
 				padding-inline: 0;
 				//overflow: hidden; => causes cut off for last element.
 
@@ -130,8 +130,8 @@
 			//adding display flex here causes settings-block-intro with html to break.
 			//because of this the cmplz-field-wrap has this property separately (see above)
 			flex-direction: column;
-			gap: var(--rsp-spacing-xs);
-			padding-inline: var(--rsp-spacing-l);
+			gap: var(--cmplz-legacy-spacing-xs);
+			padding-inline: var(--cmplz-legacy-spacing-l);
 			//double wrapped fields, like processing agreements create
 			& > .cmplz-field-wrap {
 				padding-left: 0;
@@ -149,7 +149,7 @@
 				align-items: center;
 				flex-direction: row;
 				justify-content: space-between;
-				gap: var(--rsp-spacing-s);
+				gap: var(--cmplz-legacy-spacing-s);
 				flex-wrap: wrap;
 				.cmplz-label-container {
 					width: fit-content;
@@ -162,7 +162,7 @@
 			align-items: center;
 			flex-direction: row;
 			justify-content: space-between;
-			gap: var(--rsp-spacing-s);
+			gap: var(--cmplz-legacy-spacing-s);
 			flex-wrap: wrap;
 		}
 
@@ -185,17 +185,17 @@
 		input,
 		textarea,
 		select {
-			box-shadow: 0 0 0 2px var(--rsp-red-faded);
+			box-shadow: 0 0 0 2px var(--cmplz-legacy-red-faded);
 		}
 	}
 
 	.cmplz-error-text {
 		display: flex;
-		gap: var(--rsp-spacing-xxs);
+		gap: var(--cmplz-legacy-spacing-xxs);
 
 		p {
-			color: var(--rsp-red);
-			font-size: var(--rsp-fs-200);
+			color: var(--cmplz-legacy-red);
+			font-size: var(--cmplz-legacy-fs-200);
 			font-weight: 400;
 			font-style: italic;
 		}
@@ -203,7 +203,7 @@
 
 	.cmplz-highlight {
 		background-color: transparent;
-		border-left: 4px solid var(--rsp-green);
+		border-left: 4px solid var(--cmplz-legacy-green);
 		-o-animation: fadeIt 3s ease-in-out;
 		animation: fadeIt 3s ease-in-out;
 	}
@@ -217,7 +217,7 @@
 			background-color: transparent;
 		}
 		30% {
-			background-color: var(--rsp-green-faded);
+			background-color: var(--cmplz-legacy-green-faded);
 		}
 		100% {
 			border-right: 0;
@@ -230,7 +230,7 @@
 			border-right: 0;
 		}
 		30% {
-			background-color: var(--rsp-green-faded);
+			background-color: var(--cmplz-legacy-green-faded);
 		}
 		100% {
 			background-color: inherit;
@@ -246,7 +246,7 @@
 	}
 
 	.cmplz-task-element {
-		padding-top: var(--rsp-spacing-s);
+		padding-top: var(--cmplz-legacy-spacing-s);
 		padding-bottom: 0;
 	}
 

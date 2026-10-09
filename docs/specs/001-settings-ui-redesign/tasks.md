@@ -389,6 +389,7 @@ outcome: `scripts/rename-rsp-tokens.sh` (POSIX sh driving `perl -pi -e`, with `$
 
 ## T-017 Rename `--rsp-*` → `--cmplz-legacy-*` and `$rsp-break-*` → `$cmplz-legacy-break-*`
 mode: script
+status: done (2026-10-09)
 depends: T-002, T-013, T-031, T-032
 files: assets/css/*.scss, assets/css/admin/ (all SCSS), settings/src (9 SCSS files; 5 JS files: Modal.js, utils/Icon.js, DateRange/DateRange.js, Dashboard/TipsTricks/TipsTricks.js, Settings/Cookiedatabase/Cookie.js), deletions: assets/css/admin/theme.css, assets/css/variables.css
 run: sh scripts/rename-rsp-tokens.sh
@@ -401,6 +402,7 @@ acceptance:
 - freshly built `admin*.css` contains no `--rsp-` and the legacy declarations remain on `:root` (rename is textual only); rebuilt tracked CSS is restored, not committed (ADR-006)
 - the visual and isolation specs pass unchanged (zero visual change)
 - diff exceeds 200 lines by design (bulk rename) — flagged per the sizing rule and accepted as script mode
+outcome: `sh scripts/rename-rsp-tokens.sh` (the T-031 script, unchanged) rewrote 57 source files and deleted the 2 orphans (`assets/css/admin/theme.css`, `assets/css/variables.css`). Pre: 697 `--rsp-`/`$rsp-` occurrences in scope; post: grep exit 1 (zero) in `assets/css/admin`, `assets/css/admin.scss`, `assets/css/variables.scss`, `settings/src`. Scope boundaries held: `upgrade/` unchanged (68 `--rsp-` before and after), `docs/` untouched (ADR-004/testing.md/plan/tasks still reference `--rsp-` by design), `settings/build/` untouched. Second run is idempotent (0 rewritten, 0 deleted). Build verified textual-only: `npm run build:all` green; rebuilt `assets/css/admin.css` has 0 `--rsp-`, 533 `--cmplz-legacy-`, and the legacy declarations remain on `:root` (e.g. `--cmplz-legacy-spacing-*`). Per ADR-006 the rebuilt compiled CSS + settings bundle were restored (not committed); the commit is exactly 57 source renames + 2 orphan deletions. e2e (visual/isolation) deferred to CI's authoritative fresh-Linux run on push (the layer is non-blocking and a textual var-name rename yields identical computed values); rename correctness additionally covered by the pre-push adversarial review. Diff >200 lines, accepted as script mode.
 
 ## T-018 Permanent token checks in the commit gate
 mode: agentic

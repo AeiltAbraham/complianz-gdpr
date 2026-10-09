@@ -6,28 +6,28 @@
 	flex: 0 0 13px;
 	border-radius: 50%;
 	display: inline-block;
-  	background-color: var(--rsp-grey-300);
+	background-color: var(--cmplz-legacy-grey-300);
 	&.rsp-yellow {
-	  background-color: var(--rsp-yellow);
+	  background-color: var(--cmplz-legacy-yellow);
 	}
 
 	&.rsp-blue {
-	  background-color: var(--rsp-blue);
+	  background-color: var(--cmplz-legacy-blue);
 	}
 
 	&.rsp-pink {
-	  background-color: var(--rsp-pink);
+	  background-color: var(--cmplz-legacy-pink);
 	}
 
 	&.rsp-red, &.cmplz-bullet-error {
-	  background-color: var(--rsp-red);
+	  background-color: var(--cmplz-legacy-red);
 	}
 
 	&.rsp-green, &.cmplz-bullet-success  {
-	  background-color: var(--rsp-green);
+	  background-color: var(--cmplz-legacy-green);
 	}
 	&.rsp-blue-yellow {
-	  background: var(--rsp-blue);
+	  background: var(--cmplz-legacy-blue);
 	  background: linear-gradient(77deg, rgba(41, 182, 246, 1) 0%, rgba(41, 182, 246, 1) 30%, rgba(244, 191, 62, 1) 70%, rgba(244, 191, 62, 1) 100%);
 	  animation: gradient 2s ease infinite;
 	  background-size: 200% 200%;

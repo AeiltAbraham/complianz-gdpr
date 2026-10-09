@@ -5,7 +5,7 @@
 
 .cmplz-borderradius, .cmplz-borderwidth {
   &-element-label {
-	color: var(--rsp-grey-400);
+	color: var(--cmplz-legacy-grey-400);
 	font-size: 13px;
   }
   input {
@@ -19,7 +19,7 @@
 	&-percent, &-pixel {
 	  cursor: pointer;
 	  &.cmplz-inactive{
-		color: var(--rsp-grey-400);
+		color: var(--cmplz-legacy-grey-400);
 	  }
 	}
   }

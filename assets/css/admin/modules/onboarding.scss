@@ -3,7 +3,7 @@
     height: 26px;
   }
   .cmplz-modal-content{
-    padding-top: var(--rsp-spacing-xs);
+    padding-top: var(--cmplz-legacy-spacing-xs);
     line-height: 2.2;
 	&.cmplz-processing {
 	  opacity:0.5;
@@ -21,12 +21,12 @@
 	}
 	input[type="email"]{
 	  width: 100%;
-	  margin-bottom: var(--rsp-spacing-m);
+	  margin-bottom: var(--cmplz-legacy-spacing-m);
 	  border: 2px solid;
 	  height: 50px;
-	  border-color: var(--rsp-grey-300);
+	  border-color: var(--cmplz-legacy-grey-300);
 	  &.cmplz-invalid {
-		background-color:var(--rsp-red-faded);
+		background-color:var(--cmplz-legacy-red-faded);
 	  }
 	}
   }

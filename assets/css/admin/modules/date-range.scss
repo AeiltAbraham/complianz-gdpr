@@ -5,11 +5,11 @@
 #cmplz-date-range-picker-container {
   flex: 1 1 auto;
   flex-wrap: wrap;
-  gap: var(--rsp-spacing-xs);
-  background-color: var(--rsp-background-block-color);
-  box-shadow: var(--rsp-box-shadow);
+  gap: var(--cmplz-legacy-spacing-xs);
+  background-color: var(--cmplz-legacy-background-block-color);
+  box-shadow: var(--cmplz-legacy-box-shadow);
   z-index: 1;
-  border-radius: var(--rsp-border-radius-input);
+  border-radius: var(--cmplz-legacy-border-radius-input);
   &.cmplz-date-range-picker-open {
 	display: flex;
   }
@@ -18,15 +18,15 @@
 #cmplz-date-range-picker-open-button{
   display: flex;
   align-items: center;
-  padding: var(--rsp-filter-padding);
-  box-shadow: var(--rsp-box-shadow);
+  padding: var(--cmplz-legacy-filter-padding);
+  box-shadow: var(--cmplz-legacy-box-shadow);
   cursor: pointer;
-  gap: var(--rsp-spacing-xs);
-  color: var(--rsp-text-color);
-  background-color: var(--rsp-input-background-color);
-  background: var(--rsp-grey-200);
-  border: 1px solid var(--rsp-input-border-color);
-  border-radius: var(--rsp-border-radius-input);
+  gap: var(--cmplz-legacy-spacing-xs);
+  color: var(--cmplz-legacy-text-color);
+  background-color: var(--cmplz-legacy-input-background-color);
+  background: var(--cmplz-legacy-grey-200);
+  border: 1px solid var(--cmplz-legacy-input-border-color);
+  border-radius: var(--cmplz-legacy-border-radius-input);
   .cmplz-icon{
 	height: max-content;
   }
@@ -34,11 +34,11 @@
 
 .rdrCalendarWrapper{
   color: #000000;
-  font-size: var(--rsp-fs-400);
+  font-size: var(--cmplz-legacy-fs-400);
 }
 
 .rdrDateDisplayWrapper{
-  background-color: var(--rsp-green-faded);
+  background-color: var(--cmplz-legacy-green-faded);
 }
 
 .rdrDateDisplay{
@@ -74,7 +74,7 @@
 .rdrMonthAndYearWrapper {
   align-items: center;
   height: 60px;
-  padding-top: var(--rsp-spacing-xxs);
+  padding-top: var(--cmplz-legacy-spacing-xxs);
 }
 
 .rdrMonthAndYearPickers{
@@ -173,7 +173,7 @@
   //line-height: 3.000em;
   //height: 3.000em;
   text-align: center;
-  color: var(--rsp-text-color);
+  color: var(--cmplz-legacy-text-color);
   &:focus {
 	outline: 0;
   }
@@ -199,7 +199,7 @@
 	width: 4px;
 	height: 4px;
 	border-radius: 100%;
-	background: var(--rsp-green);
+	background: var(--cmplz-legacy-green);
   }
 }
 
@@ -238,41 +238,41 @@
 .rdrInRange{}
 
 .rdrStartEdge{
-  border-top-left-radius: var(--rsp-border-radius-input);
-  border-bottom-left-radius: var(--rsp-border-radius-input);
+  border-top-left-radius: var(--cmplz-legacy-border-radius-input);
+  border-bottom-left-radius: var(--cmplz-legacy-border-radius-input);
   left: 2px;
 }
 
 .rdrEndEdge{
-  border-top-right-radius: var(--rsp-border-radius-input);
-  border-bottom-right-radius: var(--rsp-border-radius-input);
+  border-top-right-radius: var(--cmplz-legacy-border-radius-input);
+  border-bottom-right-radius: var(--cmplz-legacy-border-radius-input);
   right: 2px;
 }
 
 .rdrSelected{
-  border-radius: var(--rsp-border-radius-input);
+  border-radius: var(--cmplz-legacy-border-radius-input);
 }
 
 .rdrDayStartOfMonth, .rdrDayStartOfWeek{
   .rdrInRange, .rdrEndEdge{
-	border-top-left-radius: var(--rsp-border-radius-input);
-	border-bottom-left-radius: var(--rsp-border-radius-input);
+	border-top-left-radius: var(--cmplz-legacy-border-radius-input);
+	border-bottom-left-radius: var(--cmplz-legacy-border-radius-input);
 	left: 2px;
   }
 }
 
 .rdrDayEndOfMonth, .rdrDayEndOfWeek{
   .rdrInRange,  .rdrStartEdge{
-	border-top-right-radius: var(--rsp-border-radius-input);
-	border-bottom-right-radius: var(--rsp-border-radius-input);
+	border-top-right-radius: var(--cmplz-legacy-border-radius-input);
+	border-bottom-right-radius: var(--cmplz-legacy-border-radius-input);
 	right: 2px;
   }
 }
 
 .rdrDayStartOfMonth, .rdrDayStartOfWeek{
   .rdrDayInPreview, .rdrDayEndPreview{
-	border-top-left-radius: var(--rsp-border-radius-input);
-	border-bottom-left-radius: var(--rsp-border-radius-input);
+	border-top-left-radius: var(--cmplz-legacy-border-radius-input);
+	border-bottom-left-radius: var(--cmplz-legacy-border-radius-input);
 	border-left-width: 2px;
 	left: 0;
   }
@@ -280,8 +280,8 @@
 
 .rdrDayEndOfMonth, .rdrDayEndOfWeek{
   .rdrDayInPreview, .rdrDayStartPreview{
-	border-top-right-radius: var(--rsp-border-radius-input);
-	border-bottom-right-radius: var(--rsp-border-radius-input);
+	border-top-right-radius: var(--cmplz-legacy-border-radius-input);
+	border-bottom-right-radius: var(--cmplz-legacy-border-radius-input);
 	border-right-width: 2px;
 	right: 0;
   }
@@ -305,8 +305,8 @@
   border-top-width: 2px;
   border-left-width: 2px;
   border-bottom-width: 2px;
-  border-top-left-radius: var(--rsp-border-radius-input);
-  border-bottom-left-radius: var(--rsp-border-radius-input);
+  border-top-left-radius: var(--cmplz-legacy-border-radius-input);
+  border-bottom-left-radius: var(--cmplz-legacy-border-radius-input);
   left: 0;
 }
 
@@ -319,8 +319,8 @@
   border-top-width: 2px;
   border-right-width: 2px;
   border-bottom-width: 2px;
-  border-top-right-radius: var(--rsp-border-radius-input);
-  border-bottom-right-radius: var(--rsp-border-radius-input);
+  border-top-right-radius: var(--cmplz-legacy-border-radius-input);
+  border-bottom-right-radius: var(--cmplz-legacy-border-radius-input);
   right: 0;
 }
 
@@ -422,7 +422,7 @@
   text-align: left;
   font-weight: 600;
   color: #849095;
-  padding: var(--rsp-spacing-xxs);
+  padding: var(--cmplz-legacy-spacing-xxs);
 }
 // Calendar
 .rdrCalendarWrapper {
@@ -447,7 +447,7 @@
 	margin-left: 0.833em;
   }
   input{
-	color: var(--rsp-text-color);
+	color: var(--cmplz-legacy-text-color);
 	text-align: inherit;
 	&:disabled{
 	  cursor: default;

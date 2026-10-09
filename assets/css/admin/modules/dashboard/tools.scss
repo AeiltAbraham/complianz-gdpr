@@ -2,9 +2,9 @@
   .cmplz-grid-item-content {
 	.cmplz-tool {
 	  display: flex;
-	  padding: 8px var(--rsp-spacing-l);
+	  padding: 8px var(--cmplz-legacy-spacing-l);
 	  &:nth-child(odd) {
-		background-color: var(--rsp-grey-200)
+		background-color: var(--cmplz-legacy-grey-200)
 	  }
 
 	  .cmplz-plusone {

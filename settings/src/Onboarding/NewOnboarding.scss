@@ -1,12 +1,12 @@
-$rsp-break-xxs: 576px;
-$rsp-break-xs: 768px;
+$cmplz-legacy-break-xxs: 576px;
+$cmplz-legacy-break-xs: 768px;
 
 .cmplz-modal-backdrop {
 	z-index: auto;
 }
 
 .cmplz-websitescan {
-	width: clamp(300px, $rsp-break-xs, 100vw - 160px);
+	width: clamp(300px, $cmplz-legacy-break-xs, 100vw - 160px);
 	height: max-content;
 	min-width: unset;
 	max-width: unset;
@@ -19,12 +19,12 @@ $rsp-break-xs: 768px;
 		&-header,
 		&-content,
 		&-footer {
-			padding-left: var(--rsp-spacing-xl);
-			padding-right: var(--rsp-spacing-xl);
+			padding-left: var(--cmplz-legacy-spacing-xl);
+			padding-right: var(--cmplz-legacy-spacing-xl);
 		}
 
 		&-header {
-			padding-top: var(--rsp-spacing-xl);
+			padding-top: var(--cmplz-legacy-spacing-xl);
 
 			&-branding {
 				gap: 1.5rem;
@@ -51,11 +51,11 @@ $rsp-break-xs: 768px;
 					flex-wrap: wrap;
 					flex-direction: row;
 					gap: 5px;
-					border: 1px solid var(--rsp-grey-300);
-					background-color: var(--rsp-grey-100);
+					border: 1px solid var(--cmplz-legacy-grey-300);
+					background-color: var(--cmplz-legacy-grey-100);
 					margin-bottom: 1rem;
 
-					@media only screen and (max-width: $rsp-break-xxs) {
+					@media only screen and (max-width: $cmplz-legacy-break-xxs) {
 						max-height: 40vh;
 					}
 					/* width */
@@ -129,7 +129,7 @@ $rsp-break-xs: 768px;
 					text-align: center;
 					gap: 1rem;
 					margin-bottom: 1rem;
-					@media only screen and (min-width: $rsp-break-xxs) {
+					@media only screen and (min-width: $cmplz-legacy-break-xxs) {
 						max-width: 60%;
 					}
 				}
@@ -140,23 +140,23 @@ $rsp-break-xs: 768px;
 			display: flex !important;
 			justify-content: space-between;
 			gap: 1rem;
-			padding-bottom: var(--rsp-spacing-xl);
-			padding-top: var(--rsp-spacing-xl);
-			border-top: 1px solid var(--rsp-grey-400);
+			padding-bottom: var(--cmplz-legacy-spacing-xl);
+			padding-top: var(--cmplz-legacy-spacing-xl);
+			border-top: 1px solid var(--cmplz-legacy-grey-400);
 
-			@media only screen and (max-width: $rsp-break-xxs) {
+			@media only screen and (max-width: $cmplz-legacy-break-xxs) {
 				flex-direction: column-reverse;
 			}
 
 			.cmplz-modal-footer-btn-wrap {
 				.button {
-					@media only screen and (min-width: $rsp-break-xxs) {
-						padding: var(--rsp-spacing-xxs) var(--rsp-spacing-xl);
+					@media only screen and (min-width: $cmplz-legacy-break-xxs) {
+						padding: var(--cmplz-legacy-spacing-xxs) var(--cmplz-legacy-spacing-xl);
 					}
 				}
 
 				&.cmplz-btn-prev {
-					@media only screen and (max-width: $rsp-break-xxs) {
+					@media only screen and (max-width: $cmplz-legacy-break-xxs) {
 					}
 				}
 
@@ -164,7 +164,7 @@ $rsp-break-xs: 768px;
 					display: flex;
 					align-items: center;
 					gap: 1rem;
-					@media only screen and (max-width: $rsp-break-xxs) {
+					@media only screen and (max-width: $cmplz-legacy-break-xxs) {
 						flex: 1;
 						width: 100%;
 						flex-direction: column;
@@ -172,12 +172,12 @@ $rsp-break-xs: 768px;
 						.button {
 							flex: 1;
 							width: 100%;
-							padding-top: var(--rsp-spacing-xxs);
-							padding-bottom: var(--rsp-spacing-xxs);
+							padding-top: var(--cmplz-legacy-spacing-xxs);
+							padding-bottom: var(--cmplz-legacy-spacing-xxs);
 						}
 					}
 
-					@media only screen and (min-width: $rsp-break-xxs) {
+					@media only screen and (min-width: $cmplz-legacy-break-xxs) {
 						margin-left: auto;
 					}
 				}
@@ -210,19 +210,19 @@ $rsp-break-xs: 768px;
 			}
 
 			&:hover input ~ .checkmark {
-				background-color: var(--rsp-grey-400);
-				border: 1px solid var(--rsp-grey-400);
+				background-color: var(--cmplz-legacy-grey-400);
+				border: 1px solid var(--cmplz-legacy-grey-400);
 				border-radius: 3px;
 			}
 
 			input:checked ~ .checkmark {
-				background-color: var(--rsp-dark-blue);
-				border: 1px solid var(--rsp-dark-blue);
+				background-color: var(--cmplz-legacy-dark-blue);
+				border: 1px solid var(--cmplz-legacy-dark-blue);
 			}
 
 			input:disabled ~ .checkmark {
-				background-color: var(--rsp-grey-400);
-				border: 1px solid var(--rsp-grey-400);
+				background-color: var(--cmplz-legacy-grey-400);
+				border: 1px solid var(--cmplz-legacy-grey-400);
 			}
 
 			input:checked ~ .checkmark:after {
@@ -249,13 +249,13 @@ $rsp-break-xs: 768px;
 			}
 
 			.checkmark {
-				background-color: var(--rsp-grey-300);
-				border: 1px solid var(--rsp-grey-400);
+				background-color: var(--cmplz-legacy-grey-300);
+				border: 1px solid var(--cmplz-legacy-grey-400);
 
 				position: absolute;
 				top: 0;
 				left: 0;
-				height: var(--rsp-fs-600);
+				height: var(--cmplz-legacy-fs-600);
 				aspect-ratio: 1;
 			}
 
@@ -267,15 +267,15 @@ $rsp-break-xs: 768px;
 		}
 
 		&-invalid {
-			color: var(--rsp-red);
+			color: var(--cmplz-legacy-red);
 		}
 
 		&[type="email"] {
 			width: 100%;
-			margin-bottom: var(--rsp-spacing-m);
+			margin-bottom: var(--cmplz-legacy-spacing-m);
 			border: 2px solid;
 			height: 50px;
-			border-color: var(--rsp-grey-300);
+			border-color: var(--cmplz-legacy-grey-300);
 		}
 	}
 }

@@ -6,7 +6,7 @@
 
 		.cmplz-progress-bar, .cmplz-sync-progress-bar {
 			height: 20px;
-			background-color: var(--rsp-wp-blue);
+			background-color: var(--cmplz-legacy-wp-blue);
 			transition: width 0.5s;
 			-webkit-transition: width 0.5s;
 			font-weight: bold;
@@ -27,8 +27,8 @@
 
 	button.button {
 		&.cmplz-reset-button {
-			background-color: var(--rsp-color-error);
-			border-color: var(--rsp-color-error);
+			background-color: var(--cmplz-legacy-color-error);
+			border-color: var(--cmplz-legacy-color-error);
 			color: white;
 		}
 	}

@@ -36,10 +36,10 @@
 .cmplz-field-wrap {
 	.rdt_TableRow {
 		&:nth-child(odd) {
-			background-color: var(--rsp-grey-200)
+			background-color: var(--cmplz-legacy-grey-200)
 		}
 
-		padding: var(--rsp-spacing-xs) 0;
+		padding: var(--cmplz-legacy-spacing-xs) 0;
 	}
 
 	.cmplz-csp-revoked > div:nth-child(-n+3) {
@@ -62,10 +62,10 @@
 
 	.rdt_TableRow {
 		&:nth-child(odd) {
-			background-color: var(--rsp-grey-200)
+			background-color: var(--cmplz-legacy-grey-200)
 		}
 
-		padding: var(--rsp-spacing-xs) 0;
+		padding: var(--cmplz-legacy-spacing-xs) 0;
 
 		.cmplz-status-allowed, .cmplz-status-revoked {
 			min-width: 110px;
@@ -93,30 +93,30 @@ nav.rdt_Pagination > div > svg {
 	&.cmplz-records-of-consent,
 	&.cmplz-proof-of-consent {
 		gap: 0 !important;
-		margin-left: CALC(-1 * var(--rsp-spacing-l));
-		margin-right: CALC(-1 * var(--rsp-spacing-l));
-		@media(max-width: $rsp-break-m) { // 1280px
-			margin-left: CALC(-1 * var(--rsp-spacing-m));
-			margin-right: CALC(-1 * var(--rsp-spacing-m));
+		margin-left: CALC(-1 * var(--cmplz-legacy-spacing-l));
+		margin-right: CALC(-1 * var(--cmplz-legacy-spacing-l));
+		@media(max-width: $cmplz-legacy-break-m) { // 1280px
+			margin-left: CALC(-1 * var(--cmplz-legacy-spacing-m));
+			margin-right: CALC(-1 * var(--cmplz-legacy-spacing-m));
 		}
-		@media(max-width: $rsp-break-s) { // 1280px
-			margin-left: CALC(-1 * var(--rsp-spacing-s));
-			margin-right: CALC(-1 * var(--rsp-spacing-s));
+		@media(max-width: $cmplz-legacy-break-s) { // 1280px
+			margin-left: CALC(-1 * var(--cmplz-legacy-spacing-s));
+			margin-right: CALC(-1 * var(--cmplz-legacy-spacing-s));
 		}
 		//should be s on <1280px
 		> p,
 		> div.cmplz-table-header {
-			margin: var(--rsp-spacing-xs) var(--rsp-spacing-l);
+			margin: var(--cmplz-legacy-spacing-xs) var(--cmplz-legacy-spacing-l);
 		}
 	}
 
 	.rdt_TableCell, .rdt_TableCol {
 		&:first-child {
-			padding-left: var(--rsp-spacing-l);
+			padding-left: var(--cmplz-legacy-spacing-l);
 		}
 
 		&:last-child {
-			padding-right: var(--rsp-spacing-l);
+			padding-right: var(--cmplz-legacy-spacing-l);
 		}
 	}
 }

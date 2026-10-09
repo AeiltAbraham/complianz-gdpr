@@ -6,22 +6,22 @@
 		min-height: 50px;
 		resize: none;
 		padding: 8px;
-		font-size: var(--rsp-fs-300);
-		color: var(--rsp-text-color-light);
-		border: 1px solid var(--rsp-input-border-color);
+		font-size: var(--cmplz-legacy-fs-300);
+		color: var(--cmplz-legacy-text-color-light);
+		border: 1px solid var(--cmplz-legacy-input-border-color);
 		border-radius: 4px;
 		outline: none;
 		transition: border-color 0.2s ease-in-out;
 		overflow: hidden;
 
 		&:focus {
-			border-color: var(--rsp-dark-blue);
-			box-shadow: 0 0 0 2px var(--rsp-dark-blue);
+			border-color: var(--cmplz-legacy-dark-blue);
+			box-shadow: 0 0 0 2px var(--cmplz-legacy-dark-blue);
 		}
 
 		&:disabled {
-			background-color: var(--rsp-grey-200);
-			color: var(--rsp-grey-400);
+			background-color: var(--cmplz-legacy-grey-200);
+			color: var(--cmplz-legacy-grey-400);
 		}
 	}
 }

@@ -1,8 +1,8 @@
 .cmplz-support-alert {
-  padding: var(--rsp-spacing-s) var(--rsp-spacing-m);
-  border-radius: var(--rsp-border-radius);
-  margin-top: var(--rsp-spacing-s);
-  margin-bottom: var(--rsp-spacing-xs);
+  padding: var(--cmplz-legacy-spacing-s) var(--cmplz-legacy-spacing-m);
+  border-radius: var(--cmplz-legacy-border-radius);
+  margin-top: var(--cmplz-legacy-spacing-s);
+  margin-bottom: var(--cmplz-legacy-spacing-xs);
   width: 100%;
   display: flex;
 
@@ -11,9 +11,9 @@
   }
 
   &.cmplz-success {
-    background-color: var(--rsp-green-faded);
+    background-color: var(--cmplz-legacy-green-faded);
   }
   &.cmplz-warning {
-    background-color: var(--rsp-red-faded);
+    background-color: var(--cmplz-legacy-red-faded);
   }
 }

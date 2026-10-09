@@ -2,9 +2,9 @@
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  gap: var(--rsp-spacing-xs);
+  gap: var(--cmplz-legacy-spacing-xs);
   details{
-    font-size: var(--rsp-fs-200);
+    font-size: var(--cmplz-legacy-fs-200);
     .cmplz-help-more-info {
         display: flex;
         flex-direction: row;
@@ -15,7 +15,7 @@
       display: grid;
       grid-template-columns: 1fr auto;
       justify-content: space-between;
-      font-size: var(--rsp-fs-300);
+      font-size: var(--cmplz-legacy-fs-300);
       font-weight: 600;
       cursor:pointer;
       &::-webkit-details-marker {
@@ -31,13 +31,13 @@
     }
   }
   summary, p {
-    font-size: var(--rsp-fs-200);
+    font-size: var(--cmplz-legacy-fs-200);
   }
   details[open]{
-    padding: var(--rsp-spacing-s) var(--rsp-spacing-m);
+    padding: var(--cmplz-legacy-spacing-s) var(--cmplz-legacy-spacing-m);
     summary{
       padding: 0;
-      padding-bottom: var(--rsp-spacing-xs);
+      padding-bottom: var(--cmplz-legacy-spacing-xs);
       .cmplz-icon{
         transform: rotate(180deg);
       }
@@ -64,14 +64,14 @@
 .cmplz-wizard-help-notice {
   width: 100%;
   @include cmplz-block;
-  border-radius: var(--rsp-border-radius-s);
+  border-radius: var(--cmplz-legacy-border-radius-s);
   height: fit-content;
-  background-color: var(--rsp-blue-faded);
+  background-color: var(--cmplz-legacy-blue-faded);
   &.cmplz-warning {
-    background-color: var(--rsp-yellow-faded);
+    background-color: var(--cmplz-legacy-yellow-faded);
   }
   summary, p{
-    padding: var(--rsp-spacing-s) var(--rsp-spacing-m);
+    padding: var(--cmplz-legacy-spacing-s) var(--cmplz-legacy-spacing-m);
   }
 }
 

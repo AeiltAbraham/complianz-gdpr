@@ -13,7 +13,7 @@ button {
 .cmplz-switch-root {
 	width: 42px;
 	height: 25px;
-	background-color: var(--rsp-blue-faded);
+	background-color: var(--cmplz-legacy-blue-faded);
 	border-radius: 9999px;
 	position: relative;
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -25,19 +25,19 @@ button {
 	}
 }
 .cmplz-switch-root:focus {
-	box-shadow:  0 0 0 3px var(--rsp-white),  0 0 0 5px var(--rsp-dark-blue);
+	box-shadow:  0 0 0 3px var(--cmplz-legacy-white),  0 0 0 5px var(--cmplz-legacy-dark-blue);
 }
 .cmplz-switch-root[data-state='checked'] {
-	background-color: var(--rsp-dark-blue);
+	background-color: var(--cmplz-legacy-dark-blue);
 }
 
 .cmplz-switch-thumb {
 	display: block;
 	width: 21px;
 	height: 21px;
-	background-color: var(--rsp-white);
+	background-color: var(--cmplz-legacy-white);
 	border-radius: 9999px;
-	box-shadow: 0 2px 2px var(--rsp-dark-blue);
+	box-shadow: 0 2px 2px var(--cmplz-legacy-dark-blue);
 	transition: transform 100ms;
 	transform: translateX(2px);
 	will-change: transform;
@@ -54,14 +54,14 @@ button {
 	.cmplz-switch-thumb {
  		width: 15px;
 		height: 15px;
-		box-shadow: 0 1px 1px var(--rsp-dark-blue);
+		box-shadow: 0 1px 1px var(--cmplz-legacy-dark-blue);
 		transform: translateX(2px) translateY(-1px);
 		&[data-state='checked'] {
 			transform: translateX(16px) translateY(-1px)
 		}
 	}
 	&:focus{
-		box-shadow:  0 0 0 1px var(--rsp-white),  0 0 0 2px var(--rsp-dark-blue);
+		box-shadow:  0 0 0 1px var(--cmplz-legacy-white),  0 0 0 2px var(--cmplz-legacy-dark-blue);
 	}
 }
 

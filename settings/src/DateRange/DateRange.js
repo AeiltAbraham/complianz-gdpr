@@ -175,10 +175,10 @@ const DateRange = () => {
 				<div id="cmplz-date-range-picker-container">
 					<DateRangePicker
 						ranges={[selectionRange]}
-						rangeColors={['var(--rsp-brand-primary)']}
+						rangeColors={['var(--cmplz-legacy-brand-primary)']}
 						dateDisplayFormat={formatString}
 						monthDisplayFormat="MMMM"
-						// color="var(--rsp-text-color)"
+						// color="var(--cmplz-legacy-text-color)"
 						onChange={(ranges) => {updateDateRange(ranges)}}
 						inputRanges={[]}
 						showSelectionPreview={true}

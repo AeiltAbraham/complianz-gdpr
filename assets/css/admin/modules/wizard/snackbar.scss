@@ -4,14 +4,14 @@
 	z-index:99999;
     width: max-content;
     position: fixed;
-    bottom: var(--rsp-spacing-m);
-    right: var(--rsp-spacing-l);
+    bottom: var(--cmplz-legacy-spacing-m);
+    right: var(--cmplz-legacy-spacing-l);
     & > div{
       margin-left: auto;
     }
     .components-snackbar{
       @include cmplz-block;
-      color: var(--rsp-color-success);
+      color: var(--cmplz-legacy-color-success);
       background-color: #fff;
       font-weight:700;
       font-size:14px;

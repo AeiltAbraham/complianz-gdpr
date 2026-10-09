@@ -9,10 +9,10 @@
 //
 //  .cmplz-inactive {
 //	.cmplz-score-snippet {
-//	  color: var(--rsp-color-disabled)
+//	  color: var(--cmplz-legacy-color-disabled)
 //	}
 //	.cmplz-main-consent > div {
-//	  background: var(--rsp-grey-300);
+//	  background: var(--cmplz-legacy-grey-300);
 //	}
 //	.cmplz-details {
 //	  &:last-of-type {
@@ -22,10 +22,10 @@
 //  }
 //
 //  .cmplz-statistics-container {
-//	background: var(--rsp-green-faded);
+//	background: var(--cmplz-legacy-green-faded);
 //	padding: 20px 25px;
 //
-//	@media only screen and (max-width: $rsp-break-xxl) and (min-width: $rsp-break-m)  {
+//	@media only screen and (max-width: $cmplz-legacy-break-xxl) and (min-width: $cmplz-legacy-break-m)  {
 //	  padding: 5px;
 //	}
 //  }
@@ -37,7 +37,7 @@
 //	> div {
 //	  flex: 1;
 //	  background-color: #fff;
-//	  @media only screen and (max-width: $rsp-break-xxl) and (min-width: $rsp-break-m)  {
+//	  @media only screen and (max-width: $cmplz-legacy-break-xxl) and (min-width: $cmplz-legacy-break-m)  {
 //		background-color:transparent
 //	  }
 //	}
@@ -46,13 +46,13 @@
 //	  text-align: center;
 //	  align-items: center;
 //	  justify-content: center;
-//	  font-size: var(--rsp-fs-700);
+//	  font-size: var(--cmplz-legacy-fs-700);
 //	  font-weight: 700;
 //	  border-radius: 8px;
 //	  padding:30px;
 //
 //	  div {
-//		font-size: var(--rsp-fs-90);
+//		font-size: var(--cmplz-legacy-fs-90);
 //		font-weight: normal;
 //	  }
 //	}
@@ -60,20 +60,20 @@
 //
 //
 //	.cmplz-details {
-//	  padding: var(--rsp-spacing-s) 0;
+//	  padding: var(--cmplz-legacy-spacing-s) 0;
 //	  display: flex;
 //	  &:nth-child(even) {
 //		background-color: #fff; /* grey */
 //	  }
 //
 //	  &:nth-child(odd) {
-//		background-color: var(--rsp-grey-200); /* white */
+//		background-color: var(--cmplz-legacy-grey-200); /* white */
 //	  }
 //
 //	  .cmplz-detail {
 //		display:flex;
 //		width:100%;
-//		margin-right: var(--rsp-spacing-l);
+//		margin-right: var(--cmplz-legacy-spacing-l);
 //		&-name {
 //
 //		}
@@ -83,7 +83,7 @@
 //	  }
 //	  .cmplz-detail-icon {
 //		width: 30px;
-//		margin: 0 var(--rsp-spacing-l);
+//		margin: 0 var(--cmplz-legacy-spacing-l);
 //		.cmplz-icon {
 //		  margin-top: 2px;
 //		}
@@ -92,36 +92,36 @@
 //}
 
 .cmplz-tools .cmplz-statistics{
-	padding-inline: var(--rsp-spacing-l);
+	padding-inline: var(--cmplz-legacy-spacing-l);
 }
 .cmplz-statistics {
 	&-select {
-		padding-inline: var(--rsp-spacing-l);
-		padding-block: var(--rsp-spacing-m);
+		padding-inline: var(--cmplz-legacy-spacing-l);
+		padding-block: var(--cmplz-legacy-spacing-m);
 		display: grid;
 		width: 100%;
 		grid-template-columns: 1fr 1fr 1fr;
-		gap: var(--rsp-spacing-s);
-		background: var(--rsp-green-faded);
+		gap: var(--cmplz-legacy-spacing-s);
+		background: var(--cmplz-legacy-green-faded);
 
 		&-item {
-			border-radius: var(--rsp-border-radius-input);
+			border-radius: var(--cmplz-legacy-border-radius-input);
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
 			text-align: center;
-			padding-block: var(--rsp-spacing-s);
+			padding-block: var(--cmplz-legacy-spacing-s);
 			justify-items: center;
 			flex-wrap: wrap;
-			background: var(--rsp-white);
+			background: var(--cmplz-legacy-white);
 
 			&.active {
-				box-shadow: inset 0 0 3px 2px var(--rsp-green-faded);
-				border: 2px solid var(--rsp-green);
+				box-shadow: inset 0 0 3px 2px var(--cmplz-legacy-green-faded);
+				border: 2px solid var(--cmplz-legacy-green);
 			}
 
 			h2 {
-				margin-top: var(--rsp-spacing-xxs);
+				margin-top: var(--cmplz-legacy-spacing-xxs);
 				font-weight: 800;
 			}
 
@@ -129,7 +129,7 @@
 				display: flex;
 				gap: 3px;
 				justify-content: center;
-				font-size: var(--rsp-fs-100);
+				font-size: var(--cmplz-legacy-fs-100);
 
 				.burst-icon-live {
 					animation-name: pulse;
@@ -165,12 +165,12 @@
 			display: grid;
 			justify-items: flex-start;
 			grid-template-columns: auto 2fr 1fr;
-			gap: var(--rsp-spacing-s);
-			padding-block: var(--rsp-spacing-xs);
-			padding-inline: var(--rsp-spacing-l);
+			gap: var(--cmplz-legacy-spacing-s);
+			padding-block: var(--cmplz-legacy-spacing-xs);
+			padding-inline: var(--cmplz-legacy-spacing-l);
 
 			&:nth-of-type(even) {
-				background: var(--rsp-grey-200);
+				background: var(--cmplz-legacy-grey-200);
 			}
 
 			&-text {
