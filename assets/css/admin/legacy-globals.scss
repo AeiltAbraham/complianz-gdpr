@@ -1,0 +1,89 @@
+// delete in Phase 5 (ADR-005)
+//
+// Global (unscoped) legacy admin rules, collected here per ADR-005 ("collect the
+// global rules ... in legacy-globals.scss in Phase 2 and delete that file only in
+// Phase 5"). They style every <button> and every WordPress core .button on the
+// Complianz screens, so they must outlive the per-input modules that migrate first.
+// Imported last from admin.scss ("global rules last"), so the cascade order is
+// preserved. Add global legacy rules here, never new ones.
+
+/* reset */
+button {
+	all: unset;
+}
+
+/* Global Variables */
+:root {
+	--button-font-size: var(--cmplz-legacy-fs-300);
+	--button-font-weight: 300;
+	--button-line-height: 2;
+	--button-letter-spacing: 0.5px;
+	--button-transition: all 0.3s ease;
+	--button-min-height: 30px;
+	--button-padding: 0 10px;
+	--button-border-radius: 4px;
+	--button-accent-color: #2271b1;
+	--button-contrast-color: #000;
+	--button-secondary-bg: #fff;
+}
+
+/* Button Base Styles */
+a.button, button.button, input.button {
+	transition: var(--button-transition);
+	margin: 0;
+	padding: var(--button-padding);
+	border-radius: var(--button-border-radius);
+	text-align: center;
+	cursor: pointer;
+	text-decoration: none;
+
+	&--primary {
+		background: var(--button-accent-color);
+		color: var(--button-secondary-bg);
+		border: 1px solid var(--button-accent-color);
+
+		&:hover {
+			background: var(--button-accent-color);
+			color: var(--button-secondary-bg);
+			border-color: var(--button-accent-color);
+			box-shadow: 0 0 0 3px rgba(34, 113, 177, 0.3);
+		}
+	}
+
+	&--secondary {
+		background: var(--button-secondary-bg);
+		color: var(--button-accent-color);
+		border: 1px solid var(--button-accent-color);
+
+		&:hover {
+			background: var(--cmplz-legacy-grey-200);
+			color: var(--button-accent-color);
+			border-color: var(--button-accent-color);
+		}
+	}
+
+	&--tertiary {
+		background: var(--cmplz-legacy-grey-200);
+		color: var(--button-accent-color);
+		border: 1px solid var(--cmplz-legacy-grey-300);
+
+		&:hover {
+			background: var(--cmplz-legacy-grey-100);
+			color: var(--button-accent-color);
+			border-color: var(--cmplz-legacy-grey-400);
+		}
+
+	}
+	&--error {
+		// red button
+		background: var(--cmplz-legacy-red);
+		color: var(--cmplz-legacy-text-color-white);
+		border: 1px solid var(--cmplz-legacy-red);
+		&:hover {
+			background: var(--cmplz-legacy-red-faded);
+			color: var(--cmplz-legacy-red);
+			border-color: var(--cmplz-legacy-red);
+			box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.3);
+		}
+	}
+}

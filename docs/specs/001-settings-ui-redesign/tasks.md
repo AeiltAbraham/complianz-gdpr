@@ -477,6 +477,7 @@ outcome: `cmplz_settings_page()` renders the ADR-014 mount markup — `#complian
 
 ## T-022 Collect legacy global rules into legacy-globals.scss
 mode: agentic
+status: done (2026-10-09)
 depends: T-017
 files: assets/css/admin.scss, assets/css/admin/legacy-globals.scss, assets/css/admin/modules/inputs/Buttons.scss, assets/css/admin/modules/inputs/SwitchInput.scss
 proof: npm run build:all && npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/visual.spec.js
@@ -487,6 +488,8 @@ acceptance:
 - freshly built `admin.css` still contains each moved rule exactly once
 - visual spec unchanged (rule order changes must not change rendering)
 - tree restored after build proofs
+outcome: `assets/css/admin/legacy-globals.scss` (new, header `// delete in Phase 5 (ADR-005)`) collects the global legacy rules exactly once: the merged `button { all: unset; }` reset (was DUPLICATED in Buttons.scss + SwitchInput.scss), the 11 `:root { --button-* }` vars (font-size/weight/line-height/letter-spacing/transition/min-height/padding/border-radius/accent-color/contrast-color/secondary-bg), and the `a.button, button.button, input.button` restyle with its `--primary/--secondary/--tertiary/--error` variants. `admin.scss` imports it LAST (line 97, after states.scss/theme.scss) per ADR-005 "global rules last"; Buttons.scss/SwitchInput.scss keep only their input-scoped rules (`.cmplz-field-wrap .cmplz-button`, `.cmplz-button-icon`, `.cmplz-switch-*`) with pointer comments where the globals were.
+  Look-preservation PROVEN by a before/after FRESH-build diff of admin.css (not the stale committed copy): the ONLY semantic delta is the block relocating to end-of-file + the one intended dedupe (`button{all:unset}` 2→1; built `all: unset` 3→2, the remaining 2 = merged global reset + the untouched scoped RadioGroup instance); NO changed values/selectors/declarations; each moved rule appears exactly once. The only other diff hunk is the known `placeholder.scss random()` build non-determinism (pre-existing, unrelated). Cascade verified: no equal-specificity `button`/`button.button` competitor in the relocation range, so "global rules last" preserves rendering. Proof `--project=admin visual.spec.js` → 4 passed (non-blocking drift on the known dynamic screens, pre-existing). Build output restored (ADR-006); git status = the 4 scoped files only. (Verification: the implementer's before/after build diff is the authoritative rendering-equivalence evidence — a full adversarial review was reserved for the higher-risk new-code tasks from T-023 on, since the non-blocking visual layer cannot gate a CSS-relocation regression and a complete before/after compiled-CSS diff can.)
 
 ## T-023 Primitive set A: PortalContainer, Dialog, AlertDialog, Popover, Tooltip
 mode: agentic

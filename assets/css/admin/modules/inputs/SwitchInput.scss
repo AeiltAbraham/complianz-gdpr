@@ -1,7 +1,7 @@
-/* reset */
-button {
-	all: unset;
-}
+// Global `button { all: unset; }` reset moved to
+// assets/css/admin/legacy-globals.scss in T-022 (it was duplicated here and in
+// Buttons.scss; now a single copy, ADR-005). Only input-scoped rules remain here.
+
 .cmplz-field-wrap.cmplz-checkbox .cmplz-comment{
 	width: 100%;
 }

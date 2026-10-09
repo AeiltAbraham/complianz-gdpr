@@ -91,3 +91,7 @@
 
 @import 'admin/states.scss';
 @import 'admin/theme.scss';
+
+// Legacy global rules last (ADR-005): collected from the input modules in T-022 and
+// imported after every other module so the cascade order is preserved. Delete in Phase 5.
+@import 'admin/legacy-globals.scss';
