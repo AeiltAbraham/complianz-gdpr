@@ -1,6 +1,9 @@
-// import Tooltip from '@mui/material/Tooltip';
-// import "react-tooltip/dist/react-tooltip.css";
-import { Tooltip } from "react-tooltip";
+import {
+	Tooltip,
+	TooltipProvider,
+	TooltipTrigger,
+	TooltipContent,
+} from "../components/ui/Tooltip";
 const IconHtml = React.forwardRef(function IconHtml(props, ref){
 	const {name, color, size} = props;
 	const iconColors = {
@@ -541,13 +544,23 @@ const Icon = ({name, color, size, tooltip}) => {
 	}
 
 	let tooltipClass = tooltip ? 'tooltip-' : '';
-	let randomId= Math.floor(Math.random() * 1000000000);
 	if ( tooltip ) {
+		// react-tooltip was anchor-based (anchorSelect/content); Radix Tooltip is trigger-based, so the
+		// icon element becomes the trigger and the tooltip text the content (place="bottom" -> side,
+		// ~200ms delay preserved). Radix Tooltip needs a Provider ancestor and the T-023 primitive does
+		// NOT wrap Root in one, so we wrap per usage to keep Icon a self-contained drop-in. The icon's
+		// own wrapper div and classes are unchanged.
 		return (
-			<div className={'cmplz-' + tooltipClass + 'icon cmplz-icon-' + iconName + ' cmplz-' + iconColor}>
-				<IconHtml name={iconName} color={iconColor} size={iconSize} id={randomId} className={"cmplz-"+randomId} data-tooltip-delay-hide={200}/>
-				<Tooltip place="bottom" anchorSelect={".cmplz-"+randomId} content={tooltip} />
-			</div>
+			<TooltipProvider>
+				<Tooltip delayDuration={200}>
+					<TooltipTrigger asChild>
+						<div className={'cmplz-' + tooltipClass + 'icon cmplz-icon-' + iconName + ' cmplz-' + iconColor}>
+							<IconHtml name={iconName} color={iconColor} size={iconSize} />
+						</div>
+					</TooltipTrigger>
+					<TooltipContent side="bottom">{tooltip}</TooltipContent>
+				</Tooltip>
+			</TooltipProvider>
 		);
 	}
 

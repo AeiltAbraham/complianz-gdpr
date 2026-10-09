@@ -2,7 +2,7 @@ import {
 	useState,
 	useRef,
 } from "@wordpress/element";
-import Popover from '@mui/material/Popover';
+import { Popover, PopoverTrigger, PopoverContent } from '../components/ui/Popover';
 
 // date range picker and date fns
 import { DateRangePicker } from 'react-date-range';
@@ -12,8 +12,7 @@ import {__} from '@wordpress/i18n';
 import useDate from './useDateStore';
 
 const DateRange = () => {
-	const [anchorEl, setAnchorEl] = useState(null);
-	const open = Boolean(anchorEl);
+	const [open, setOpen] = useState(false);
 	const startDate = useDate((state) => state.startDate);
 	const endDate = useDate((state) => state.endDate);
 	const setStartDate = useDate((state) => state.setStartDate);
@@ -113,12 +112,8 @@ const DateRange = () => {
 		}
 	}
 
-	const handleClick = (e) => {
-		setAnchorEl(e.currentTarget);
-	};
-
-	const handleClose = (e) => {
-		setAnchorEl(null);
+	const handleClose = () => {
+		setOpen(false);
 	};
 
 
@@ -158,38 +153,41 @@ const DateRange = () => {
 	}
 	return (
 		<div className="cmplz-date-range-container">
-			<button onClick={handleClick} id="cmplz-date-range-picker-open-button">
-				<Icon name='calendar' size={'18'}/>
+			<Popover open={open} onOpenChange={setOpen}>
+				<PopoverTrigger asChild>
+					<button id="cmplz-date-range-picker-open-button">
+						<Icon name='calendar' size={'18'}/>
 
-				{range === 'custom' && display.startDate +  ' - ' +  display.endDate}
-				{range !== 'custom' && availableRanges[range].label}
-				<Icon name='chevron-down' />
-			</button>
-			<Popover
-				anchorEl={anchorEl}
-				anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
-				transformOrigin={{vertical: 'top', horizontal: 'right'}}
-				open={open}
-				onClose={handleClose}
-			>
-				<div id="cmplz-date-range-picker-container">
-					<DateRangePicker
-						ranges={[selectionRange]}
-						rangeColors={['var(--cmplz-legacy-brand-primary)']}
-						dateDisplayFormat={formatString}
-						monthDisplayFormat="MMMM"
-						// color="var(--cmplz-legacy-text-color)"
-						onChange={(ranges) => {updateDateRange(ranges)}}
-						inputRanges={[]}
-						showSelectionPreview={true}
-						// moveRangeOnFirstSelection={false}
-						months={2}
-						direction="horizontal"
-						minDate={new Date(2022, 0, 1)}
-						maxDate={ new Date() }
-						staticRanges={dateRanges}
-					/>
-				</div>
+						{range === 'custom' && display.startDate +  ' - ' +  display.endDate}
+						{range !== 'custom' && availableRanges[range].label}
+						<Icon name='chevron-down' />
+					</button>
+				</PopoverTrigger>
+				{/* align="end" + side="bottom" (default) reproduce the MUI bottom/right anchoring;
+				    padding="none" lets the calendar fill the panel like the old MUI paper. */}
+				<PopoverContent padding="none" align="end">
+					{/* The react-date-range calendar is isolated from the scoped base (base.css): the
+					    popover now portals into #complianz-portal-root[data-cmplz-ui], so without this zone
+					    the scoped reset would reach the calendar. Its legacy date-range SCSS keeps
+					    styling it until Phase 4. */}
+					<div id="cmplz-date-range-picker-container" data-cmplz-isolate="date-range">
+						<DateRangePicker
+							ranges={[selectionRange]}
+							rangeColors={['var(--cmplz-accent-strong)']}
+							dateDisplayFormat={formatString}
+							monthDisplayFormat="MMMM"
+							onChange={(ranges) => {updateDateRange(ranges)}}
+							inputRanges={[]}
+							showSelectionPreview={true}
+							// moveRangeOnFirstSelection={false}
+							months={2}
+							direction="horizontal"
+							minDate={new Date(2022, 0, 1)}
+							maxDate={ new Date() }
+							staticRanges={dateRanges}
+						/>
+					</div>
+				</PopoverContent>
 			</Popover>
 		</div>
 	);
