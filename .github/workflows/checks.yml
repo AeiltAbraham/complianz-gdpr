@@ -49,13 +49,25 @@ jobs:
           $want = array("lodash","react","react-dom","react-jsx-runtime","wp-api-fetch","wp-components","wp-data","wp-element","wp-i18n");
           exit($a["dependencies"] === $want ? 0 : 1);'
       - name: Token hygiene (ADR-004 / T-018)
-        # Mirrors the two commit-gate token checks server-side. The `! grep` form is errexit-safe
-        # (a bare `grep; test $?` would trip `set -e` when grep finds nothing): `!` makes a match
-        # fail the step and a no-match (or a missing path, grep exit 2) pass it — which is exactly
-        # the tolerance check (b) needs while settings/src/components|styles do not exist yet.
+        # Mirrors the two commit-gate token checks server-side. Each path is grepped only when it
+        # EXISTS, inside an `if` condition (so Actions' `bash -e` never exits on grep's no-match or
+        # a missing-path error), and any match sets fail=1; `exit $fail` gates. This avoids two
+        # traps a terser form falls into: a non-final `! grep` is errexit-exempt (so it can never
+        # gate), and grep over a not-yet-created sibling dir returns exit 2 (which `! grep` / an
+        # `-ne 0` test wrongly treat as "clean"). settings/src/components|styles arrive in T-020+.
         run: |
-          ! grep -r -n -e '--rsp-' -e '[$]rsp-' assets/css/admin assets/css/admin.scss assets/css/variables.scss settings/src
-          ! grep -r -n -e '--cmplz-legacy-' settings/src/components settings/src/styles
+          fail=0
+          for p in assets/css/admin assets/css/admin.scss assets/css/variables.scss settings/src; do
+            if [ -e "$p" ] && grep -r -n -e '--rsp-' -e '[$]rsp-' "$p"; then
+              echo "::error::legacy --rsp-/\$rsp- token in $p (ADR-004)"; fail=1
+            fi
+          done
+          for p in settings/src/components settings/src/styles; do
+            if [ -d "$p" ] && grep -r -n -e '--cmplz-legacy-' "$p"; then
+              echo "::error::--cmplz-legacy- token in new code $p (ADR-004)"; fail=1
+            fi
+          done
+          exit $fail
       - name: Physical-utility check (ADR-007 / T-016)
         run: node settings/scripts/check-physical-utilities.js
       - name: Stylelint on settings/src/styles (non-blocking until T-020)
