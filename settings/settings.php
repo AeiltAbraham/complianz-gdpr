@@ -393,6 +393,33 @@ function cmplz_add_option_menu() {
 	}
 
 	add_action( "admin_print_scripts-{$page_hook_suffix}", 'cmplz_plugin_admin_scripts' );
+
+	// Enqueue the redesign entry CSS (settings/build/index.css) on the Complianz settings
+	// screen only. admin_enqueue_scripts fires early enough for style dependencies to resolve,
+	// where cmplz_plugin_admin_scripts (admin_print_scripts-*) would print too late. The
+	// $page_hook_suffix closure scopes it to this page exactly, mirroring the line above.
+	add_action(
+		'admin_enqueue_scripts',
+		function ( $hook_suffix ) use ( $page_hook_suffix ) {
+			if ( $hook_suffix !== $page_hook_suffix ) {
+				return;
+			}
+			$css_path = plugin_dir_path( __FILE__ ) . 'build/index.css';
+			// Skip silently on an unbuilt checkout so filemtime() never warns on a missing file.
+			if ( ! file_exists( $css_path ) ) {
+				return;
+			}
+			// Load after the legacy admin stylesheet while that handle still exists (Phase 5
+			// retires it); guarded so a missing handle does not drop the enqueue.
+			$deps = wp_style_is( 'complianz-admin', 'registered' ) ? array( 'complianz-admin' ) : array();
+			wp_enqueue_style(
+				'cmplz-settings',
+				plugins_url( 'build/index.css', __FILE__ ),
+				$deps,
+				filemtime( $css_path )
+			);
+		}
+	);
 }
 add_action( 'admin_menu', 'cmplz_add_option_menu' );
 
@@ -405,8 +432,10 @@ function cmplz_settings_page() {
 		return;
 	}
 	?>
-	<div id="complianz" class="cmplz"></div>
-	<div id="complianz-modal"></div>
+	<div id="complianz" class="cmplz">
+		<div id="complianz-app"></div>
+		<div id="complianz-portal"><div id="complianz-portal-root" data-cmplz-ui></div></div>
+	</div>
 	<?php
 }
 

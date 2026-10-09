@@ -16,14 +16,15 @@ function cmplzRenderSettings(container){
 }
 
 document.addEventListener( 'DOMContentLoaded', () => {
-	const container = document.getElementById( 'complianz' );
+	const container = document.getElementById( 'complianz-app' );
 	if ( container ) {
 		cmplzRenderSettings(container);
 	} else {
-		//delay 1000 ms and try again
+		//delay 1000 ms and re-query, since the element may not have been parsed yet
 		setTimeout(() => {
-			if (container) {
-				cmplzRenderSettings(container);
+			const retryContainer = document.getElementById( 'complianz-app' );
+			if (retryContainer) {
+				cmplzRenderSettings(retryContainer);
 			}
 		},1000);
 	}
