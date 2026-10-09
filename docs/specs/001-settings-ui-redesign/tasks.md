@@ -493,6 +493,7 @@ outcome: `assets/css/admin/legacy-globals.scss` (new, header `// delete in Phase
 
 ## T-023 Primitive set A: PortalContainer, Dialog, AlertDialog, Popover, Tooltip
 mode: agentic
+status: done (2026-10-09)
 depends: T-020, T-016
 files: settings/src/components/ui/PortalContainer.js, settings/src/components/ui/Dialog.js, settings/src/components/ui/AlertDialog.js, settings/src/components/ui/Popover.js, settings/src/components/ui/Tooltip.js, settings/src/components/ui/cx.js, settings/package.json, settings/package-lock.json
 proof: (cd settings && npm run build && npm run lint:js -- src/components/ui) && node settings/scripts/check-physical-utilities.js
@@ -503,6 +504,10 @@ acceptance:
 - all overlay primitives portal into the PHP-rendered portal root via `PortalContainer` (read synchronously, no `document.body` fallback)
 - physical-utilities check passes; failure mode of a banned utility in a variant map — probe-at-build (introduced by T-016)
 - no consumer is migrated yet (that is T-024/T-026); bundle builds and suite smoke stays green
+outcome: `settings/src/components/ui/` created with `cx.js` (`export { default as clsx } from 'clsx'`), `PortalContainer.js` (`getPortalContainer()` reads `#complianz-portal-root` synchronously, no body fallback), and `Dialog/AlertDialog/Popover/Tooltip.js` on Radix (behavior/a11y) + Tailwind (styling). ADR-013 followed: one file each, hand-written literal variant maps composed with `clsx(...)` (no cva, no tailwind-merge, no concatenation); styled with the SEMANTIC `--cmplz-*` tokens via arbitrary values (`tw-bg-[var(--cmplz-surface)]`, etc.) and logical utilities only; `grep --cmplz-legacy-/--rsp- settings/src/components` is empty. Overlays portal into `#complianz-portal-root` via `getPortalContainer()`. Look-match to today: dialog white/12px-radius/grey backdrop/526px/shadow-2xl; tooltip dark #222 react-tooltip reproduction; popover MUI-paper look. No consumer migrated (T-024). Proof `(build && lint:js src/components/ui) && check-physical-utilities.js` → all green (195 files, no banned utilities). Added `clsx ^2.1.1` + Radix `react-dialog ^1.2.0`/`react-alert-dialog ^1.1.24`/`react-tooltip ^1.3.0`; upgraded existing Radix together (popover 1.2.0, checkbox 1.3.12, radio-group 1.4.8, switch 1.3.8, select 1.2.2→2.3.8) to one internal generation (react-primitive 2.1.11; the old duplicate react-primitive@1.0.3 is gone). All accept React 17 (FR-023, peers verified).
+  TWO flags the implementer raised, both resolved by the dispatcher BEFORE commit:
+  (1) FLAG — `npm install --legacy-peer-deps` was used (new Radix packages' OPTIONAL `@types/react-dom` peer resolved to v19 under npm 11, conflicting with the React-18 tree). The resulting lockfile FAILED `npm ci` (EUSAGE — pruned `@playwright/test`, `typescript`, `@types/react` etc. that package.json still requires) and WOULD HAVE broken CI (same class as the earlier typescript-7.x break). Fixed by pinning `@types/react`/`@types/react-dom` to `^18.3.0` in `overrides` and regenerating the lockfile with a NORMAL `npm install` (no legacy-peer-deps). Verified: `npm install` resolves cleanly and `npm ci` reproduces (exit 0); typescript stays 5.9.3, no native 7.x, no production pin drift.
+  (2) FLAG — `@radix-ui/react-select` is a MAJOR bump (1.2.2→2.3.8) touching the LIVE, not-yet-migrated `SelectInput.js`, and the build-only proof did not exercise it. Dispatcher verified the live select via e2e before accepting: `--project=admin fields.spec.js conditions.spec.js` → 16 passed (incl. "…select persist across reload" and the condition controllers). No regression → upgrade KEPT (T-029 migrates/restyles select anyway).
 
 ## T-024 Migrate dialog/tooltip/popover consumers; drop MUI and react-tooltip
 mode: agentic
