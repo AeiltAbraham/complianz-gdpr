@@ -247,17 +247,25 @@ look-preserving-net call if a later seed makes them visible.
 
 ### Visual layer is non-blocking (advisory)
 
-**The full-screen visual-regression layer (`visual.spec.js`) does not fail the run** (maintainer
-decision 2026-10-08). Most screens of this app carry dynamic content — the notifications sidebar,
-task lists, cookie-database sync status, async data — which makes reliable pixel parity across 37
-screens × 2 widths × 2 locales impractical; chasing it repeatedly blocked progress. The spec still
-runs and records per-screen drift (logged and attached as `visual-drift.txt`) for manual review,
-but a mismatch never gates CI. The same applies to the two timing-sensitive **isolation** shots —
-the logged-out frontend `website-banner` and the WordPress `media-modal`. What stays **blocking**:
-every functional spec (smoke, fields, conditions, flows, dialogs, tour, i18n), the minimum-WP
-React-17 run, and the high-value `banner-preview` + `wp-admin chrome` isolation shots that prove
-style-scoping. Look-preservation during the migration is confirmed by the per-section design review
-the redesign already requires.
+**No `toHaveScreenshot` assertion fails the run; functional assertions gate.** The full-screen
+visual-regression layer (`visual.spec.js`) went non-blocking on 2026-10-08, and on 2026-10-09
+(maintainer decision "Option B") the remaining blocking **isolation** screenshots followed. The
+reason for the second step was concrete: the first Linux CI run failed the `banner-preview`
+`toHaveScreenshot` purely from a cross-OS pixel mismatch — the baselines were captured on the macOS
+dev host, CI renders on Linux, and `snapshotPathTemplate` carries no `{platform}` token, so a macOS
+baseline can never match a Linux render. Rather than maintain a second (Linux) baseline set, every
+`toHaveScreenshot` in both `visual.spec.js` and `isolation.spec.js` now records drift (logged, and
+attached as `visual-drift.txt` for the full-screen layer; `console.warn('[isolation non-blocking] …')`
+for the isolation shots) but never gates.
+
+What stays **blocking** everywhere: every functional spec (smoke, fields, conditions, flows,
+dialogs, tour, i18n), the minimum-WP React-17 run, and — within `isolation.spec.js` — the
+*functional* assertions that each screenshot sits beside: the banner preview must mount and resolve
+its real document links, and the manage-consent widget, `#wpadminbar`, `#adminmenuwrap` and the
+General-Settings heading must be visible. Those catch a genuinely broken or unscoped surface;
+pixel-level look-preservation is confirmed by the per-section design review the redesign already
+requires. The committed PNGs under `__screenshots__/` are kept for local (macOS) pixel review and
+as the Phase-5 ADR-008 re-baseline starting point.
 
 Screenshot baselines live under `tests/e2e/admin/__screenshots__/` and are updated only by
 an explicit, reviewed change:
@@ -331,6 +339,27 @@ the specs:
 | `E2E_WEBSERVER_CMD` | `npx wp-env start` |
 | `WP_CLI_CMD_LATEST` | `npx wp-env run cli wp` |
 | `WP_CLI_CMD_MIN` | `npx wp-env run tests-cli wp` |
+
+### GitHub Actions workflow (`.github/workflows/checks.yml`, ADR-012 / T-019)
+
+Runs on push and PR to `001-settings-ui-redesign`, with `concurrency` cancelling an older
+in-flight run on the same ref. Two jobs, both on `ubuntu-latest` with Node from `.nvmrc`:
+
+- **`build` (Build from source)** — `npm ci` (root and `settings`), `npm run build:all`, then:
+  the FR-023 externalisation guard (React/wp-* stay external); the **ADR-004 token checks**
+  (T-018, mirrored from the commit gate server-side, written as `! grep …` so they are
+  `set -e`-safe); the **ADR-007 physical-utility check** (`node settings/scripts/check-physical-utilities.js`,
+  T-016); and a **stylelint** step on `settings/src/styles/` that is a no-op + `continue-on-error`
+  until T-020 creates that directory and its config.
+- **`e2e` (Admin e2e suite)** — adds `npx playwright install --with-deps chromium`, `npx wp-env
+  start`, and runs the four admin projects (`admin`, `admin-rtl`, `admin-min-wp`, `admin-i18n`).
+  `CI=true` switches on `retries: 2`. The Playwright HTML report and `test-results/` (traces +
+  screenshot diffs) upload as the `playwright-report` artifact (14-day retention, on success and
+  failure).
+
+Coding standards (WPCS) and `php -l` are NOT repeated here — the flow commit gate
+(`.agent/gate.json`) already enforces them on every commit and push. Marking this workflow a
+**required status check** is a manual branch-protection setting in the repo.
 
 ### Stop the environment
 

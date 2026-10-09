@@ -5,10 +5,13 @@
 # the fresh-DB determinism bug during Stage C. Coding standards (WPCS) and php -l are already
 # enforced on every commit by the flow gate (.agent/gate.json), so they are not repeated here.
 #
-# Scope today: build + e2e. The token/physical-utilities/stylelint checks are added as the
-# tasks that introduce them land (T-016, T-018, T-020). The e2e job needs Actions enabled on
-# the fork (Settings -> Actions) and a Docker-capable runner (ubuntu-latest has Docker for
-# @wordpress/env). Mark this workflow a required status check in branch protection (manual).
+# Scope: build + static token/physical-utility checks + the e2e suite. The ADR-004 token
+# checks (T-018) and the ADR-007 physical-utility check (T-016) run server-side here as well as
+# in the local commit gate (defence in depth: a push without the hook, or a web edit, still gets
+# checked). Stylelint on settings/src/styles/ is wired but non-blocking until T-020 creates that
+# directory and its config. The e2e job needs Actions enabled on the fork (Settings -> Actions)
+# and a Docker-capable runner (ubuntu-latest has Docker for @wordpress/env). Mark this workflow a
+# required status check in branch protection (manual repo setting).
 name: checks
 
 on:
@@ -45,6 +48,26 @@ jobs:
           php -r '$f = glob("settings/build/index.*.asset.php"); $a = require $f[0];
           $want = array("lodash","react","react-dom","react-jsx-runtime","wp-api-fetch","wp-components","wp-data","wp-element","wp-i18n");
           exit($a["dependencies"] === $want ? 0 : 1);'
+      - name: Token hygiene (ADR-004 / T-018)
+        # Mirrors the two commit-gate token checks server-side. The `! grep` form is errexit-safe
+        # (a bare `grep; test $?` would trip `set -e` when grep finds nothing): `!` makes a match
+        # fail the step and a no-match (or a missing path, grep exit 2) pass it — which is exactly
+        # the tolerance check (b) needs while settings/src/components|styles do not exist yet.
+        run: |
+          ! grep -r -n -e '--rsp-' -e '[$]rsp-' assets/css/admin assets/css/admin.scss assets/css/variables.scss settings/src
+          ! grep -r -n -e '--cmplz-legacy-' settings/src/components settings/src/styles
+      - name: Physical-utility check (ADR-007 / T-016)
+        run: node settings/scripts/check-physical-utilities.js
+      - name: Stylelint on settings/src/styles (non-blocking until T-020)
+        # The directory and a stylelint config arrive in T-020; until then this is a clean no-op,
+        # and continue-on-error keeps it from ever gating the run (T-020 removes that line).
+        continue-on-error: true
+        run: |
+          if [ -d settings/src/styles ]; then
+            npx --no-install stylelint "settings/src/styles/**/*.css"
+          else
+            echo "settings/src/styles/ does not exist yet (created in T-020) — stylelint is a no-op for now"
+          fi
 
   e2e:
     name: Admin e2e suite (fresh WordPress)

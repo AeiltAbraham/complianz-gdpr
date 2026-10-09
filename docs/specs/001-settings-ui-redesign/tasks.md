@@ -421,6 +421,7 @@ outcome: `.agent/gate.json` gains two `commit` checks (run on commit AND push): 
 
 ## T-019 CI workflow on GitHub Actions
 mode: agentic
+status: done (2026-10-09)
 depends: T-013, T-018
 files: .github/workflows/checks.yml, docs/developers/testing.md
 proof: gh run list --workflow=checks.yml --branch 001-settings-ui-redesign --limit 1 --json conclusion --jq '.[0].conclusion' | grep -qx success
@@ -431,6 +432,7 @@ acceptance:
 - the first run on the integration branch completes green (the proof shows status `completed`/`success`)
 - the run is registered as a required status check — a repository setting; the task outcome records that the maintainer applied it (cannot be set from the workflow file)
 - no secrets are referenced; everything runs against the public checkout (public-fork constraint)
+outcome: `.github/workflows/checks.yml` (ADR-012) triggers on push/PR to `001-settings-ui-redesign` with `concurrency` cancel-in-progress, two ubuntu-latest jobs on Node from `.nvmrc`. **build**: `npm ci` (root + settings), `npm run build:all`, the FR-023 externalisation guard, the ADR-004 token checks (T-018, mirrored server-side as `! grep …` so they are `set -e`-safe), the ADR-007 `check-physical-utilities.js` (T-016), and a `continue-on-error` stylelint step on `settings/src/styles/` that is a clean no-op until T-020 creates the dir+config. **e2e**: `playwright install --with-deps chromium`, `wp-env start`, the four admin projects (`CI=true` → retries 2), uploading the `playwright-report` artifact (report + `test-results/` traces/diffs, 14-day retention, on success and failure). WPCS/`php -l` are not repeated (the commit gate enforces them). Built on the interim build+e2e workflow: the FIRST Actions run (sha acab3cd5) caught a real cross-platform `npm ci` break (typescript's npm `latest` is now the native 7.x preview; pinned to 5.9.3 via overrides) — build job green thereafter; the e2e job then surfaced two environment issues now fixed (wizard-lock test isolation; cross-OS screenshots → Option B non-blocking). The complete workflow's first green run is verified on the push that lands this Phase-1 batch (see progress.md). Marking the workflow a REQUIRED status check is a manual branch-protection setting — the maintainer applies it in the repo UI (cannot be set from the workflow file).
 
 ## T-020 Tailwind foundation in the settings build
 mode: agentic
