@@ -24,6 +24,16 @@
  * tests/e2e/admin/__screenshots__/ are regenerated ONLY by an explicitly reviewed PR that runs
  * `--update-snapshots` and shows the diff. Preview/website shots are re-baselined in Phase 5 (ADR-008).
  *
+ * BLOCKING CONTRACT (maintainer decision 2026-10-09, "Option B"): every `toHaveScreenshot` in this
+ * file is NON-BLOCKING — it records drift to the console/report but never fails the run — because the
+ * baselines are OS-specific (captured on the macOS dev host; CI renders on Linux) and the snapshot
+ * path template carries no {platform} token, so a macOS baseline can never match a Linux render. The
+ * FUNCTIONAL assertions (the preview mounting and resolving its links, the manage widget / admin
+ * chrome / General-Settings heading being visible) STAY BLOCKING — those are what gate the suite and
+ * catch a genuinely broken surface. The committed PNGs are kept for local (macOS) pixel review and as
+ * the Phase-5 re-baseline starting point. This matches the full-screen visual layer (visual.spec.js),
+ * which went non-blocking on 2026-10-08 for the same cross-environment reason.
+ *
  * Determinism: each layout is set through the banner record via wp-cli (the T-008 helper pattern), so
  * both the admin preview and the website render it; the whole fixture is restored by re-seeding in
  * afterAll, so this spec leaves the DB exactly as it found it.
@@ -175,7 +185,17 @@ test( 'banner preview element baselines per layout (ADR-008, 1920x1080)', async 
 			// never capture the racy `{title}` placeholder mid-render.
 			await loadResolvedBannerPreview( page, '#banner/appearance' );
 			const banner = page.locator( PREVIEW_BANNER );
-			await expect( banner ).toHaveScreenshot( `preview-banner-${ position }.png`, BANNER_ELEMENT_SHOT );
+			// Non-blocking screenshot (maintainer decision 2026-10-09, Option B): toHaveScreenshot
+			// baselines are OS-specific — the macOS dev host and the Linux CI runner render fonts and
+			// anti-aliasing differently, and the snapshot path has no {platform} token, so a macOS
+			// baseline can never match a Linux render. Record drift; do not gate. The FUNCTIONAL signal
+			// stays blocking: loadResolvedBannerPreview above already asserts the preview mounts and
+			// resolves its real document links, which is what ADR-008 fidelity actually depends on.
+			try {
+				await expect( banner ).toHaveScreenshot( `preview-banner-${ position }.png`, BANNER_ELEMENT_SHOT );
+			} catch ( err ) {
+				console.warn( `[isolation non-blocking] preview-banner ${ position }: ${ String( err.message || err ).split( '\n' )[ 0 ] }` );
+			}
 
 			// The preview keeps the manage-consent revoke widget hidden until the banner is dismissed,
 			// and `setUpBanner()` (which runs in the preview's render body) re-hides it with an inline
@@ -187,8 +207,13 @@ test( 'banner preview element baselines per layout (ADR-008, 1920x1080)', async 
 				content: '#cmplz-manage-consent .cmplz-manage-consent{display:block !important;visibility:visible !important;}',
 			} );
 			const manage = page.locator( MANAGE_CONSENT );
+			// Functional assertion stays blocking; the screenshot is non-blocking (Option B, see above).
 			await expect( manage ).toBeVisible( { timeout: 30_000 } );
-			await expect( manage ).toHaveScreenshot( `preview-manage-consent-${ position }.png` );
+			try {
+				await expect( manage ).toHaveScreenshot( `preview-manage-consent-${ position }.png` );
+			} catch ( err ) {
+				console.warn( `[isolation non-blocking] preview-manage-consent ${ position }: ${ String( err.message || err ).split( '\n' )[ 0 ] }` );
+			}
 		} );
 	}
 } );
@@ -229,12 +254,26 @@ test( 'wp-admin chrome baseline on a Complianz screen (DB-01/DB-02)', async ( { 
 	await gotoSettings( page, '#dashboard' );
 	await waitForAppMounted( page );
 
+	// Functional signal stays blocking: the admin chrome renders on a Complianz screen. The pixel
+	// baselines are non-blocking (Option B, 2026-10-09): OS-specific renders cannot match across the
+	// macOS dev host and the Linux CI runner; record drift, do not gate.
+	await expect( page.locator( '#wpadminbar' ) ).toBeVisible( { timeout: 30_000 } );
+	await expect( page.locator( '#adminmenuwrap' ) ).toBeVisible( { timeout: 30_000 } );
+
 	// Admin bar: mask the gravatar — it is fetched by the browser from secure.gravatar.com, so it is
 	// non-deterministic (and absent offline / in CI). The restyled bar itself is the baseline.
-	await expect( page.locator( '#wpadminbar' ) ).toHaveScreenshot( 'wpadmin-bar.png', {
-		mask: [ page.locator( '#wpadminbar .avatar' ) ],
-	} );
-	await expect( page.locator( '#adminmenuwrap' ) ).toHaveScreenshot( 'wpadmin-menu.png' );
+	try {
+		await expect( page.locator( '#wpadminbar' ) ).toHaveScreenshot( 'wpadmin-bar.png', {
+			mask: [ page.locator( '#wpadminbar .avatar' ) ],
+		} );
+	} catch ( err ) {
+		console.warn( `[isolation non-blocking] wpadmin-bar: ${ String( err.message || err ).split( '\n' )[ 0 ] }` );
+	}
+	try {
+		await expect( page.locator( '#adminmenuwrap' ) ).toHaveScreenshot( 'wpadmin-menu.png' );
+	} catch ( err ) {
+		console.warn( `[isolation non-blocking] wpadmin-menu: ${ String( err.message || err ).split( '\n' )[ 0 ] }` );
+	}
 } );
 
 test( 'WordPress media modal baseline (opened from the banner logo field)', async ( { page } ) => {
@@ -267,11 +306,17 @@ test( 'WordPress media modal baseline (opened from the banner logo field)', asyn
 test( 'non-Complianz admin screen baseline (Settings > General, DB-01/DB-02)', async ( { page } ) => {
 	await page.setViewportSize( { width: 1440, height: 900 } );
 	await page.goto( '/wp-admin/options-general.php' );
+	// Functional signal stays blocking: Settings > General renders unaffected by Complianz. The pixel
+	// baseline is non-blocking (Option B, 2026-10-09; same OS-specific-render reason as the shots above).
 	await expect( page.getByRole( 'heading', { name: /General Settings/i } ) ).toBeVisible( { timeout: 30_000 } );
 
 	// Mask: the timezone row prints the live UTC/local clock (drifts every run); the admin-bar gravatar
 	// is browser-fetched (see chrome test). Everything else is the DB-02 "unchanged" baseline.
-	await expect( page ).toHaveScreenshot( 'non-complianz-options-general.png', {
-		mask: [ page.locator( '.timezone-info' ), page.locator( '#wpadminbar .avatar' ) ],
-	} );
+	try {
+		await expect( page ).toHaveScreenshot( 'non-complianz-options-general.png', {
+			mask: [ page.locator( '.timezone-info' ), page.locator( '#wpadminbar .avatar' ) ],
+		} );
+	} catch ( err ) {
+		console.warn( `[isolation non-blocking] non-complianz-options-general: ${ String( err.message || err ).split( '\n' )[ 0 ] }` );
+	}
 } );
