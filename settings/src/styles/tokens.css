@@ -1,0 +1,36 @@
+/* Semantic design tokens for the settings app.
+ *
+ * LOOK-PRESERVING placeholders: each value is the CONCRETE current-look value (what the matching
+ * legacy token resolves to today), copied in literally so this layer is self-contained and the
+ * rendered look is unchanged. We deliberately do NOT reference the legacy custom properties here:
+ * the ADR-004/T-018 gate forbids legacy token names in the redesign's own code (settings/src/**),
+ * and a semantic layer that depended on them would break at Phase 5 when the legacy stylesheet is
+ * removed. The C-2 token sign-off replaces these current-look values with the concrete redesign
+ * values before Phase 3.
+ *
+ * Declared on the scoped app/portal roots, never on :root (DB-08 / ADR-001). No reserved
+ * frontend-banner token names (ADR-004/008).
+ */
+:is(#complianz, #complianz-portal) :where(#complianz-app-root[data-cmplz-ui], #complianz-portal-root[data-cmplz-ui]) {
+  --cmplz-surface: #fff;
+  --cmplz-surface-sunken: #f0f0f1;
+  --cmplz-field-surface: #fff;
+  --cmplz-text: rgba(15, 23, 42, 0.95);
+  --cmplz-text-muted: rgba(15, 23, 42, 0.85);
+  --cmplz-text-on-accent: rgba(255, 255, 255, 0.95);
+  --cmplz-border: #dfdfdf;
+  --cmplz-field-border: #c6c6c6;
+  --cmplz-accent: #009fff;
+  --cmplz-accent-strong: #1e73be;
+  --cmplz-success: #2e8a37;
+  --cmplz-warning: #f4bf3e;
+  --cmplz-danger: #d7263d;
+  --cmplz-radius: 12px;
+  --cmplz-radius-s: 8px;
+  --cmplz-radius-field: 5px;
+  --cmplz-space-xs: 10px;
+  --cmplz-space-s: 15px;
+  --cmplz-space-m: 20px;
+  --cmplz-space-l: 25px;
+  --cmplz-font-size: 0.875rem;
+}

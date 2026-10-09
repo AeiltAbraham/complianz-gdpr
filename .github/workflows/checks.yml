@@ -8,8 +8,8 @@
 # Scope: build + static token/physical-utility checks + the e2e suite. The ADR-004 token
 # checks (T-018) and the ADR-007 physical-utility check (T-016) run server-side here as well as
 # in the local commit gate (defence in depth: a push without the hook, or a web edit, still gets
-# checked). Stylelint on settings/src/styles/ is wired but non-blocking until T-020 creates that
-# directory and its config. The e2e job needs Actions enabled on the fork (Settings -> Actions)
+# checked). Stylelint (stylelint-use-logical) gates the hand-written entry CSS under
+# settings/src/styles/ as of T-020. The e2e job needs Actions enabled on the fork (Settings -> Actions)
 # and a Docker-capable runner (ubuntu-latest has Docker for @wordpress/env). Mark this workflow a
 # required status check in branch protection (manual repo setting).
 name: checks
@@ -70,16 +70,13 @@ jobs:
           exit $fail
       - name: Physical-utility check (ADR-007 / T-016)
         run: node settings/scripts/check-physical-utilities.js
-      - name: Stylelint on settings/src/styles (non-blocking until T-020)
-        # The directory and a stylelint config arrive in T-020; until then this is a clean no-op,
-        # and continue-on-error keeps it from ever gating the run (T-020 removes that line).
-        continue-on-error: true
-        run: |
-          if [ -d settings/src/styles ]; then
-            npx --no-install stylelint "settings/src/styles/**/*.css"
-          else
-            echo "settings/src/styles/ does not exist yet (created in T-020) — stylelint is a no-op for now"
-          fi
+      - name: Stylelint on settings/src/styles
+        # Enforces logical properties (ADR-007, stylelint-use-logical) on the HAND-WRITTEN entry CSS:
+        # tokens.css and base.css only — NOT tailwind.css, whose @tailwind directives stylelint cannot
+        # parse. The config is settings/.stylelintrc.json; run from settings/ so the config, the binary
+        # and the plugin all resolve there. Gating now (T-020 removed the continue-on-error from T-019).
+        working-directory: settings
+        run: npx --no-install stylelint src/styles/tokens.css src/styles/base.css
 
   e2e:
     name: Admin e2e suite (fresh WordPress)

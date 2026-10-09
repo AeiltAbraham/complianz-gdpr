@@ -1,6 +1,7 @@
 import {
     render,createRoot
 } from '@wordpress/element';
+import './styles/tailwind.css';
 import Page from './Page';
 
 /**

@@ -1,0 +1,18 @@
+{
+  "plugins": ["stylelint-use-logical"],
+  "rules": {
+    "csstools/use-logical": [
+      "always",
+      {
+        "except": [
+          "width",
+          "min-width",
+          "max-width",
+          "height",
+          "min-height",
+          "max-height"
+        ]
+      }
+    ]
+  }
+}

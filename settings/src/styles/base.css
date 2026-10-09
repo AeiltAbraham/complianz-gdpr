@@ -1,0 +1,22 @@
+/* B1 — box-sizing + border reset (utilities assume Preflight's border defaults) */
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui] *:not([data-cmplz-isolate] *):not([data-cmplz-isolate])),
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui] *:not([data-cmplz-isolate] *):not([data-cmplz-isolate]))::before,
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui] *:not([data-cmplz-isolate] *):not([data-cmplz-isolate]))::after {
+  box-sizing: border-box; border-width: 0; border-style: solid; border-color: currentColor;
+}
+/* B2 — root typography, ONE rule on the two inner wrappers (FR-003) */
+:is(#complianz, #complianz-portal) :where(#complianz-app-root[data-cmplz-ui], #complianz-portal-root[data-cmplz-ui]) {
+  font-size: 14px; line-height: 1.5; color: #1e1e1e; -webkit-font-smoothing: antialiased;
+}
+/* B3 — form controls inherit font (Preflight replacement) */
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui] :is(button,input,select,textarea,optgroup):not([data-cmplz-isolate] *):not([data-cmplz-isolate])) {
+  font: inherit; color: inherit; margin: 0;
+}
+/* B4 — button reset */
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui] button:not([data-cmplz-isolate] *):not([data-cmplz-isolate])) {
+  cursor: pointer; background-color: transparent; background-image: none;
+}
+/* B5 — replaced elements (optional, keeps images sane without full Preflight) */
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui] :is(img,svg,video,canvas,audio,iframe,embed,object):not([data-cmplz-isolate] *):not([data-cmplz-isolate])) {
+  display: block; max-width: 100%; height: auto; vertical-align: middle;
+}
