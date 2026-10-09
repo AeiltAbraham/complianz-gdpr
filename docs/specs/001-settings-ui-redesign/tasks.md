@@ -406,6 +406,7 @@ outcome: `sh scripts/rename-rsp-tokens.sh` (the T-031 script, unchanged) rewrote
 
 ## T-018 Permanent token checks in the commit gate
 mode: agentic
+status: done (2026-10-09)
 depends: T-017
 files: .agent/gate.json, .agent/conventions.md
 proof: sh -c "grep -r -n -e '--rsp-' -e '[\$]rsp-' assets/css/admin assets/css/admin.scss assets/css/variables.scss settings/src; test \$? -eq 1" && sh -c "grep -r -n -e '--cmplz-legacy-' settings/src/components settings/src/styles; test \$? -ne 0"
@@ -416,6 +417,7 @@ acceptance:
 - failure mode: a scratch SCSS file under `assets/css/admin/` containing `--rsp-test` makes the gate check exit non-zero; probed at build with the real command (the grep semantics were probed in planning; the gate wiring is new here) — record the output, delete the file
 - on the post-T-017 tree both checks pass (the proof)
 - conventions.md "Gate" section documents both checks and their scope rationale
+outcome: `.agent/gate.json` gains two `commit` checks (run on commit AND push): (a) `grep -r -n -e '--rsp-' -e '[$]rsp-' assets/css/admin assets/css/admin.scss assets/css/variables.scss settings/src; test $? -eq 1` — passes only when grep finds nothing, so a reintroduced legacy token (e.g. via a weekly master merge, ADR-006) blocks; (b) `grep -r -n -e '--cmplz-legacy-' settings/src/components settings/src/styles; test $? -ne 0` — blocks a `--cmplz-legacy-` in the redesign's own code, and `-ne 0` tolerates those dirs not existing yet (missing-path grep exits 2 → pass). Scope deliberately excludes `docs/`, `upgrade/`, `settings/build/` and the stale compiled `admin.css`. Verified: both pass on the post-T-017 tree (proof green); a planted `assets/css/admin/zz-gate-probe.scss` containing `--rsp-test` made check (a) exit non-zero (probe deleted). conventions.md "Gate" section documents both checks (now items 4-5) and their scope rationale; the "planned addition" note removed.
 
 ## T-019 CI workflow on GitHub Actions
 mode: agentic

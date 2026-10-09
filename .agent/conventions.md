@@ -108,9 +108,22 @@ unknowns are marked `TODO: confirm`. Update this file when a convention changes.
    WARNING alike (WARNING carries security sniffs such as nonce verification), and — when
    PHP is staged but `vendor/bin/phpcs` is absent — fails telling you to run
    `composer install`.
+4. **No legacy `--rsp-`/`$rsp-` tokens** (ADR-004, T-018): `grep -r` for `--rsp-` or
+   `$rsp-` across `assets/css/admin`, `assets/css/admin.scss`, `assets/css/variables.scss`
+   and `settings/src`; the check passes only when grep finds nothing (`test $? -eq 1`), so a
+   reintroduced legacy token — e.g. from a weekly `master` merge (ADR-006) — blocks the
+   commit. Scope is the SCSS sources and `settings/src` only: it deliberately excludes
+   `docs/` (ADR-004 itself quotes `--rsp-`), `upgrade/` (its own self-contained tokens) and
+   `settings/build/`, and it does not read the stale compiled `assets/css/admin.css`
+   (rebuilt at release, ADR-006), which still carries `--rsp-` until then.
+5. **No `--cmplz-legacy-` in new code** (ADR-004, T-018): `grep -r` for `--cmplz-legacy-`
+   under `settings/src/components` and `settings/src/styles` (the redesign's own code);
+   the check passes unless grep finds a match (`test $? -ne 0`), which also tolerates those
+   directories not existing yet — a missing-path grep exits 2, and `-ne 0` treats that as a
+   pass. The renamed legacy tokens are for legacy SCSS only; new components/styles use the
+   semantic `--cmplz-*` set, never the `--cmplz-legacy-*` names.
 
 Stage files in a separate call before committing: checks 2 and 3 only see staged content.
-Planned addition (plan 001): the permanent token checks (T-018).
 
 ## CI
 
