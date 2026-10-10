@@ -155,6 +155,12 @@
 					width: fit-content;
 				}
 			}
+			// Relocated from the deleted inputs/SwitchInput.scss (ADR-005, T-029): the comment under a
+			// checkbox-type field spans the full row so it wraps onto its own line — the field-wrap is
+			// flex-row-wrap, where a content-width comment would otherwise collapse onto the control row.
+			&.cmplz-checkbox .cmplz-comment {
+				width: 100%;
+			}
 		}
 
 		.button {

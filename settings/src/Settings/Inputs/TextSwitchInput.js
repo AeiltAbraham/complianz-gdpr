@@ -3,6 +3,10 @@ import SwitchInput from './SwitchInput';
 import {__} from '@wordpress/i18n';
 import {memo, useEffect, useState} from 'react';
 
+// Look-preserving restyle of the text + switch composite (ADR-005 SCSS deleted). The two controls
+// keep their own primitives and markers; only this wrapper's grid is restyled, mirroring the deleted
+// TextSwitchInput.scss (`display:grid; grid-template-columns:1fr auto; gap:xs; align-content:center`)
+// with logical utilities on the semantic token (ADR-007/ADR-013).
 const TextSwitchInput = ({
 	label,
 	value,
@@ -32,7 +36,7 @@ const TextSwitchInput = ({
 	}
 
 	return (
-		<div className="cmplz-text-checkbox-input">
+		<div data-cmplz-ui className="tw-grid tw-grid-cols-[1fr_auto] tw-content-center tw-gap-[var(--cmplz-space-xs)]">
 			<TextInput
 				value={value['text']}
 				onChange={onTextChange}
