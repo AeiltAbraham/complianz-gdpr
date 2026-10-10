@@ -57,10 +57,9 @@
     @import 'admin/modules/wizard/editor.scss';
     @import 'admin/modules/wizard/processors-thirdparties.scss';
 	@import 'admin/modules/toast/main.scss';
-	// inputs
-	@import 'admin/modules/inputs/Input.scss';
-	@import 'admin/modules/inputs/BorderInput.scss';
-	@import 'admin/modules/inputs/Buttons.scss';
+	// inputs: the modules/inputs/ module is fully retired (ADR-005 Phase-2 exit, T-030). The three
+	// former files (Input, BorderInput, Buttons) are gone: BorderInput/Button-icon looks moved onto
+	// the migrated components; the global input/button rules live on in legacy-globals.scss.
 
 	  @import 'admin/modules/CookieBannerPreview.scss';
 

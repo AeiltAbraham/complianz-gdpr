@@ -87,3 +87,94 @@ a.button, button.button, input.button {
 		}
 	}
 }
+
+// Relocated from the deleted modules/inputs/Input.scss (ADR-005, T-030 Phase-2 exit). These are
+// GLOBAL rules (not last-consumed by any single migrated input), so they move here instead of being
+// deleted:
+//   - `.cmplz-input-group`: the flex-column wrapper still carried by the migrated text inputs (T-028),
+//     by RadioGroup and by integrations.scss markup.
+//   - the generic `.cmplz input` field look: still styles every UN-migrated raw <input> in the main
+//     app (DocumentControl url, search boxes, onboarding, ...). The migrated inputs override it with
+//     their `tw-` utilities (1,1,0 > 0,1,1), unchanged by this move.
+// The generic rule is scoped `:where(:not([data-cmplz-isolate] *))` because legacy-globals is imported
+// LAST: without it the relocated rule would move past (and so override) the retained, isolated
+// react-date-range calendar inputs (`.rdrDateDisplayItem input`, equal 0,1,1 specificity, which won by
+// source order while Input.scss sat at its original position). Excluding data-cmplz-isolate subtrees
+// keeps app styling out of the isolate zones (ADR-001); `:where()` adds zero specificity, so the rule
+// stays 0,1,1 and the real (non-isolate) consumers — and their win over wp-admin `forms.css` — are
+// unchanged.
+.cmplz-input-group {
+	display: flex;
+	flex-direction: column;
+	gap: var(--cmplz-legacy-spacing-xs);
+}
+
+// we don't want the border radius of radio buttons to change.
+.cmplz input:where(:not([data-cmplz-isolate] *)):not([type="radio"]) {
+	border-radius: var(--cmplz-legacy-border-radius-xs);
+}
+
+.cmplz input:where(:not([data-cmplz-isolate] *)) {
+	border: 1px solid var(--cmplz-legacy-input-border-color);
+	padding: var(--cmplz-legacy-spacing-xxs) var(--cmplz-legacy-spacing-xs);
+	font-size: var(--cmplz-legacy-fs-300);
+	line-height: 1.5;
+	color: var(--cmplz-legacy-text-color-light);
+	background-color: var(--cmplz-legacy-white);
+	outline: none;
+
+	&:focus {
+		border-color: var(--cmplz-legacy-dark-blue);
+		box-shadow: 0 0 0 2px var(--cmplz-legacy-dark-blue);
+	}
+
+	&:disabled {
+		background-color: var(--cmplz-legacy-grey-200);
+		color: var(--cmplz-legacy-grey-400);
+	}
+}
+
+// Relocated from the deleted modules/inputs/Buttons.scss (ADR-005, T-030). Neither rule was
+// last-consumed by the migrated Button, so both move here instead of being deleted:
+//   - `.cmplz-field-wrap .cmplz-button`: end-aligns a raw `.cmplz-button` inside a field wrap. The
+//     migrated primitive button dropped the `cmplz-button` class and is margin:0 via base B3, so this
+//     no longer touches it; it still serves the un-migrated raw button in CreateProcessingAgreements.
+//   - `.cmplz-button-icon`: the round icon button still rendered by SinglePrivacyStatement.js and
+//     targeted as an ancestor by wizard/panel.scss — unchanged.
+.cmplz-field-wrap .cmplz-button {
+	margin-left: auto;
+}
+
+.cmplz-button-icon {
+	background: transparent;
+	background: var(--cmplz-legacy-grey-300);
+	color: #2271b1;
+	border: 1px solid transparent;
+	border-radius: 50%;
+	width: 1em;
+	height: 1em;
+	padding: 10px;
+	margin: 5px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.3s ease;
+	cursor: pointer;
+
+	.cmplz-tooltip-icon {
+		padding-top: 3px;
+	}
+
+	&:hover {
+		padding: 15px;
+		margin: 0;
+	}
+
+	&--delete:hover {
+		background: var(--cmplz-legacy-red-faded);
+
+		svg path {
+			fill: var(--cmplz-legacy-red);
+		}
+	}
+}
