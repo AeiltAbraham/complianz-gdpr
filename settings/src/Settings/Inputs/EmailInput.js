@@ -1,4 +1,5 @@
 import {memo, useEffect, useState} from "@wordpress/element";
+import { TextField } from '../../components/ui/TextField';
 
 const EmailInput = ({
 	value,
@@ -47,8 +48,8 @@ const EmailInput = ({
 	};
 
 	return (
-		<div className="cmplz-input-group cmplz-email-input-group">
-			<input
+		<div data-cmplz-ui className="cmplz-input-group cmplz-email-input-group">
+			<TextField
 				type='email'
 				id={inputId}
 				name={name}
@@ -56,7 +57,6 @@ const EmailInput = ({
 				onChange={(event) => handleChange(event.target.value)}
 				required={required}
 				disabled={disabled}
-				className="cmplz-email-input-group__input"
 			/>
 		</div>
 	);

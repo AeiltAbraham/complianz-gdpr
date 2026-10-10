@@ -1,5 +1,6 @@
 import {memo, useEffect, useState} from 'react';
 import Icon from "../../utils/Icon";
+import { TextField } from '../../components/ui/TextField';
 const PasswordInput = ({
 					   value,
 					   onChange,
@@ -38,8 +39,7 @@ const PasswordInput = ({
 		setInputValue(value);
 	};
 
-	const toggleVisible = (e) => {
-		console.log("togle", e);
+	const toggleVisible = () => {
 		if (inputType === 'password') {
 			setInputType('text');
 			setIcon('eye-slash');
@@ -50,8 +50,8 @@ const PasswordInput = ({
 	}
 
 	return (
-		<div className="cmplz-input-group cmplz-password-input-group">
-			<input
+		<div data-cmplz-ui className="cmplz-input-group tw-relative">
+			<TextField
 				type={inputType}
 				id={inputId}
 				name={name}
@@ -59,10 +59,14 @@ const PasswordInput = ({
 				onChange={(event) => handleChange(event.target.value)}
 				required={required}
 				disabled={disabled}
-				className="cmplz-text-input-group__input"
 				placeholder={placeholder}
 			/>
-			<div onClick={(e) => toggleVisible(e)}><Icon name={icon} color={'grey'} size={16} /></div>
+			<div
+				className="tw-absolute tw-end-[15px] tw-top-[8px] tw-cursor-pointer"
+				onClick={() => toggleVisible()}
+			>
+				<Icon name={icon} color={'grey'} size={16} />
+			</div>
 		</div>
 	);
 };

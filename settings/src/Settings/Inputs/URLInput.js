@@ -1,4 +1,5 @@
 import {memo, useEffect, useState} from 'react';
+import { TextField } from '../../components/ui/TextField';
 
 const URLInput = ({
 	value,
@@ -45,8 +46,8 @@ const URLInput = ({
 	};
 
 	return (
-		<div className="cmplz-input-group cmplz-url-input-group">
-			<input
+		<div data-cmplz-ui className="cmplz-input-group cmplz-url-input-group">
+			<TextField
 				type='url'
 				id={inputId}
 				name={name}
@@ -54,7 +55,6 @@ const URLInput = ({
 				onChange={(event) => handleChange(event.target.value)}
 				required={required}
 				disabled={disabled}
-				className="cmplz-url-input-group__input"
 			/>
 		</div>
 	);

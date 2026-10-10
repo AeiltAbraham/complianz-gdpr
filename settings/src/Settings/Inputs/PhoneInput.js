@@ -1,4 +1,5 @@
 import {memo, useEffect, useState} from "@wordpress/element";
+import { TextField } from '../../components/ui/TextField';
 
 const PhoneInput = ({
 	value,
@@ -45,8 +46,8 @@ const PhoneInput = ({
 	};
 
 	return (
-		<div className="cmplz-input-group cmplz-phone-input-group">
-			<input
+		<div data-cmplz-ui className="cmplz-input-group cmplz-phone-input-group">
+			<TextField
 				type='tel'
 				id={inputId}
 				name={name}
@@ -54,7 +55,6 @@ const PhoneInput = ({
 				onChange={(event) => handleChange(event.target.value)}
 				required={required}
 				disabled={disabled}
-				className="cmplz-phone-input-group__input"
 			/>
 		</div>
 	);

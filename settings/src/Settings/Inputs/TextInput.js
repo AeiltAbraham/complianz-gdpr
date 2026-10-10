@@ -1,4 +1,6 @@
 import {memo, useEffect, useState} from 'react';
+import { TextField } from '../../components/ui/TextField';
+
 const TextInput = ({
 	value,
 	onChange,
@@ -36,8 +38,8 @@ const TextInput = ({
 	};
 
 	return (
-		<div className="cmplz-input-group cmplz-text-input-group">
-			<input
+		<div data-cmplz-ui className="cmplz-input-group cmplz-text-input-group">
+			<TextField
 				type='text'
 				id={inputId}
 				name={name}
@@ -45,7 +47,6 @@ const TextInput = ({
 				onChange={(event) => handleChange(event.target.value)}
 				required={required}
 				disabled={disabled}
-				className="cmplz-text-input-group__input"
 				placeholder={placeholder}
 			/>
 		</div>
