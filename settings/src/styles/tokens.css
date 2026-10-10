@@ -8,10 +8,17 @@
  * removed. The C-2 token sign-off replaces these current-look values with the concrete redesign
  * values before Phase 3.
  *
- * Declared on the scoped app/portal roots, never on :root (DB-08 / ADR-001). No reserved
- * frontend-banner token names (ADR-004/008).
+ * Declared on every scoped UI island (any `[data-cmplz-ui]` root under `#complianz`/
+ * `#complianz-portal`), never on :root (DB-08 / ADR-001). This matches the scoped BASE in base.css,
+ * which targets `[data-cmplz-ui] *`: through Phases 2-4 each migrated component carries `data-cmplz-ui`
+ * on its own root (there is no single `#complianz-app-root` until the Phase-5 marker move, ADR-001),
+ * so the tokens must be available on those islands — keying them only to `#complianz-app-root` left
+ * every main-app primitive consumer (inputs, textarea, the combobox control) with undefined vars and a
+ * token-less render. CSS custom properties inherit, so declaring on the island root reaches all its
+ * descendants; the portal host (`#complianz-portal-root[data-cmplz-ui]`) is one such island. No
+ * reserved frontend-banner token names (ADR-004/008).
  */
-:is(#complianz, #complianz-portal) :where(#complianz-app-root[data-cmplz-ui], #complianz-portal-root[data-cmplz-ui]) {
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) {
   --cmplz-surface: #fff;
   --cmplz-surface-sunken: #f0f0f1;
   --cmplz-field-surface: #fff;
