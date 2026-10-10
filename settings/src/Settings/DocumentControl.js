@@ -1,4 +1,4 @@
-import AsyncSelect from 'react-select/async';
+import { Combobox } from "../components/ui/Combobox";
 import { __ } from '@wordpress/i18n';
 import * as cmplz_api from "../utils/api";
 import {useState, useEffect, useRef, memo} from "@wordpress/element";
@@ -118,16 +118,13 @@ const DocumentControl = ({id, value, options, defaultValue, disabled}) => {
 			}
 			{ value==='custom' && pagesListLoaded &&
 				<>
-	                  <AsyncSelect
+	                  <Combobox
 						  label={ __("Link to custom page", "complianz-gdpr") }
                           defaultOptions={pages}
                           loadOptions={promisePages}
-						  menuPortalTarget={document.body}
-						  menuPosition={'fixed'}
 						  placeholder={__("Type at least two characters", "complianz-gdpr")}
 						  onChange={ ( fieldValue ) => onChangeSelectHandler(fieldValue) }
-						  value= { pageId }
-						  styles={{ menuPortal: baseStyles => ({ ...baseStyles, zIndex: 9999 }) }}
+						  value={ pageId }
                         />
 
 
