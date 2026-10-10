@@ -1,4 +1,4 @@
-import {TextareaControl,} from '@wordpress/components';
+import {Textarea} from '../../components/ui/Textarea';
 import {__} from '@wordpress/i18n';
 import * as cmplz_api from "../../utils/api";
 import {useState} from "@wordpress/element";
@@ -29,10 +29,18 @@ const Support = () => {
 	let disabled = sending || message.length===0;
 	return (
 		<>
-			<TextareaControl
+			<Textarea
+				rows={4}
+				// The Textarea primitive hard-codes overflow-hidden + resize-none (look-preserving the
+				// field textarea, which auto-grows via JS in its own consumer). This standalone support
+				// box has no auto-grow, so without this it would CLIP input past 4 rows with no way to
+				// review it, where WP's TextareaControl scrolled. Inline style reliably restores vertical
+				// scroll + resize — a class-append cannot override the primitive utility (ADR-013: no
+				// tailwind-merge).
+				style={ { overflowY: 'auto', resize: 'vertical' } }
 				disabled={sending}
 				placeholder={__("Type your question here","complianz-gdpr")}
-				onChange={ ( message ) => onChangeHandler(message) }
+				onChange={ ( e ) => onChangeHandler(e.target.value) }
 			/>
 			{responseMessage &&
 				<div className={`cmplz-support-alert cmplz-${response ? 'success' : 'warning'}`}>

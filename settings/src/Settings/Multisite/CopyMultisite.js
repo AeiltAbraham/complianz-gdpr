@@ -3,7 +3,7 @@ import {memo, useEffect, useState} from "@wordpress/element";;
 import Icon from "../../utils/Icon";
 import { __ } from '@wordpress/i18n';
 
-import {__experimentalConfirmDialog as ConfirmDialog} from "@wordpress/components";
+import AreYouSureModal from "../AreYouSureModal";
 import useFields from "../Fields/FieldsData";
 const CopyMultisite = () => {
 	const { progress, active, start, next, total, copySites } = UseCopyMultisiteData();
@@ -37,13 +37,13 @@ const CopyMultisite = () => {
 	return (
 		<>
 			<div className="cmplz-export-container">
-				<ConfirmDialog
+				<AreYouSureModal
 					isOpen={ isOpen }
 					onConfirm={ handleConfirm }
 					onCancel={ handleCancel }
 				>
 					{__( 'Are you sure? This will overwrite the settings in all your subsites with the Complianz settings of this site.', 'complianz-gdpr' )}
-				</ConfirmDialog>
+				</AreYouSureModal>
 				<button className="button button-default" onClick={() => setIsOpen( true )}>{__("Start","complianz-gdpr")}
 					{ active && <>&nbsp;{progress}%<Icon name = "loading" color = 'grey' /></>}
 				</button>

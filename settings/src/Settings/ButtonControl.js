@@ -4,7 +4,7 @@ import useFields from "./Fields/FieldsData";
 import useMenu from "../Menu/MenuData";
 import {useState} from "@wordpress/element";
 
-import { __experimentalConfirmDialog as ConfirmDialog } from '@wordpress/components';
+import AreYouSureModal from "./AreYouSureModal";
 
 const ButtonControl = ({label, field, disabled}) => {
 	const {fetchFieldsData, showSavedSettingsNotice} = useFields();
@@ -49,13 +49,13 @@ const ButtonControl = ({label, field, disabled}) => {
 						disabled={disabled}
 						onClick={(e)=>clickHandler(e)}
 				/>
-				<ConfirmDialog
+				<AreYouSureModal
 					isOpen={ isOpen }
 					onConfirm={ handleConfirm }
 					onCancel={ handleCancel }
 				>
 					{field.warn}
-				</ConfirmDialog>
+				</AreYouSureModal>
 			</>
 		)
 	} else {

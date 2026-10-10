@@ -2,9 +2,7 @@ import {memo, useState} from "@wordpress/element";
 import * as cmplz_api from '../../utils/api';
 import useFields from '../Fields/FieldsData';
 import useMenu from '../../Menu/MenuData';
-import {
-	__experimentalConfirmDialog as ConfirmDialog
-} from '@wordpress/components';
+import AreYouSureModal from "../AreYouSureModal";
 import {UseCookieScanData} from "../CookieScan/CookieScanData";
 import useProgress from "../../Dashboard/Progress/ProgressData";
 
@@ -38,12 +36,6 @@ const Button = ({
 			return;
 		}
 		if (type === 'action' && action) {
-			//wordpress <6.0 does not have the confirmdialog component
-			if ( !ConfirmDialog ) {
-				await executeAction();
-				return;
-			}
-
 			if (field && field.warn) {
 				setIsOpen( true );
 			} else {
@@ -83,17 +75,13 @@ const Button = ({
 	if ( type === 'action' ) {
 		return (
 			<>
-				{ConfirmDialog && <ConfirmDialog
+				<AreYouSureModal
 					isOpen={ isOpen }
 					onConfirm={ handleConfirm }
 					onCancel={ handleCancel }
 				>
 					{warningText}
-				</ConfirmDialog> }
-				{/*Commented out because the below still needs css */}
-				{/*<AreYouSureModal isOpen={isOpen} onConfirm={handleConfirm} onCancel={handleCancel} >*/}
-				{/*	{warningText}*/}
-				{/*</AreYouSureModal>*/}
+				</AreYouSureModal>
 
 				<button
 					className={classes}

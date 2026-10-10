@@ -46,7 +46,7 @@ jobs:
         # Guards FR-023: React/wp-* must stay external (provided by WordPress), never bundled.
         run: >-
           php -r '$f = glob("settings/build/index.*.asset.php"); $a = require $f[0];
-          $want = array("lodash","react","react-dom","react-jsx-runtime","wp-api-fetch","wp-components","wp-data","wp-element","wp-i18n");
+          $want = array("lodash","react","react-dom","react-jsx-runtime","wp-api-fetch","wp-data","wp-element","wp-i18n");
           exit($a["dependencies"] === $want ? 0 : 1);'
       - name: Token hygiene (ADR-004 / T-018)
         # Mirrors the two commit-gate token checks server-side. Each path is grepped only when it

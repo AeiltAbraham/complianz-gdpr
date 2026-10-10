@@ -3,7 +3,7 @@ import useFields from "../../Settings/Fields/FieldsData";
 import UseBannerData from "./CookieBannerData";
 import Icon from "../../utils/Icon";
 import {useState, useEffect, memo} from "@wordpress/element";
-import {__experimentalConfirmDialog as ConfirmDialog} from "@wordpress/components";
+import AreYouSureModal from "../AreYouSureModal";
 
 const ResetBannerButton = () => {
 	const { cssLoading, selectedBanner } = UseBannerData();
@@ -25,11 +25,7 @@ const ResetBannerButton = () => {
 	},[fields]);
 
 	const handleClick = async () => {
-		if (!ConfirmDialog) {
-			await handleConfirm();
-		} else {
-			setIsOpen( true );
-		}
+		setIsOpen( true );
 	}
 
 	const handleConfirm = async () => {
@@ -54,13 +50,13 @@ const ResetBannerButton = () => {
 
 	return (
 		<>
-			{ ConfirmDialog && <ConfirmDialog
+			<AreYouSureModal
 					isOpen={ isOpen }
 					onConfirm={ () => handleConfirm() }
 					onCancel={() => setIsOpen(false) }
 				>
 					{__('Are you sure you want to reset this banner to the default settings?', 'complianz-gdpr')}
-				</ConfirmDialog> }
+				</AreYouSureModal>
 			<button disabled={disabled || active}
 					onClick={() => handleClick(  )}
 					className="button button-default"

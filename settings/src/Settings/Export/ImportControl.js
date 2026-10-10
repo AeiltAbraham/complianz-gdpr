@@ -1,7 +1,5 @@
-import {
-	FormFileUpload,
-} from '@wordpress/components';
-import {useState, useEffect} from "@wordpress/element";
+import {Button} from "../../components/ui/Button";
+import {useState, useEffect, useRef} from "@wordpress/element";
 import useFields from "../../Settings/Fields/FieldsData";
 import Icon from "../../utils/Icon";
 import { __ } from '@wordpress/i18n';
@@ -14,6 +12,7 @@ function ImportControl() {
 	const {removeHelpNotice, addHelpNotice, fetchFieldsData, showSavedSettingsNotice} = useFields();
 	const {selectedSubMenuItem } = useMenu();
 
+	const fileInputRef = useRef(null);
 	const [file, setFile] = useState(false)
 	const [disabled, setDisabled] = useState(true);
 	const [uploading, setUploading] = useState(false);
@@ -53,13 +52,25 @@ function ImportControl() {
 		<div className="cmplz-import-form">
 			<div className="cmplz-import-button-container">
 			{file && file.name}
-			<FormFileUpload
-				accept=""
-				icon={ <Icon name="upload" color = 'black' /> } //formfile upload overrides size prop. We override that in the icon component
-				onChange={ ( event ) => setFile(event.currentTarget.files[0]) }
+			<Button
+				variant="secondary"
+				className="tw-gap-[8px]"
+				onClick={ () => fileInputRef.current && fileInputRef.current.click() }
 			>
+				<Icon name="upload" color='black' />
 				{__("Select file","complianz-gdpr")}
-			</FormFileUpload>
+			</Button>
+			{/* Visually hidden native input: keeps the file picker, accept filter and change
+			    handling; the Button above is the labelled, operable trigger. */}
+			<input
+				ref={fileInputRef}
+				type="file"
+				accept=""
+				className="tw-sr-only"
+				tabIndex={-1}
+				aria-label={__("Select file","complianz-gdpr")}
+				onChange={ ( event ) => setFile(event.currentTarget.files[0]) }
+			/>
 			<button disabled={disabled} className="button button-default"  onClick={(e) => onClickHandler(e)}>
 				{__("Import","complianz-gdpr")}
 				{uploading && <Icon name = "loading" color = 'grey' />}

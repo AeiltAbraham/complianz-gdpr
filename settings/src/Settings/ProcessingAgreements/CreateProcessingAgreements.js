@@ -1,7 +1,7 @@
 import useProcessingAgreementsData from "./ProcessingAgreementsData";
-import {useState, useEffect} from "@wordpress/element";
+import {useState, useEffect, useRef} from "@wordpress/element";
 import { __ } from '@wordpress/i18n';
-import {FormFileUpload} from "@wordpress/components";
+import {Button} from "../../components/ui/Button";
 import Field from "../Fields/Field";
 import useFields from "../Fields/FieldsData";
 import Icon from "../../utils/Icon";
@@ -17,6 +17,7 @@ const CreateProcessingAgreements = () => {
 	const {allRequiredFieldsCompleted, fetchAllFieldsCompleted, fieldsLoaded, addHelpNotice, showSavedSettingsNotice, removeHelpNotice} = useFields();
 
 	let scrollAnchor = React.createRef();
+	const fileInputRef = useRef(null);
 	const [file, setFile] = useState(false)
 	const [uploading, setUploading] = useState(false);
 	const [uploadDisabled, setUploadDisabled] = useState(true);
@@ -172,13 +173,25 @@ const CreateProcessingAgreements = () => {
 							</>}
 							{!editDocumentId && <>
 								{file && file.name}
-								<FormFileUpload
-									accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-									icon={<Icon name='upload' color='black' />}//formfile upload overrides size prop. We override that in the icon component
-									onChange={ ( event ) => setFile(event.currentTarget.files[0]) }
+								<Button
+									variant="secondary"
+									className="tw-gap-[8px]"
+									onClick={ () => fileInputRef.current && fileInputRef.current.click() }
 								>
+									<Icon name='upload' color='black' />
 									{__("Select file","complianz-gdpr")}
-								</FormFileUpload>
+								</Button>
+								{/* Visually hidden native input: keeps the file picker, accept filter and
+								    change handling; the Button above is the labelled, operable trigger. */}
+								<input
+									ref={fileInputRef}
+									type="file"
+									accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+									className="tw-sr-only"
+									tabIndex={-1}
+									aria-label={__("Select file","complianz-gdpr")}
+									onChange={ ( event ) => setFile(event.currentTarget.files[0]) }
+								/>
 								<button disabled={uploadDisabled} className="button button-default"  onClick={(e) => onUploadHandler(e)}>
 									{__("Upload","complianz-gdpr")}
 									{uploading && <Icon name = "loading" color = 'grey' />}

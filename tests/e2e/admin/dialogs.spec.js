@@ -9,12 +9,12 @@
  * file is written to the dialog's ROLE, accessible NAME and KEYBOARD behaviour, never to MUI/WP-core
  * markup, so it survives the swap of the underlying primitive.
  *
- * What is actually mounted TODAY:
- *   - The live confirm/"are you sure" dialog is WordPress `__experimentalConfirmDialog` (a real ARIA
- *     `role="dialog"` with focus trap + Escape + focus-return), reachable via Tools > Data > Reset
- *     (the `reset_settings` field's `warn`). `Modal.js`/`AreYouSureModal.js` are not independently
- *     mounted in today's free UI (AreYouSureModal is commented out in Inputs/Button.js); this confirm
- *     dialog is exactly what they become after T-024/T-026, so it is the DB-09 subject here.
+ * What is actually mounted:
+ *   - The live confirm/"are you sure" dialog, reachable via Tools > Data > Reset (the `reset_settings`
+ *     field's `warn`). Before T-026 it was WordPress `__experimentalConfirmDialog` (ARIA `role="dialog"`);
+ *     as of T-026 it is `AreYouSureModal` on the Radix `AlertDialog` primitive (ARIA `role="alertdialog"`),
+ *     both with focus trap + Escape + focus-return. The specs locate it by a `dialog`-or-`alertdialog`
+ *     union (Playwright's role match is exact), so they hold across that swap unchanged — DB-09 subject.
  *   - The onboarding modal (Onboarding/NewOnboarding.js), shown when the URL carries `websitescan`.
  *     It is a plain (non-ARIA) modal with a labelled Close control and step navigation; it is NOT part
  *     of the Phase-2 Radix migration, so it is characterised for open / step / close as it behaves
@@ -35,7 +35,10 @@ async function openConfirmDialog( page ) {
 	const trigger = page.getByTestId( 'field-reset_settings' ).getByRole( 'button', { name: 'Reset', exact: true } );
 	await expect( trigger ).toBeVisible();
 	await trigger.click();
-	const dialog = page.getByRole( 'dialog' );
+	// Union locator: WordPress `__experimentalConfirmDialog` renders `role="dialog"`; the ADR-002
+	// AlertDialog migration (T-026) renders `role="alertdialog"`. Playwright's role match is exact (no
+	// ARIA superclass expansion), so match EITHER to survive the mixed-migration window unchanged.
+	const dialog = page.getByRole( 'dialog' ).or( page.getByRole( 'alertdialog' ) );
 	await expect( dialog ).toBeVisible();
 	return { trigger, dialog };
 }
@@ -59,7 +62,7 @@ test( 'confirm dialog opens with its message and confirm/cancel controls', async
 	await expect( cancelButton( dialog ) ).toBeVisible();
 	// Focus is moved into the dialog while it is open (focus trap).
 	const focusInDialog = await page.evaluate( () => {
-		const d = document.querySelector( '[role=dialog]' );
+		const d = document.querySelector( '[role=dialog],[role=alertdialog]' );
 		return !! d && d.contains( document.activeElement );
 	} );
 	expect( focusInDialog ).toBe( true );
@@ -68,14 +71,14 @@ test( 'confirm dialog opens with its message and confirm/cancel controls', async
 test( 'Cancel closes the dialog and returns focus to the trigger', async ( { page } ) => {
 	const { dialog } = await openConfirmDialog( page );
 	await cancelButton( dialog ).click();
-	await expect( page.getByRole( 'dialog' ) ).toHaveCount( 0 );
+	await expect( page.getByRole( 'dialog' ).or( page.getByRole( 'alertdialog' ) ) ).toHaveCount( 0 );
 	expect( await triggerIsFocused( page ) ).toBe( 'Reset' );
 } );
 
 test( 'Escape closes the dialog and returns focus to the trigger', async ( { page } ) => {
 	const { dialog } = await openConfirmDialog( page );
 	await page.keyboard.press( 'Escape' );
-	await expect( page.getByRole( 'dialog' ) ).toHaveCount( 0 );
+	await expect( page.getByRole( 'dialog' ).or( page.getByRole( 'alertdialog' ) ) ).toHaveCount( 0 );
 	expect( await triggerIsFocused( page ) ).toBe( 'Reset' );
 } );
 
@@ -96,7 +99,7 @@ test( 'Confirm runs the action and closes the dialog', async ( { page } ) => {
 	const { dialog } = await openConfirmDialog( page );
 	await confirmButton( dialog ).click();
 	// Confirming dismisses the dialog (the action then runs against the stub).
-	await expect( page.getByRole( 'dialog' ) ).toHaveCount( 0 );
+	await expect( page.getByRole( 'dialog' ).or( page.getByRole( 'alertdialog' ) ) ).toHaveCount( 0 );
 } );
 
 // --------------------------------------------------------------------------------------------------
