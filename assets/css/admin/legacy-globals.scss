@@ -329,3 +329,33 @@ a.button, button.button, input.button {
 		}
 	}
 }
+
+// Relocated from the emptied layout.scss (ADR-005, T-039 — the Header.js shell migrated to `tw-`
+// utilities + `data-cmplz-ui` and dropped these legacy class hooks). The rules the migrated Header no
+// longer needs are the ones the still-legacy error/lock shell keeps using:
+// Placeholder/PagePlaceholder.js (migrated at T-041) renders `.cmplz-header-container` >
+// `.cmplz-settings-header` > `img.cmplz-header-logo` (logo only, no nav), so those three rules RELOCATE
+// here instead of being deleted — relocate, not orphan. The header-left / header-menu / header-right /
+// nav-link / active rules had NO other consumer (grep) and were reproduced in Header.js, so they are
+// gone. Wrapped in `:where(.cmplz)` (0 specificity) like the grid block above, so the relocation keeps
+// the exact cascade it had in layout.scss rather than its former source position. Delete in Phase 5.
+:where(.cmplz) {
+	.cmplz-header-container {
+		background: var(--cmplz-legacy-background-block-color);
+	}
+
+	.cmplz-settings-header {
+		max-width: clamp(300px, calc(100% - var(--cmplz-legacy-grid-gap) * 2), 1600px);
+		margin: 0 auto;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		min-height: 70px;
+		box-sizing: border-box;
+
+		img {
+			margin: auto 0;
+			height: 26px;
+		}
+	}
+}
