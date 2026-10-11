@@ -4,6 +4,63 @@ import useMenu from './MenuData';
 import useFields from '../Settings/Fields/FieldsData';
 import Icon from '../utils/Icon';
 import {UseDocumentsData} from "../Settings/CreateDocuments/DocumentsData";
+import { clsx } from "../components/ui/cx";
+
+// Redesigned sidebar menu item (T-040, DB-07, C-3, ADR-005), rebuilt on `tw-` utilities + the semantic
+// `--cmplz-*` tokens, matching docs/specs/001-settings-ui-redesign/design/shell-preview.html (the
+// per-section sub-menu with its step icons). The active rules in assets/css/admin/modules/wizard/menu.scss
+// (the shell's only SCSS consumer — grep-verified) are reproduced here and the file is deleted.
+//
+// The marker (`data-cmplz-ui`) sits on the Menu ROOT (Menu.js); every item below is a migrated leaf
+// styled with `tw-` utilities, which beat base.css B1-B5 ((1,1,0) via the `important: :is(#complianz,
+// #complianz-portal)` config > the reset's (1,0,0)). The one exception is the step `<Icon>`: its SVG
+// carries only a `height` presentation attribute (no width), so base B5 (`height:auto`) would balloon it
+// (learnings 2026-10-11). `[&_svg]:` arbitrary variants pin an explicit 13px box that beats B5.
+//
+// C-3 — the navigation MODEL is unchanged: same hash routing and anchor formats (`getMenuAttributes`
+// still emits `#<main>/<id>`), the same `selectedSubMenuItem`/active test (`isSelectedMenuItem`), the
+// same `aria-current="step"` progress hook (wizard.spec reads it), the step-icon progress logic
+// (`getIconProps`), and the legacy class hooks (`cmplz-wizard-menu-item`, `cmplz-main`/`cmplz-sub`,
+// `cmplz-active`, `cmplz-featured`, `cmplz-premium`, `cmplz-submenu-items`, `cmplz-menu-item-featured-pill`)
+// are all kept. Restyle only. Logical CSS only (ADR-007: `ps`/`pe`/`ms` on the inline axis; `py`/`my`/`mt`
+// are block-axis and RTL-safe). `#e9f5ff` is the preview's `--accent-wash` tint (no wash token exists).
+const ITEM_BASE = clsx(
+	"cmplz-wizard-menu-item",
+	"tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs)] tw-no-underline",
+	"tw-rounded-[var(--cmplz-radius-s)]",
+	"tw-transition-colors tw-duration-[var(--cmplz-duration)] tw-ease-[var(--cmplz-ease)]"
+);
+const MAIN_BASE = clsx(
+	"cmplz-main",
+	"tw-px-[var(--cmplz-space-s)] tw-py-[var(--cmplz-space-xs)]",
+	"tw-text-[length:var(--cmplz-font-size)] tw-font-bold"
+);
+const MAIN_INACTIVE = "tw-text-[color:var(--cmplz-text)]";
+const MAIN_ACTIVE = clsx(
+	"cmplz-active",
+	"tw-text-[color:var(--cmplz-accent-strong)] tw-bg-[#e9f5ff] tw-shadow-[var(--cmplz-shadow-sm)]"
+);
+const SUB_BASE = clsx(
+	"cmplz-sub",
+	"tw-py-[6px] tw-ps-[var(--cmplz-space-m)] tw-pe-[var(--cmplz-space-s)]",
+	"tw-text-[length:var(--cmplz-font-size-sm)]",
+	"[&_svg]:tw-h-[13px] [&_svg]:tw-w-[13px] [&_svg]:tw-shrink-0"
+);
+const SUB_INACTIVE = "tw-text-[color:var(--cmplz-text-muted)]";
+const SUB_ACTIVE = clsx(
+	"cmplz-active",
+	"tw-text-[color:var(--cmplz-accent-strong)] tw-font-semibold"
+);
+const ITEM_HOVER = "hover:tw-bg-[color:var(--cmplz-surface)]";
+const SUBMENU_ITEMS = clsx(
+	"cmplz-submenu-items",
+	"tw-flex tw-flex-col tw-gap-[1px] tw-my-[var(--cmplz-space-xs)]"
+);
+const FEATURED_PILL = clsx(
+	"cmplz-menu-item-featured-pill",
+	"tw-ms-auto tw-bg-[color:var(--cmplz-success)] tw-text-[color:var(--cmplz-text-on-accent)]",
+	"tw-py-[1px] tw-px-[8px] tw-rounded-[999px] tw-text-[length:var(--cmplz-font-size-xs)] tw-font-bold"
+);
 
 const useMenuItem = (menuItem, isMain) => {
 	const {hasMissingPages, fetchDocumentsData, documentsDataLoaded, documentsDataLoading} = UseDocumentsData();
@@ -57,7 +114,6 @@ const MenuItem = ({ index, menuItem, isMain }) => {
 		selectedMainMenuItem,
 	} = useMenuItem(menuItem, isMain);
 	const menuIsSelected = isSelectedMenuItem(selectedSubMenuItem, menuItem);
-	const menuClass = getMenuClass(menuItem, isMain, menuIsSelected);
 	const { icon, iconColor } = getIconProps(menuIsSelected, completed);
 
 	const attributes = getMenuAttributes(
@@ -65,23 +121,24 @@ const MenuItem = ({ index, menuItem, isMain }) => {
 		selectedMainMenuItem,
 		selectedSubMenuItem,
 	);
+	const menuClass = getMenuClass(menuItem, isMain, menuIsSelected, attributes.href);
 
 	if (menuItem.visible
 		//&& menuHasFields
 		) {
 		return (
 			<>
-				<a {...attributes} aria-current={menuItem.id === selectedSubMenuItem ? 'step' : undefined} className={`cmplz-wizard-menu-item ${menuClass}`}>
-					{!isMain && <Icon name={icon} size={11} color={iconColor} />}
+				<a {...attributes} aria-current={menuItem.id === selectedSubMenuItem ? 'step' : undefined} className={menuClass}>
+					{!isMain && <Icon name={icon} size={13} color={iconColor} />}
 					{menuItem.title}
 					{menuItem.featured && (
-						<span className="cmplz-menu-item-featured-pill">
+						<span className={FEATURED_PILL}>
               {__('New', 'complianz-gdpr')}
             </span>
 					)}
 				</a>
 				{menuItem.menu_items && menuIsSelected && (
-					<div className="cmplz-submenu-items">
+					<div className={SUBMENU_ITEMS}>
 						{menuItem.menu_items.map(
 							(subMenuItem, i) =>
 								subMenuItem.visible && (
@@ -131,23 +188,27 @@ const isSelectedMenuItem = (selectedSubMenuItem, menuItem) => {
 };
 
 /**
- * Utility function to get the menu class
+ * Utility function to get the menu item class: the `tw-` utility set for the item's variant
+ * (main/sub × active/inactive, plus a hover tint only when the item is a real link) composed with
+ * the preserved legacy class hooks (C-3). `cmplz-active`/`cmplz-main`/`cmplz-sub` are carried by the
+ * variant constants; `cmplz-featured`/`cmplz-premium` are appended as behaviour-free DOM hooks.
  * @param menuItem
  * @param isMain
  * @param menuIsSelected
+ * @param href the resolved link target (undefined when the item is the selected parent — no link)
  * @returns {string}
  */
-const getMenuClass = (menuItem, isMain, menuIsSelected) => {
-	let menuClass = '';
-
-	if (menuIsSelected) {
-		menuClass += ' cmplz-active';
-	}
-
-	menuClass += isMain ? ' cmplz-main' : ' cmplz-sub';
-	menuClass += menuItem.featured ? ' cmplz-featured' : '';
-	menuClass += menuItem.premium && !cmplz_settings.is_premium ? ' cmplz-premium' : '';
-	return menuClass;
+const getMenuClass = (menuItem, isMain, menuIsSelected, href) => {
+	return clsx(
+		ITEM_BASE,
+		isMain ? MAIN_BASE : SUB_BASE,
+		isMain
+			? (menuIsSelected ? MAIN_ACTIVE : MAIN_INACTIVE)
+			: (menuIsSelected ? SUB_ACTIVE : SUB_INACTIVE),
+		href && ITEM_HOVER,
+		menuItem.featured && 'cmplz-featured',
+		menuItem.premium && !cmplz_settings.is_premium && 'cmplz-premium'
+	);
 };
 
 /**
