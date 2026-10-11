@@ -680,7 +680,8 @@ acceptance:
 
 ## T-036 Apply approved C-2 token values to tokens.css (+ new families); drop Icon.js legacy tokens
 mode: agentic
-status: ready (C-2 + shell-preview signed off 2026-10-11); runs in dependency order
+status: done (2026-10-11)
+outcome: 21 approved C-2 values applied to tokens.css (brand hues kept; slate neutral ramp; text #0f172a / muted #475569; field-border #94a3b8; success #1f7a34; warning #eab308; 4px spacing 8/12/16/24; radius-field 6) on the island selector; new DB-08 families added on the same island selector — shadow (sm/base/lg), z-index (sticky/overlay/dropdown/toast/portal), motion (fast/base/slow/ease), type-scale (xs/sm/lg/xl + line-height), plus a prefers-reduced-motion block zeroing the durations (island-scoped, not :root). Breakpoints set in tailwind.config.js theme.screens (sm768/md1080/lg1280/xl1440 — no responsive tw- variants exist yet; the grid breakpoint is an independent SCSS var, safe). Icon.js's 8 --cmplz-legacy-* color refs swapped to semantic tokens (0 legacy left in Icon.js). No forbidden token names; tokens stay on the islands (not #complianz-app-root). Intended look change (re-baselined at T-043); functional fields.spec 13/13. Lean 2-dim adversarial review (fidelity/no-breakage + a11y-contrast of the approved palette): 0 defects. build + physical-utilities + token-hygiene green; compiled output restored (ADR-006).
 depends: T-034
 files: settings/src/styles/tokens.css, settings/src/utils/Icon.js, settings/src/styles/tailwind.config.js (only if new families need theme wiring)
 proof: npm run build:all && node settings/scripts/check-physical-utilities.js && sh -c "grep -REn -- '--cmplz-legacy-|--rsp-' settings/src/components settings/src/styles settings/src/utils/Icon.js; test \$? -ne 0"

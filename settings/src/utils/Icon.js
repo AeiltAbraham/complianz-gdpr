@@ -7,14 +7,14 @@ import {
 const IconHtml = React.forwardRef(function IconHtml(props, ref){
 	const {name, color, size} = props;
 	const iconColors = {
-		'black': 'var(--cmplz-legacy-black)',
-		'green': 'var(--cmplz-legacy-green)',
-		'blue': 'var(--cmplz-legacy-blue)',
-		'dark-blue': 'var(--cmplz-legacy-dark-blue)',
-		'yellow': 'var(--cmplz-legacy-yellow)',
-		'orange': 'var(--cmplz-legacy-orange)',
-		'red': 'var(--cmplz-legacy-red)',
-		'grey': 'var(--cmplz-legacy-grey-400)',
+		'black': 'var(--cmplz-text)',
+		'green': 'var(--cmplz-success)',
+		'blue': 'var(--cmplz-accent)',
+		'dark-blue': 'var(--cmplz-accent-strong)',
+		'yellow': 'var(--cmplz-warning)',
+		'orange': 'var(--cmplz-warning)',
+		'red': 'var(--cmplz-danger)',
+		'grey': 'var(--cmplz-text-muted)',
 	};
 	let renderedIcon = '';
 

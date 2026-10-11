@@ -1,12 +1,13 @@
 /* Semantic design tokens for the settings app.
  *
- * LOOK-PRESERVING placeholders: each value is the CONCRETE current-look value (what the matching
- * legacy token resolves to today), copied in literally so this layer is self-contained and the
- * rendered look is unchanged. We deliberately do NOT reference the legacy custom properties here:
- * the ADR-004/T-018 gate forbids legacy token names in the redesign's own code (settings/src/**),
- * and a semantic layer that depended on them would break at Phase 5 when the legacy stylesheet is
- * removed. The C-2 token sign-off replaces these current-look values with the concrete redesign
- * values before Phase 3.
+ * These are the APPROVED C-2 redesign values (gate G3, signed off 2026-10-11 — see
+ * docs/specs/001-settings-ui-redesign/design/shell.md). They replace the earlier look-preserving
+ * placeholders: brand hues kept (bright blue #009fff, dark blue #1e73be, red #d7263d), neutrals
+ * modernized onto one cool-grey (slate) ramp, a 4px spacing grid, a tidied radius step, and new
+ * shadow / layering / motion / type-scale families (DB-08). We deliberately do NOT reference any
+ * legacy custom property here: the ADR-004/T-018 gate forbids legacy token names in the redesign's
+ * own code (settings/src/**), and a semantic layer that depended on them would break at Phase 5 when
+ * the legacy stylesheet is removed. No reserved frontend-banner token names (ADR-004/008).
  *
  * Declared on every scoped UI island (any `[data-cmplz-ui]` root under `#complianz`/
  * `#complianz-portal`), never on :root (DB-08 / ADR-001). This matches the scoped BASE in base.css,
@@ -15,29 +16,69 @@
  * so the tokens must be available on those islands — keying them only to `#complianz-app-root` left
  * every main-app primitive consumer (inputs, textarea, the combobox control) with undefined vars and a
  * token-less render. CSS custom properties inherit, so declaring on the island root reaches all its
- * descendants; the portal host (`#complianz-portal-root[data-cmplz-ui]`) is one such island. No
- * reserved frontend-banner token names (ADR-004/008).
+ * descendants; the portal host (`#complianz-portal-root[data-cmplz-ui]`) is one such island.
  */
 :is(#complianz, #complianz-portal) :where([data-cmplz-ui]) {
-  --cmplz-surface: #fff;
-  --cmplz-surface-sunken: #f0f0f1;
-  --cmplz-field-surface: #fff;
-  --cmplz-text: rgba(15, 23, 42, 0.95);
-  --cmplz-text-muted: rgba(15, 23, 42, 0.85);
-  --cmplz-text-on-accent: rgba(255, 255, 255, 0.95);
-  --cmplz-border: #dfdfdf;
-  --cmplz-field-border: #c6c6c6;
+  /* Surfaces & neutrals */
+  --cmplz-surface: #ffffff;
+  --cmplz-surface-sunken: #f1f5f9;
+  --cmplz-field-surface: #ffffff;
+  --cmplz-text: #0f172a;
+  --cmplz-text-muted: #475569;
+  --cmplz-text-on-accent: #ffffff;
+  --cmplz-border: #e2e8f0;
+  --cmplz-field-border: #94a3b8;
+
+  /* Brand & status */
   --cmplz-accent: #009fff;
   --cmplz-accent-strong: #1e73be;
-  --cmplz-success: #2e8a37;
-  --cmplz-warning: #f4bf3e;
+  --cmplz-success: #1f7a34;
+  --cmplz-warning: #eab308;
   --cmplz-danger: #d7263d;
+
+  /* Radius */
   --cmplz-radius: 12px;
   --cmplz-radius-s: 8px;
-  --cmplz-radius-field: 5px;
-  --cmplz-space-xs: 10px;
-  --cmplz-space-s: 15px;
-  --cmplz-space-m: 20px;
-  --cmplz-space-l: 25px;
+  --cmplz-radius-field: 6px;
+
+  /* Spacing — 4px grid */
+  --cmplz-space-xs: 8px;
+  --cmplz-space-s: 12px;
+  --cmplz-space-m: 16px;
+  --cmplz-space-l: 24px;
+
+  /* Typography (base; the scale below adds the heading/caption steps) */
   --cmplz-font-size: 0.875rem;
+  --cmplz-font-size-xs: 0.6875rem;
+  --cmplz-font-size-sm: 0.8125rem;
+  --cmplz-font-size-lg: 1rem;
+  --cmplz-font-size-xl: 1.25rem;
+  --cmplz-line-height: 1.5;
+
+  /* Shadow */
+  --cmplz-shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.06);
+  --cmplz-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.10), 0 1px 2px -1px rgba(15, 23, 42, 0.06);
+  --cmplz-shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.18), 0 8px 10px -6px rgba(15, 23, 42, 0.10);
+
+  /* Layering / z-index (ADR-014: toast 9999, portal host 100001 are mirrored here for CSS) */
+  --cmplz-z-sticky: 20;
+  --cmplz-z-overlay: 30;
+  --cmplz-z-dropdown: 1000;
+  --cmplz-z-toast: 9999;
+  --cmplz-z-portal: 100001;
+
+  /* Motion */
+  --cmplz-duration-fast: 120ms;
+  --cmplz-duration: 200ms;
+  --cmplz-duration-slow: 300ms;
+  --cmplz-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* DB-12 reduced-motion: zero the motion durations on the same scoped islands (not :root). */
+@media (prefers-reduced-motion: reduce) {
+  :is(#complianz, #complianz-portal) :where([data-cmplz-ui]) {
+    --cmplz-duration-fast: 0ms;
+    --cmplz-duration: 0ms;
+    --cmplz-duration-slow: 0ms;
+  }
 }
