@@ -638,22 +638,146 @@ outcome: Phase-2 EXIT. The last 3 field inputs migrated and the `assets/css/admi
 
 ---
 
-## Not yet tasked — re-plan after gate G3 (Phase 3), per-section sign-off (Phase 4), CP4 (Phase 5)
+# Phase 3 — shell (Stage G). Gate G3 RATIFIED 2026-10-10 (re-plan via the understand→synthesize
+# workflow). Decision: B2/marker reconciliation = OPTION A — re-scope base.css B2 (root typography)
+# to the shell `[data-cmplz-ui]` islands (same island-model fix as tokens.css), keeping the Phase-5
+# marker move intact; do NOT introduce `#complianz-app-root` early. Reserved sign-offs still open:
+# C-2 token VALUES and the shell preview (produced by T-034/T-035, recorded in design/shell.md).
+# Numbering starts at T-034 (T-031..T-033 are already assigned above). Strictly serial (shared
+# wp-env/baseline). SCSS correction vs the old prose: only header.scss + notices.scss (empty) and
+# wizard/menu.scss (shell-only) are CLEAN deletes; layout.scss `.cmplz-grid-item*`, wizard/panel.scss,
+# placeholder.scss loading rules have Phase-4 consumers → RELOCATE to legacy-globals.scss or defer.
+
+## T-034 C-2 token-set proposal + shell design note (gate G3 sign-off artifact)
+mode: agentic
+status: done (2026-10-11) — C-2 token values APPROVED as proposed (design/shell.md); 21 tokens revalued (brand hues kept, slate neutral ramp, 4px spacing, radius 6/8/12), DB-08 families added (shadow/z-index/motion/type-scale; breakpoints → tailwind.config.screens), Icon.js 8 legacy→semantic map, B2 = Option A
+depends: CP2
+files: docs/specs/001-settings-ui-redesign/design/shell.md (NEW — the sign-off record), docs/specs/001-settings-ui-redesign/design/token-preview.html (NEW)
+proof: test -f docs/specs/001-settings-ui-redesign/design/shell.md && test -f docs/specs/001-settings-ui-redesign/design/token-preview.html && sh -c "grep -REn -- '--cmplz-legacy-|--rsp-|--cmplz-manage-consent' docs/specs/001-settings-ui-redesign/design/; test \$? -ne 0"
+serves: C-2, DB-07, DB-08; gate G3
+acceptance:
+- design/shell.md created as the record for the C-2 token + shell-preview sign-offs
+- a concrete redesign VALUE + one-line rationale for each of the 21 semantic --cmplz-* tokens in tokens.css (derived from current UI + modern admin conventions, clarify Q-02)
+- explicit decision on growing the vocabulary with the DB-08 families the shell needs and tokens.css lacks (shadow, layering/z-index, motion/transition, breakpoint) — any new names listed
+- semantic equivalents proposed for Icon.js's 8 --cmplz-legacy-* black/orange refs so T-036 can drop them
+- in-repo token-preview.html rendering the proposed values (swatches + scale) for review
+- records B2/marker = OPTION A (island model) per the ratified gate decision; no --cmplz-legacy-/--rsp-/reserved frontend-banner --cmplz- names in the proposal
+- PAUSE after this + T-035: C-2 token values are a maintainer sign-off; no migration (T-036+) proceeds until approved in shell.md
+
+## T-035 Shell HTML preview for maintainer sign-off (gate G3 sign-off artifact)
+mode: agentic
+status: done (2026-10-11) — shell preview APPROVED (design/shell-preview.html)
+depends: T-034
+files: docs/specs/001-settings-ui-redesign/design/shell-preview.html (NEW), docs/specs/001-settings-ui-redesign/design/shell.md (append preview notes)
+proof: test -f docs/specs/001-settings-ui-redesign/design/shell-preview.html
+serves: C-2, DB-07, C-3; gate G3
+acceptance:
+- static in-repo HTML preview of the redesigned shell FRAME: the Page grid, Header, Menu + per-section sub-menu, panels, Skeleton loading states, notices — rendered with the proposed C-2 tokens
+- honors C-3: top-level section tabs + per-section sub-menu, visual redesign only (navigation model unchanged)
+- uses only logical utilities + semantic tokens (no physical left/right family; no legacy token names)
+- becomes the DB-07 shell review reference; approval recorded in design/shell.md
+- PAUSE for the shell-preview sign-off (with C-2) before any migration
+
+## T-036 Apply approved C-2 token values to tokens.css (+ new families); drop Icon.js legacy tokens
+mode: agentic
+status: ready (C-2 + shell-preview signed off 2026-10-11); runs in dependency order
+depends: T-034
+files: settings/src/styles/tokens.css, settings/src/utils/Icon.js, settings/src/styles/tailwind.config.js (only if new families need theme wiring)
+proof: npm run build:all && node settings/scripts/check-physical-utilities.js && sh -c "grep -REn -- '--cmplz-legacy-|--rsp-' settings/src/components settings/src/styles settings/src/utils/Icon.js; test \$? -ne 0"
+serves: C-2, DB-08, ADR-004
+acceptance:
+- the 21 placeholder values in tokens.css replaced with the approved C-2 redesign values; any approved new families (shadow/z-index/motion/breakpoint) added on the same scoped island selector
+- Icon.js's 8 --cmplz-legacy-* refs removed using the approved semantic equivalents
+- tokens.css still declares no --cmplz-legacy-/--rsp- and no reserved frontend-banner --cmplz- names; build + physical-utility + token-hygiene green
+
+## T-037 Create settings/src/styles/page.css (unscoped) + re-scope base.css B2 to the shell islands
+mode: agentic
+status: ready (C-2 + shell-preview signed off 2026-10-11); runs in dependency order
+depends: T-036
+files: settings/src/styles/page.css (NEW), settings/src/styles/base.css, settings/src/styles/tailwind.css (import wiring)
+proof: npm run build:all && npx --prefix settings stylelint settings/src/styles/page.css && node settings/scripts/check-physical-utilities.js
+serves: ADR-001, ADR-014, DB-03
+acceptance:
+- page.css holds exactly the page-level rules re-expressed logically (other-plugins notice hiding; mount-point offset as margin-inline-start); it is the ONLY unscoped stylesheet (ADR-001), targets #complianz, imported last
+- base.css B2 root typography RE-SCOPED to the shell `[data-cmplz-ui]` islands (OPTION A) — NOT keyed to the not-yet-rendered #complianz-app-root; no early marker move (ADR-001/014 unchanged)
+- build + stylelint + physical-utility green
+
+## T-038 Migrate the Page.js grid shell; relocate the .cmplz-grid-item* family to legacy-globals
+mode: agentic
+status: ready (C-2 + shell-preview signed off 2026-10-11); runs in dependency order
+depends: T-037
+files: settings/src/Page.js, assets/css/admin/layout.scss, assets/css/admin/legacy-globals.scss
+proof: npm run build:all && node settings/scripts/check-physical-utilities.js && npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/menu.spec.js tests/e2e/admin/fields.spec.js
+serves: DB-07, ADR-005
+acceptance:
+- rebuilds the .cmplz-wrapper / .cmplz-content-area / .cmplz-grid frame on tokens + utilities + data-cmplz-ui
+- removes the shell grid rules from layout.scss; RELOCATES the whole .cmplz-grid-item* family (Phase-4 consumers) to legacy-globals.scss, not delete
+- shell renders on every section unchanged in structure; functional specs green
+
+## T-039 Migrate Header.js; delete the empty header.scss and layout.scss (now empty)
+mode: agentic
+status: ready (C-2 + shell-preview signed off 2026-10-11); runs in dependency order
+depends: T-038
+files: settings/src/Header.js, assets/css/admin/layout.scss (DELETE if emptied), assets/css/admin/modules/header.scss (DELETE — empty), assets/css/admin.scss (drop imports)
+proof: npm run build:all && node settings/scripts/check-physical-utilities.js && npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/fields.spec.js
+serves: DB-07, ADR-005
+acceptance:
+- rebuilds Header.js on tokens/utilities + data-cmplz-ui; removes the header rules from layout.scss
+- deletes modules/header.scss (empty no-op) + layout.scss once empty; every dropped @import matches a deleted file; functional specs green
+
+## T-040 Restyle Menu/* on tokens + utilities (navigation model unchanged, C-3); delete wizard/menu.scss
+mode: agentic
+status: ready (C-2 + shell-preview signed off 2026-10-11); runs in dependency order
+depends: T-039
+files: settings/src/Menu/Menu.js, settings/src/Menu/MenuItem.js, assets/css/admin/modules/wizard/menu.scss (DELETE), assets/css/admin.scss (drop import)
+proof: npm run build:all && node settings/scripts/check-physical-utilities.js && npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/menu.spec.js
+serves: DB-07, C-3, ADR-005
+acceptance:
+- rebuilds Menu/MenuItem markup with tw- utilities on data-cmplz-ui islands; C-3 preserved EXACTLY (hash routing, the #main/id + #section anchor formats, deep links, aria-current, the tour DOM)
+- deletes wizard/menu.scss (shell-only consumers — the clean module delete); menu.spec passes unmodified
+
+## T-041 Rebuild Placeholder/* on the Skeleton primitive (preserve error/lock states); relocate placeholder.scss loading rules
+mode: agentic
+status: ready (C-2 + shell-preview signed off 2026-10-11); runs in dependency order
+depends: T-040
+files: settings/src/Placeholder/*.js, assets/css/admin/modules/placeholder.scss (RELOCATE non-shell rules, then delete if emptied), assets/css/admin/legacy-globals.scss, assets/css/admin.scss
+proof: npm run build:all && node settings/scripts/check-physical-utilities.js && npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/fields.spec.js
+serves: DB-07, DB-16, ADR-005
+acceptance:
+- all Placeholder/* render on the T-025 Skeleton primitive; PagePlaceholder PRESERVES the error branch and the locked-by-another-user state (behavioral, not just visual)
+- RELOCATES the non-shell loading/preview rules (.cmplz-loading*/preview) to legacy-globals (Phase-4 consumers), deletes placeholder.scss only if emptied; functional specs green
+
+## T-042 Migrate shell notices; resolve wizard/panel.scss disposition (relocate/defer); delete empty notices.scss
+mode: agentic
+status: ready (C-2 + shell-preview signed off 2026-10-11); runs in dependency order
+depends: T-041
+files: settings/src/ (shell notice markup), assets/css/admin/modules/notices.scss (DELETE — empty), assets/css/admin/modules/wizard/panel.scss (RELOCATE or DEFER — mostly Phase-4), assets/css/admin.scss
+proof: npm run build:all && node settings/scripts/check-physical-utilities.js && npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/fields.spec.js
+serves: DB-07, ADR-005
+acceptance:
+- migrates the shell notices onto tokens/utilities + data-cmplz-ui islands; deletes modules/notices.scss (empty) + its import
+- panel.scss disposition stated explicitly and justified: it is overwhelmingly Phase-4 (panel/list/cookie_list controls) → RELOCATE the few shell-needed rules or DEFER the file to Phase 4; do NOT over-delete; functional specs green
+
+## T-043 First intentional re-baseline + per-screen axe-gate activation + Stage-G exit
+mode: agentic
+status: ready (C-2 + shell-preview signed off 2026-10-11); runs in dependency order
+depends: T-038, T-039, T-040, T-041, T-042
+files: tests/e2e/admin/**/__screenshots__ (regenerated PNG baselines), tests/e2e/admin/helpers/axe.js (MIGRATED_SCREENS), docs/progress.md, docs/specs/001-settings-ui-redesign/baselines.md
+proof: npx wp-env clean all && npx wp-env start && npm run build:all && npm run e2e -- --update-snapshots && npm run e2e
+serves: DB-07, DB-12, SC-03; Stage-G exit
+acceptance:
+- on a RESET wp-env DB + fresh build, regenerate the visual + isolation PNG baselines (the FIRST intentional redesign re-baseline); separate real redesign drift from the known stale-admin.css noise (document in baselines.md)
+- activate axe gating only for CONTENT-migrated screens (append qualifying hashes to MIGRATED_SCREENS; the shell alone may activate none — Phase 3 migrates the frame, not screen bodies)
+- full suite green across all 4 projects; Stage-G exit recorded in docs/progress.md
+
+---
+
+## Not yet tasked — per-section sign-off (Phase 4), CP4 (Phase 5)
 
 Prose only, deliberately without `## T-` headings: these phases depend on per-section
 design approval (C-2) and on ADR-014/audit outcomes, so tasking them now would guess at
 visuals and boundaries. The slices below are the re-planning input; plan.md §5 maps them
 to stages G–I with their gates.
-
-**Phase 3 — shell (gate G3: CP2 green + token set and shell preview approved).**
-Token-set proposal (design values + rationale, in-repo preview) → maintainer sign-off →
-shell migration: `Page.js` grid, `Header.js`, `Menu/*` (navigation model unchanged, C-3),
-`Placeholder/*` → Skeleton, panels, notices; delete `layout.scss`, `header.scss`,
-`wizard/menu.scss`, `placeholder.scss`, `wizard/panel.scss`, `notices.scss`; root
-typography to `base.css` on the two inner wrappers; page-level rules to
-`styles/page.css` (other-plugins-notices hiding, mount-point offset as
-`margin-inline-start`); first intentional re-baseline (redesigned screenshots become the
-new baseline; axe gating activates per migrated screen).
 
 **Phase 4 — screens, per section (gate: that section's preview approved; order: wizard
 fields → dashboard → consent banner → integrations → tools/settings tables →

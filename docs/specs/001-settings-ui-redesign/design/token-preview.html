@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Complianz 001 — C-2 token proposal preview</title>
+<!--
+  Standalone review aid for the C-2 token sign-off (feature 001, gate G3). Renders the
+  PROPOSED redesign values from design/shell.md. Self-contained: inline CSS, no external deps.
+  NOTE: for this demo the tokens are declared on :root. In production they live only on the
+  scoped islands  :is(#complianz,#complianz-portal) :where([data-cmplz-ui])  (ADR-001/004),
+  never on :root. This file is a proposal, not production code.
+-->
+<style>
+  :root {
+    /* ---- Surfaces & neutrals ---- */
+    --cmplz-surface: #ffffff;
+    --cmplz-surface-sunken: #f1f5f9;
+    --cmplz-field-surface: #ffffff;
+    --cmplz-text: #0f172a;
+    --cmplz-text-muted: #475569;
+    --cmplz-text-on-accent: #ffffff;
+    --cmplz-border: #e2e8f0;
+    --cmplz-field-border: #94a3b8;
+
+    /* ---- Brand & status ---- */
+    --cmplz-accent: #009fff;
+    --cmplz-accent-strong: #1e73be;
+    --cmplz-success: #1f7a34;
+    --cmplz-warning: #eab308;
+    --cmplz-danger: #d7263d;
+
+    /* ---- Radius ---- */
+    --cmplz-radius: 12px;
+    --cmplz-radius-s: 8px;
+    --cmplz-radius-field: 6px;
+
+    /* ---- Spacing (proposed 4px grid) ---- */
+    --cmplz-space-xs: 8px;
+    --cmplz-space-s: 12px;
+    --cmplz-space-m: 16px;
+    --cmplz-space-l: 24px;
+
+    /* ---- Typography ---- */
+    --cmplz-font-size: 0.875rem;
+    --cmplz-font-size-xs: 0.6875rem;
+    --cmplz-font-size-sm: 0.8125rem;
+    --cmplz-font-size-lg: 1rem;
+    --cmplz-font-size-xl: 1.25rem;
+    --cmplz-line-height: 1.5;
+
+    /* ---- Shadow (new family) ---- */
+    --cmplz-shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.06);
+    --cmplz-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.10), 0 1px 2px -1px rgba(15, 23, 42, 0.06);
+    --cmplz-shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.18), 0 8px 10px -6px rgba(15, 23, 42, 0.10);
+
+    /* ---- Layering (new family) ---- */
+    --cmplz-z-sticky: 20;
+    --cmplz-z-overlay: 30;
+    --cmplz-z-dropdown: 1000;
+    --cmplz-z-toast: 9999;
+    --cmplz-z-portal: 100001;
+
+    /* ---- Motion (new family) ---- */
+    --cmplz-duration-fast: 120ms;
+    --cmplz-duration: 200ms;
+    --cmplz-duration-slow: 300ms;
+    --cmplz-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--cmplz-surface-sunken);
+    color: var(--cmplz-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: var(--cmplz-font-size);
+    line-height: var(--cmplz-line-height);
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: var(--cmplz-space-l); }
+  header.page {
+    background: var(--cmplz-surface);
+    border: 1px solid var(--cmplz-border);
+    border-radius: var(--cmplz-radius);
+    box-shadow: var(--cmplz-shadow);
+    padding: var(--cmplz-space-l);
+    margin-block-end: var(--cmplz-space-l);
+  }
+  header.page h1 { margin: 0 0 6px; font-size: var(--cmplz-font-size-xl); }
+  header.page p { margin: 0; color: var(--cmplz-text-muted); }
+  .badge {
+    display: inline-block; margin-block-start: var(--cmplz-space-s);
+    padding: 3px 10px; border-radius: 999px;
+    background: #fef9c3; color: #713f12; border: 1px solid #fde68a;
+    font-size: var(--cmplz-font-size-xs); font-weight: 600; letter-spacing: .3px;
+  }
+  section.card {
+    background: var(--cmplz-surface);
+    border: 1px solid var(--cmplz-border);
+    border-radius: var(--cmplz-radius);
+    box-shadow: var(--cmplz-shadow);
+    padding: var(--cmplz-space-l);
+    margin-block-end: var(--cmplz-space-l);
+  }
+  h2 { font-size: var(--cmplz-font-size-lg); margin: 0 0 4px; }
+  .hint { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); margin: 0 0 var(--cmplz-space-m); }
+
+  /* swatches */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: var(--cmplz-space-m); }
+  .sw {
+    border: 1px solid var(--cmplz-border);
+    border-radius: var(--cmplz-radius-s);
+    overflow: hidden;
+    background: var(--cmplz-field-surface);
+  }
+  .sw .chip { height: 64px; display: flex; align-items: flex-end; justify-content: flex-end; padding: 6px; }
+  .sw .meta { padding: 8px 10px; }
+  .sw .name { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: var(--cmplz-font-size-sm); }
+  .sw .val { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-xs); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .sw .use { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-xs); margin-top: 4px; }
+  .tag { display:inline-block; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: rgba(255,255,255,.85); color:#0f172a; }
+  .tag.warn { background:#fde68a; color:#713f12; }
+
+  /* type scale */
+  .type-row { display:flex; align-items: baseline; gap: var(--cmplz-space-m); padding: 8px 0; border-top: 1px solid var(--cmplz-border); }
+  .type-row:first-child { border-top: 0; }
+  .type-row .k { width: 190px; flex: none; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: var(--cmplz-font-size-xs); color: var(--cmplz-text-muted); }
+
+  /* spacing */
+  .space-row { display:flex; align-items:center; gap: var(--cmplz-space-m); padding: 6px 0; }
+  .space-row .k { width: 190px; flex:none; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: var(--cmplz-font-size-xs); color: var(--cmplz-text-muted); }
+  .space-bar { height: 16px; background: var(--cmplz-accent); border-radius: 3px; }
+
+  /* radius */
+  .radii { display:flex; gap: var(--cmplz-space-l); flex-wrap: wrap; }
+  .radii .r { text-align:center; }
+  .radii .box { width: 90px; height: 64px; background: var(--cmplz-accent-strong); margin: 0 auto 6px; }
+  .radii .lbl { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: var(--cmplz-font-size-xs); color: var(--cmplz-text-muted); }
+
+  /* shadow */
+  .shadows { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: var(--cmplz-space-l); }
+  .shadows .s { background: var(--cmplz-surface); border-radius: var(--cmplz-radius); padding: var(--cmplz-space-l); text-align:center; }
+  .shadows .lbl { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: var(--cmplz-font-size-xs); color: var(--cmplz-text-muted); }
+
+  /* motion */
+  .motion-demo { display:flex; gap: var(--cmplz-space-l); flex-wrap: wrap; }
+  .motion-demo .m {
+    padding: 10px 16px; border-radius: var(--cmplz-radius-field);
+    background: var(--cmplz-accent-strong); color: var(--cmplz-text-on-accent);
+    font-size: var(--cmplz-font-size-sm); cursor: default;
+  }
+  .motion-demo .m.fast  { transition: transform var(--cmplz-duration-fast) var(--cmplz-ease); }
+  .motion-demo .m.base  { transition: transform var(--cmplz-duration)      var(--cmplz-ease); }
+  .motion-demo .m.slow  { transition: transform var(--cmplz-duration-slow) var(--cmplz-ease); }
+  .motion-demo .m:hover { transform: translateY(-4px); }
+
+  /* usage note boxes */
+  .note { border-inline-start: 4px solid var(--cmplz-accent); background: #eef7ff; padding: 10px 14px; border-radius: 6px; color: var(--cmplz-text); font-size: var(--cmplz-font-size-sm); margin-top: var(--cmplz-space-m); }
+  table.z { width:100%; border-collapse: collapse; font-size: var(--cmplz-font-size-sm); }
+  table.z td, table.z th { text-align:left; padding: 6px 8px; border-top: 1px solid var(--cmplz-border); }
+  table.z th { color: var(--cmplz-text-muted); font-weight:600; }
+  table.z td.k { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: var(--cmplz-font-size-xs); }
+  @media (prefers-reduced-motion: reduce) { .motion-demo .m { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page">
+    <h1>Complianz settings — C-2 token proposal</h1>
+    <p>Feature 001, gate&nbsp;G3. The <strong>proposed redesign values</strong> from
+       <code>design/shell.md</code>, rendered for sign-off. Tasteful modernization: Complianz
+       brand hues kept, neutrals formalized as a slate ramp, 4px spacing grid, WCAG&nbsp;AA.</p>
+    <span class="badge">PROPOSAL — awaiting maintainer sign-off</span>
+  </header>
+
+  <section class="card">
+    <h2>Surfaces &amp; neutrals</h2>
+    <p class="hint">A cohesive cool-grey (slate) ramp; solid text colours for predictable contrast.</p>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:var(--cmplz-surface); border-bottom:1px solid var(--cmplz-border)"><span class="tag">card</span></div><div class="meta"><div class="name">--cmplz-surface</div><div class="val">#ffffff</div><div class="use">Cards / panels</div></div></div>
+      <div class="sw"><div class="chip" style="background:var(--cmplz-surface-sunken)"><span class="tag">page</span></div><div class="meta"><div class="name">--cmplz-surface-sunken</div><div class="val">#f1f5f9</div><div class="use">Page background (slate-100)</div></div></div>
+      <div class="sw"><div class="chip" style="background:var(--cmplz-field-surface); border-bottom:1px solid var(--cmplz-field-border)"><span class="tag">input</span></div><div class="meta"><div class="name">--cmplz-field-surface</div><div class="val">#ffffff</div><div class="use">Input background</div></div></div>
+      <div class="sw"><div class="chip" style="background:var(--cmplz-text)"><span class="tag" style="color:#fff;background:rgba(0,0,0,.25)">Aa 18:1</span></div><div class="meta"><div class="name">--cmplz-text</div><div class="val">#0f172a</div><div class="use">Primary text (slate-900)</div></div></div>
+      <div class="sw"><div class="chip" style="background:var(--cmplz-text-muted)"><span class="tag" style="color:#fff;background:rgba(0,0,0,.25)">Aa 7.6:1</span></div><div class="meta"><div class="name">--cmplz-text-muted</div><div class="val">#475569</div><div class="use">Secondary text (slate-600)</div></div></div>
+      <div class="sw"><div class="chip" style="background:var(--cmplz-accent-strong)"><span style="color:var(--cmplz-text-on-accent);font-weight:700">Aa</span></div><div class="meta"><div class="name">--cmplz-text-on-accent</div><div class="val">#ffffff</div><div class="use">Text on strong fills (≥4.9:1)</div></div></div>
+      <div class="sw"><div class="chip" style="background:var(--cmplz-border)"><span class="tag">line</span></div><div class="meta"><div class="name">--cmplz-border</div><div class="val">#e2e8f0</div><div class="use">Dividers / card edge (slate-200)</div></div></div>
+      <div class="sw"><div class="chip" style="background:var(--cmplz-field-border)"><span class="tag warn">~2.6:1</span></div><div class="meta"><div class="name">--cmplz-field-border</div><div class="val">#94a3b8</div><div class="use">Input border (slate-400) — see note</div></div></div>
+    </div>
+    <div class="note">Resting <code>field-border</code> is ~2.6:1 (vs ~1.5:1 for today's <code>#c6c6c6</code>);
+      the 3:1 affordance for SC&nbsp;1.4.11 is met on <strong>focus</strong> (a 2px <code>accent-strong</code> ring).
+      Strict-AA alternative at rest: slate-500 <code>#64748b</code> (~4.8:1). Maintainer call (shell.md §9).</div>
+  </section>
+
+  <section class="card">
+    <h2>Brand &amp; status</h2>
+    <p class="hint">Brand hues kept. The bright <code>accent</code> is a fill/tint only (not text);
+       interactive text/icons use <code>accent-strong</code>.</p>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:var(--cmplz-accent)"><span class="tag warn">fill only 2.8:1</span></div><div class="meta"><div class="name">--cmplz-accent</div><div class="val">#009fff</div><div class="use">Fills, tints, toggle, progress, focus ring</div></div></div>
+      <div class="sw"><div class="chip" style="background:var(--cmplz-accent-strong)"><span style="color:#fff;font-weight:700">Aa 4.9:1</span></div><div class="meta"><div class="name">--cmplz-accent-strong</div><div class="val">#1e73be</div><div class="use">Links, active nav, interactive text</div></div></div>
+      <div class="sw"><div class="chip" style="background:var(--cmplz-success)"><span style="color:#fff;font-weight:700">Aa 5.4:1</span></div><div class="meta"><div class="name">--cmplz-success</div><div class="val">#1f7a34</div><div class="use">Success / complete</div></div></div>
+      <div class="sw"><div class="chip" style="background:var(--cmplz-warning)"><span class="tag">dark text</span></div><div class="meta"><div class="name">--cmplz-warning</div><div class="val">#eab308</div><div class="use">Caution (absorbs legacy orange)</div></div></div>
+      <div class="sw"><div class="chip" style="background:var(--cmplz-danger)"><span style="color:#fff;font-weight:700">Aa 5.0:1</span></div><div class="meta"><div class="name">--cmplz-danger</div><div class="val">#d7263d</div><div class="use">Error / destructive</div></div></div>
+    </div>
+    <div class="note" style="border-inline-start-color:var(--cmplz-accent-strong);background:#eef4fb">
+      Tints used across the shell (selected menu item, radio-card selected) are light washes of these hues —
+      e.g. a ~8% <code>accent</code> wash for the active section, a ~8% <code>success</code> wash for a chosen radio card.</div>
+  </section>
+
+  <section class="card">
+    <h2>Type scale</h2>
+    <p class="hint">14px base kept (matches wp-admin / B2 root). Heading + caption steps added (new family).</p>
+    <div class="type-row"><div class="k">--cmplz-font-size-xl</div><div style="font-size:var(--cmplz-font-size-xl);font-weight:600">Page / panel heading — 20px</div></div>
+    <div class="type-row"><div class="k">--cmplz-font-size-lg</div><div style="font-size:var(--cmplz-font-size-lg);font-weight:600">Section / menu title — 16px</div></div>
+    <div class="type-row"><div class="k">--cmplz-font-size</div><div style="font-size:var(--cmplz-font-size)">Body text — 14px base</div></div>
+    <div class="type-row"><div class="k">--cmplz-font-size-sm</div><div style="font-size:var(--cmplz-font-size-sm);color:var(--cmplz-text-muted)">Submenu / caption — 13px</div></div>
+    <div class="type-row"><div class="k">--cmplz-font-size-xs</div><div style="font-size:var(--cmplz-font-size-xs);color:var(--cmplz-text-muted)">Pill / legend — 11px</div></div>
+  </section>
+
+  <section class="card">
+    <h2>Spacing — proposed 4px grid</h2>
+    <p class="hint">8 / 12 / 16 / 24. Density call in shell.md §9: <code>space-m</code> 20→16 tightens card padding.</p>
+    <div class="space-row"><div class="k">--cmplz-space-xs &nbsp;8px</div><div class="space-bar" style="width:8px"></div></div>
+    <div class="space-row"><div class="k">--cmplz-space-s &nbsp;12px</div><div class="space-bar" style="width:12px"></div></div>
+    <div class="space-row"><div class="k">--cmplz-space-m &nbsp;16px</div><div class="space-bar" style="width:16px"></div></div>
+    <div class="space-row"><div class="k">--cmplz-space-l &nbsp;24px</div><div class="space-bar" style="width:24px"></div></div>
+  </section>
+
+  <section class="card">
+    <h2>Radius</h2>
+    <p class="hint">Signature 12px card kept; scale tidied to 6 / 8 / 12.</p>
+    <div class="radii">
+      <div class="r"><div class="box" style="border-radius:var(--cmplz-radius-field)"></div><div class="lbl">--cmplz-radius-field · 6px</div></div>
+      <div class="r"><div class="box" style="border-radius:var(--cmplz-radius-s)"></div><div class="lbl">--cmplz-radius-s · 8px</div></div>
+      <div class="r"><div class="box" style="border-radius:var(--cmplz-radius)"></div><div class="lbl">--cmplz-radius · 12px</div></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Shadow <span style="font-weight:400;color:var(--cmplz-text-muted);font-size:var(--cmplz-font-size-sm)">(new family)</span></h2>
+    <p class="hint">DB-08 family the shell needs; today's single hard-coded box-shadow becomes three steps.</p>
+    <div class="shadows">
+      <div class="s" style="box-shadow:var(--cmplz-shadow-sm)"><div class="lbl">--cmplz-shadow-sm</div></div>
+      <div class="s" style="box-shadow:var(--cmplz-shadow)"><div class="lbl">--cmplz-shadow</div></div>
+      <div class="s" style="box-shadow:var(--cmplz-shadow-lg)"><div class="lbl">--cmplz-shadow-lg</div></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Motion <span style="font-weight:400;color:var(--cmplz-text-muted);font-size:var(--cmplz-font-size-sm)">(new family)</span></h2>
+    <p class="hint">Hover a chip to feel each duration. A global reduced-motion rule zeroes these (DB-12).</p>
+    <div class="motion-demo">
+      <div class="m fast">fast · 120ms</div>
+      <div class="m base">default · 200ms</div>
+      <div class="m slow">slow · 300ms</div>
+    </div>
+    <div class="note">Easing <code>--cmplz-ease: cubic-bezier(0.4, 0, 0.2, 1)</code> for all transitions.</div>
+  </section>
+
+  <section class="card">
+    <h2>Layering / z-index <span style="font-weight:400;color:var(--cmplz-text-muted);font-size:var(--cmplz-font-size-sm)">(new family)</span></h2>
+    <p class="hint">In-app stack; the toast/portal values mirror ADR-014 (authoritative value in PHP).</p>
+    <table class="z">
+      <tr><th>Token</th><th>Value</th><th>Use</th></tr>
+      <tr><td class="k">--cmplz-z-sticky</td><td>20</td><td>Sticky settings footer</td></tr>
+      <tr><td class="k">--cmplz-z-overlay</td><td>30</td><td>In-card locked overlay</td></tr>
+      <tr><td class="k">--cmplz-z-dropdown</td><td>1000</td><td>In-flow menus / comboboxes</td></tr>
+      <tr><td class="k">--cmplz-z-toast</td><td>9999</td><td>Toasts (mirrors ADR-014)</td></tr>
+      <tr><td class="k">--cmplz-z-portal</td><td>100001</td><td>Portal host (mirrors ADR-014; above admin bar/menu, below WP media modal)</td></tr>
+    </table>
+  </section>
+
+</div>
+</body>
+</html>

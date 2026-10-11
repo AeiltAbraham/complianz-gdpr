@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Complianz 001 — redesigned shell preview</title>
+<!--
+  Standalone DB-07 review reference for the redesigned shell FRAME (feature 001, gate G3).
+  Mirrors Page.js (grid), Header.js, Menu/*, Placeholder/* -> Skeleton, panels and a notice,
+  rendered with the PROPOSED C-2 tokens. Self-contained: inline CSS, no external deps.
+  C-3 honored: top-level section tabs + per-section sub-menu — VISUAL redesign only, the
+  navigation MODEL is unchanged. Logical CSS properties only (margin-inline / inset-inline /
+  padding-inline / border-inline-*): switch <html dir> to "rtl" to see it mirror (ADR-007).
+  The content blocks are representative placeholders — the FRAME is mocked, not real screens.
+  Demo declares tokens on :root; production keeps them on the scoped islands (ADR-001/004).
+-->
+<style>
+  :root {
+    --cmplz-surface: #ffffff;
+    --cmplz-surface-sunken: #f1f5f9;
+    --cmplz-field-surface: #ffffff;
+    --cmplz-text: #0f172a;
+    --cmplz-text-muted: #475569;
+    --cmplz-text-on-accent: #ffffff;
+    --cmplz-border: #e2e8f0;
+    --cmplz-field-border: #94a3b8;
+
+    --cmplz-accent: #009fff;
+    --cmplz-accent-strong: #1e73be;
+    --cmplz-success: #1f7a34;
+    --cmplz-warning: #eab308;
+    --cmplz-danger: #d7263d;
+
+    --cmplz-radius: 12px;
+    --cmplz-radius-s: 8px;
+    --cmplz-radius-field: 6px;
+
+    --cmplz-space-xs: 8px;
+    --cmplz-space-s: 12px;
+    --cmplz-space-m: 16px;
+    --cmplz-space-l: 24px;
+
+    --cmplz-font-size: 0.875rem;
+    --cmplz-font-size-xs: 0.6875rem;
+    --cmplz-font-size-sm: 0.8125rem;
+    --cmplz-font-size-lg: 1rem;
+    --cmplz-font-size-xl: 1.25rem;
+    --cmplz-line-height: 1.5;
+
+    --cmplz-shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.06);
+    --cmplz-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.10), 0 1px 2px -1px rgba(15, 23, 42, 0.06);
+    --cmplz-shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.18), 0 8px 10px -6px rgba(15, 23, 42, 0.10);
+
+    --cmplz-z-sticky: 20;
+    --cmplz-z-overlay: 30;
+
+    --cmplz-duration-fast: 120ms;
+    --cmplz-duration: 200ms;
+    --cmplz-duration-slow: 300ms;
+    --cmplz-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* review-only tints (light washes of the brand hues) */
+    --accent-wash: #e9f5ff;
+    --success-wash: #e8f3ec;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--cmplz-surface-sunken); color: var(--cmplz-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: var(--cmplz-font-size); line-height: var(--cmplz-line-height);
+  }
+
+  /* ---------- Header (Header.js) ---------- */
+  .cmplz-header-container { background: var(--cmplz-surface); border-block-end: 1px solid var(--cmplz-border); }
+  .cmplz-settings-header {
+    max-width: clamp(300px, calc(100% - var(--cmplz-space-l) * 2), 1600px);
+    margin-inline: auto;
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--cmplz-space-m);
+    min-height: 70px; padding-inline: var(--cmplz-space-l);
+  }
+  .cmplz-header-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: var(--cmplz-font-size-lg); letter-spacing: -.2px; }
+  .cmplz-header-logo .mark {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: linear-gradient(135deg, var(--cmplz-accent), var(--cmplz-accent-strong));
+  }
+  .cmplz-header-menu ul { list-style: none; display: flex; gap: 2px; margin: 0; padding: 0; }
+  .cmplz-header-menu a {
+    display: inline-flex; align-items: center; height: 70px; padding-inline: var(--cmplz-space-m);
+    text-decoration: none; color: var(--cmplz-text); font-weight: 500;
+    border-block-end: 3px solid transparent; transition: color var(--cmplz-duration-slow) var(--cmplz-ease), border-color var(--cmplz-duration-slow) var(--cmplz-ease);
+  }
+  .cmplz-header-menu a:hover { color: var(--cmplz-accent-strong); }
+  .cmplz-header-menu a.active { color: var(--cmplz-accent-strong); border-block-end-color: var(--cmplz-accent-strong); font-weight: 600; }
+  .cmplz-header-right { margin-inline-start: auto; display: flex; align-items: center; gap: var(--cmplz-space-m); }
+  .cmplz-knowledge-base-link { color: var(--cmplz-accent-strong); text-decoration: none; font-weight: 500; }
+  .cmplz-knowledge-base-link:hover { text-decoration: underline; }
+  .button-black {
+    background: #111827; color: #fff; text-decoration: none; font-weight: 600;
+    padding: 8px 16px; border-radius: var(--cmplz-radius-field); font-size: var(--cmplz-font-size-sm);
+  }
+
+  /* ---------- Page grid (Page.js) ---------- */
+  .cmplz-content-area {
+    max-width: clamp(300px, calc(100% - var(--cmplz-space-l) * 2), 1600px);
+    margin-inline: auto; margin-block-start: var(--cmplz-space-l);
+    display: grid; gap: var(--cmplz-space-l);
+    grid-template-columns: 28ch 1fr 1fr 1fr;
+    padding-block-end: var(--cmplz-space-l);
+  }
+  @media (max-width: 1080px) { .cmplz-content-area { grid-template-columns: 1fr; } .cmplz-column-2, .cmplz-wizard-menu { grid-column: 1 !important; } }
+
+  .cmplz-card {
+    background: var(--cmplz-surface); border: 1px solid var(--cmplz-border);
+    border-radius: var(--cmplz-radius); box-shadow: var(--cmplz-shadow);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .cmplz-column-2 { grid-column: span 2; }
+
+  /* ---------- Menu (Menu/*) ---------- */
+  .cmplz-wizard-menu { grid-column: span 1; height: fit-content; display: flex; flex-direction: column; gap: 2px; padding: var(--cmplz-space-s); background: transparent; }
+  .cmplz-wizard-menu-header { padding: var(--cmplz-space-xs) var(--cmplz-space-s); }
+  .cmplz-wizard-menu-header h1 { margin: 0; font-size: var(--cmplz-font-size-lg); }
+  .cmplz-wizard-menu-item {
+    display: flex; align-items: center; gap: var(--cmplz-space-xs);
+    padding: var(--cmplz-space-xs) var(--cmplz-space-s); border-radius: var(--cmplz-radius-s);
+    color: var(--cmplz-text); text-decoration: none; font-size: var(--cmplz-font-size);
+    transition: background var(--cmplz-duration) var(--cmplz-ease), color var(--cmplz-duration) var(--cmplz-ease);
+  }
+  .cmplz-wizard-menu-item.cmplz-main { font-weight: 700; }
+  .cmplz-wizard-menu-item[href]:hover { background: var(--cmplz-surface); }
+  .cmplz-wizard-menu-item.cmplz-active.cmplz-main { color: var(--cmplz-accent-strong); background: var(--accent-wash); box-shadow: var(--cmplz-shadow-sm); }
+  .cmplz-submenu-items { display: flex; flex-direction: column; gap: 1px; margin-block: var(--cmplz-space-xs); }
+  .cmplz-submenu-items .cmplz-wizard-menu-item {
+    padding-block: 6px; color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm);
+    padding-inline-start: var(--cmplz-space-m);
+  }
+  .cmplz-submenu-items .cmplz-wizard-menu-item.cmplz-active { color: var(--cmplz-accent-strong); font-weight: 600; }
+  .cmplz-menu-item-featured-pill {
+    margin-inline-start: auto; background: var(--cmplz-success); color: var(--cmplz-text-on-accent);
+    padding: 1px 8px; border-radius: 999px; font-size: var(--cmplz-font-size-xs); font-weight: 700;
+  }
+  .ico { width: 13px; height: 13px; flex: none; display: inline-block; }
+  .cmplz-premium-menu-item { margin-block-start: var(--cmplz-space-s); background: var(--accent-wash); border-radius: var(--cmplz-radius-s); padding: var(--cmplz-space-s); display: flex; }
+  .cmplz-premium-menu-item .button-black { width: 100%; text-align: center; }
+
+  /* ---------- Card internals (grid-item header/content/footer) ---------- */
+  .cmplz-grid-item-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--cmplz-space-m) var(--cmplz-space-l); border-block-end: 1px solid var(--cmplz-border);
+    min-height: 56px;
+  }
+  .cmplz-grid-item-header h2 { margin: 0; font-size: var(--cmplz-font-size-lg); }
+  .cmplz-grid-item-controls { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-xs); }
+  .cmplz-grid-item-content { padding: var(--cmplz-space-m) var(--cmplz-space-l); flex-grow: 1; }
+
+  .field-row { margin-block-end: var(--cmplz-space-l); }
+  .field-row > label { display: block; font-weight: 600; margin-block-end: var(--cmplz-space-xs); }
+  .field-row .help { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); margin-block-start: var(--cmplz-space-xs); }
+  .field {
+    width: 100%; padding: 8px 12px; background: var(--cmplz-field-surface);
+    border: 1px solid var(--cmplz-field-border); border-radius: var(--cmplz-radius-field);
+    font: inherit; color: var(--cmplz-text); transition: border-color var(--cmplz-duration) var(--cmplz-ease), box-shadow var(--cmplz-duration) var(--cmplz-ease);
+  }
+  .field:focus { outline: none; border-color: var(--cmplz-accent-strong); box-shadow: 0 0 0 2px var(--accent-wash); }
+
+  .radio-cards { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cmplz-space-s); }
+  @media (max-width: 560px) { .radio-cards { grid-template-columns: 1fr; } }
+  .radio-card {
+    display: flex; gap: var(--cmplz-space-s); align-items: flex-start;
+    border: 2px solid var(--cmplz-border); border-radius: var(--cmplz-radius-field);
+    padding: var(--cmplz-space-s); background: var(--cmplz-surface); cursor: default;
+  }
+  .radio-card.selected { border-color: var(--cmplz-success); background: var(--success-wash); }
+  .radio-card .dot { width: 16px; height: 16px; border-radius: 999px; border: 2px solid var(--cmplz-field-border); flex: none; margin-block-start: 2px; }
+  .radio-card.selected .dot { border-color: var(--cmplz-success); background: var(--cmplz-success); box-shadow: inset 0 0 0 3px var(--cmplz-surface); }
+  .radio-card h5 { margin: 0 0 2px; font-size: var(--cmplz-font-size); }
+  .radio-card p { margin: 0; color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); }
+
+  /* sticky footer with scroll-progress + Save */
+  .cmplz-grid-item-footer-container { position: sticky; inset-block-end: 0; z-index: var(--cmplz-z-sticky); margin-block-start: auto; }
+  .scroll-progress-track { height: 3px; background: var(--cmplz-border); overflow: hidden; }
+  .scroll-progress-fill { height: 100%; width: 62%; background: var(--cmplz-accent); }
+  .cmplz-grid-item-footer {
+    display: flex; align-items: center; gap: var(--cmplz-space-m);
+    background: #f8fafc; border-block-start: 1px solid var(--cmplz-border);
+    padding: var(--cmplz-space-m) var(--cmplz-space-l);
+  }
+  .btn-primary {
+    margin-inline-start: auto; border: 0; cursor: pointer;
+    background: var(--cmplz-accent-strong); color: var(--cmplz-text-on-accent);
+    font: inherit; font-weight: 600; padding: 9px 20px; border-radius: var(--cmplz-radius-field);
+    transition: filter var(--cmplz-duration) var(--cmplz-ease);
+  }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-tertiary { background: transparent; border: 1px solid var(--cmplz-field-border); color: var(--cmplz-text); font: inherit; padding: 9px 16px; border-radius: var(--cmplz-radius-field); cursor: pointer; }
+  .legend { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-xs); display: flex; align-items: center; gap: 6px; }
+
+  /* ---------- Skeleton (components/ui/Skeleton.js) ---------- */
+  .skeleton { display: block; border-radius: var(--cmplz-radius-s); background: var(--cmplz-surface-sunken); animation: cmplz-pulse 1.6s ease-in-out infinite; }
+  @keyframes cmplz-pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+
+  /* ---------- Notice ---------- */
+  .cmplz-notice {
+    display: flex; gap: var(--cmplz-space-s); align-items: flex-start;
+    border: 1px solid var(--cmplz-border); border-inline-start: 4px solid var(--cmplz-accent-strong);
+    background: var(--accent-wash); border-radius: var(--cmplz-radius-s);
+    padding: var(--cmplz-space-s) var(--cmplz-space-m); margin-block-end: var(--cmplz-space-m);
+  }
+  .cmplz-notice.success { border-inline-start-color: var(--cmplz-success); background: var(--success-wash); }
+  .cmplz-notice .ico { width: 18px; height: 18px; margin-block-start: 1px; }
+  .cmplz-notice strong { display: block; }
+  .cmplz-notice p { margin: 2px 0 0; color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); }
+
+  .reviewbar { max-width: clamp(300px, calc(100% - var(--cmplz-space-l) * 2), 1600px); margin: var(--cmplz-space-l) auto 0; padding-inline: var(--cmplz-space-l); }
+  .reviewbar .badge { display:inline-block; padding: 3px 10px; border-radius: 999px; background:#fef9c3; color:#713f12; border:1px solid #fde68a; font-size: var(--cmplz-font-size-xs); font-weight: 700; }
+  .reviewbar .dir-note { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); margin-block-start: 6px; }
+  @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="cmplz-header-container">
+    <div class="cmplz-settings-header">
+      <div class="cmplz-header-logo"><span class="mark"></span>Complianz</div>
+      <nav class="cmplz-header-menu" aria-label="Sections">
+        <ul>
+          <li><a href="#dashboard">Dashboard</a></li>
+          <li><a class="active" href="#wizard" aria-current="page">Wizard</a></li>
+          <li><a href="#banner">Consent banner</a></li>
+          <li><a href="#integrations">Integrations</a></li>
+          <li><a href="#settings">Settings</a></li>
+          <li><a href="#tools">Tools</a></li>
+        </ul>
+      </nav>
+      <div class="cmplz-header-right">
+        <a class="cmplz-knowledge-base-link" href="#docs">Documentation</a>
+        <a class="button-black" href="#pro">Go Pro</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="reviewbar">
+    <span class="badge">SHELL PREVIEW — DB-07 review reference (proposal, awaiting sign-off)</span>
+    <div class="dir-note">C-3: top-level section tabs + per-section sub-menu, visual redesign only — model unchanged.
+      Logical properties throughout — set <code>&lt;html dir="rtl"&gt;</code> to see it mirror (ADR-007).</div>
+  </div>
+
+  <!-- Page grid: menu + settings panel + side/skeleton card -->
+  <div class="cmplz-content-area">
+
+    <!-- Menu (per-section sub-menu) -->
+    <nav class="cmplz-wizard-menu" aria-label="Wizard steps">
+      <div class="cmplz-wizard-menu-header"><h1 class="cmplz-h4">Wizard</h1></div>
+
+      <a class="cmplz-wizard-menu-item cmplz-main cmplz-active" href="#general" aria-current="step">
+        <span>General</span>
+      </a>
+      <div class="cmplz-submenu-items">
+        <a class="cmplz-wizard-menu-item cmplz-active" href="#who">
+          <svg class="ico" viewBox="0 0 512 512" aria-hidden="true"><path fill="var(--cmplz-accent-strong)" d="M512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256z"/></svg>
+          Who we are
+        </a>
+        <a class="cmplz-wizard-menu-item" href="#regions">
+          <svg class="ico" viewBox="0 0 512 512" aria-hidden="true"><path fill="var(--cmplz-success)" d="M0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256zM371.8 211.8C382.7 200.9 382.7 183.1 371.8 172.2C360.9 161.3 343.1 161.3 332.2 172.2L224 280.4L179.8 236.2C168.9 225.3 151.1 225.3 140.2 236.2C129.3 247.1 129.3 264.9 140.2 275.8L204.2 339.8C215.1 350.7 232.9 350.7 243.8 339.8L371.8 211.8z"/></svg>
+          Regions
+        </a>
+        <a class="cmplz-wizard-menu-item" href="#consent">
+          <svg class="ico" viewBox="0 0 512 512" aria-hidden="true"><path fill="var(--cmplz-text-muted)" d="M512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256zM256 48C141.1 48 48 141.1 48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48z"/></svg>
+          Consent
+        </a>
+      </div>
+
+      <a class="cmplz-wizard-menu-item cmplz-main" href="#documents"><span>Documents</span></a>
+      <a class="cmplz-wizard-menu-item cmplz-main" href="#integrations-step">
+        <span>Integrations</span>
+        <span class="cmplz-menu-item-featured-pill">New</span>
+      </a>
+      <a class="cmplz-wizard-menu-item cmplz-main" href="#finish"><span>Finish</span></a>
+
+      <div class="cmplz-premium-menu-item"><a class="button-black" href="#pro">Go Pro</a></div>
+    </nav>
+
+    <!-- Settings panel (spans 2) -->
+    <section class="cmplz-card cmplz-column-2" aria-label="General settings">
+      <div class="cmplz-grid-item-header">
+        <h2>Who we are</h2>
+        <span class="cmplz-grid-item-controls">Step 1 of 5</span>
+      </div>
+      <div class="cmplz-grid-item-content">
+
+        <div class="cmplz-notice success">
+          <svg class="ico" viewBox="0 0 448 512" aria-hidden="true"><path fill="var(--cmplz-success)" d="M438.6 105.4C451.1 117.9 451.1 138.1 438.6 150.6L182.6 406.6C170.1 419.1 149.9 419.1 137.4 406.6L9.372 278.6C-3.124 266.1-3.124 245.9 9.372 233.4C21.87 220.9 42.13 220.9 54.63 233.4L159.1 338.7L393.4 105.4C405.9 92.88 426.1 92.88 438.6 105.4H438.6z"/></svg>
+          <div><strong>Settings saved</strong><p>Your changes were stored. This is how an in-app notice reads in the redesigned shell.</p></div>
+        </div>
+
+        <div class="field-row">
+          <label for="f-name">Website name</label>
+          <input id="f-name" class="field" type="text" value="example.com" />
+          <div class="help">Shown in your generated privacy documents.</div>
+        </div>
+
+        <div class="field-row">
+          <label>Consent type for this region</label>
+          <div class="radio-cards">
+            <div class="radio-card selected"><span class="dot"></span><div><h5>Opt-in</h5><p>Ask consent before any cookies are placed (EU default).</p></div></div>
+            <div class="radio-card"><span class="dot"></span><div><h5>Opt-out</h5><p>Allow cookies until the visitor objects.</p></div></div>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label for="f-note">Notes for your DPO</label>
+          <textarea id="f-note" class="field" rows="3">Review retention periods before launch.</textarea>
+        </div>
+
+      </div>
+      <div class="cmplz-grid-item-footer-container">
+        <div class="scroll-progress-track"><div class="scroll-progress-fill"></div></div>
+        <div class="cmplz-grid-item-footer">
+          <span class="legend">
+            <svg class="ico" style="width:12px;height:12px" viewBox="0 0 512 512" aria-hidden="true"><path fill="var(--cmplz-success)" d="M0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256z"/></svg>
+            4 of 6 required fields complete
+          </span>
+          <button class="btn-tertiary" type="button">Back</button>
+          <button class="btn-primary" type="button">Save &amp; Continue</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Side card: Skeleton loading state -->
+    <aside class="cmplz-card" aria-label="Loading" aria-busy="true">
+      <div class="cmplz-grid-item-header"><h2>Progress</h2></div>
+      <div class="cmplz-grid-item-content">
+        <span class="skeleton" style="width:70%;height:1rem;margin-block-end:12px"></span>
+        <span class="skeleton" style="width:100%;height:1rem;margin-block-end:12px"></span>
+        <span class="skeleton" style="width:85%;height:1rem;margin-block-end:12px"></span>
+        <span class="skeleton" style="width:60%;height:1rem;margin-block-end:20px"></span>
+        <span class="skeleton" style="width:100%;height:120px;border-radius:var(--cmplz-radius)"></span>
+      </div>
+    </aside>
+
+  </div>
+
+</body>
+</html>
