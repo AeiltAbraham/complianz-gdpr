@@ -72,11 +72,11 @@ jobs:
         run: node settings/scripts/check-physical-utilities.js
       - name: Stylelint on settings/src/styles
         # Enforces logical properties (ADR-007, stylelint-use-logical) on the HAND-WRITTEN entry CSS:
-        # tokens.css and base.css only — NOT tailwind.css, whose @tailwind directives stylelint cannot
-        # parse. The config is settings/.stylelintrc.json; run from settings/ so the config, the binary
-        # and the plugin all resolve there. Gating now (T-020 removed the continue-on-error from T-019).
+        # tokens.css, base.css and page.css only — NOT tailwind.css, whose @tailwind directives stylelint
+        # cannot parse. The config is settings/.stylelintrc.json; run from settings/ so the config, the
+        # binary and the plugin all resolve there. Gating now (T-020 removed the continue-on-error from T-019).
         working-directory: settings
-        run: npx --no-install stylelint src/styles/tokens.css src/styles/base.css
+        run: npx --no-install stylelint src/styles/tokens.css src/styles/base.css src/styles/page.css
 
   e2e:
     name: Admin e2e suite (fresh WordPress)

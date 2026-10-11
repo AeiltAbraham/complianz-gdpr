@@ -4,9 +4,16 @@
 :is(#complianz, #complianz-portal) :where([data-cmplz-ui] *:not([data-cmplz-isolate] *):not([data-cmplz-isolate]))::after {
   box-sizing: border-box; border-width: 0; border-style: solid; border-color: currentColor;
 }
-/* B2 — root typography, ONE rule on the two inner wrappers (FR-003) */
-:is(#complianz, #complianz-portal) :where(#complianz-app-root[data-cmplz-ui], #complianz-portal-root[data-cmplz-ui]) {
-  font-size: 14px; line-height: 1.5; color: #1e1e1e; -webkit-font-smoothing: antialiased;
+/* B2 — root typography on every scoped UI island (OPTION A).
+ * Re-scoped from `#complianz-app-root[data-cmplz-ui], #complianz-portal-root[data-cmplz-ui]` to the
+ * same island selector tokens.css uses, so it reaches every migrated island now and the shell once it
+ * carries the marker (T-038+); the old selector keyed B2 to #complianz-app-root, which no phase before
+ * Phase 5 renders (the marker MOVE is deferred, ADR-001), so in the main app B2 matched nothing — the
+ * same latent token/island bug the token-scope fix solved (learnings 2026-10-10). No early marker move.
+ * color uses the live --cmplz-text token (co-declared on this exact selector in tokens.css, so it always
+ * resolves) instead of the former hardcoded #1e1e1e (C-2 redesign; drift re-baselined at T-043). */
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) {
+  font-size: 14px; line-height: 1.5; color: var(--cmplz-text); -webkit-font-smoothing: antialiased;
 }
 /* B3 — form controls inherit font (Preflight replacement) */
 :is(#complianz, #complianz-portal) :where([data-cmplz-ui] :is(button,input,select,textarea,optgroup):not([data-cmplz-isolate] *):not([data-cmplz-isolate])) {

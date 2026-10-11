@@ -1,15 +1,13 @@
 .cmplz {
 	font-variant-numeric: tabular-nums; // https://css-tricks.com/almanac/properties/f/font-variant-numeric/
 	margin: 0;
-	margin-left: -20px;
+	// Mount-point offset (was margin-left: -20px / -9px @ max-width 768px) relocated to the page-level
+	// settings/src/styles/page.css as margin-inline-start (T-037, ADR-001/ADR-005/ADR-007).
 	font-size: var(--cmplz-legacy-fs-300);
 	box-sizing: border-box;
 	color: var(--cmplz-legacy-text-color);
 	font-weight: 400;
 	line-height: 1.5;
-	@media only screen and ( max-width: $cmplz-legacy-break-xs)  {
-		margin-left: -9px;
-	}
 	*, *:before, *:after {
 		box-sizing: inherit;
 	}
@@ -94,12 +92,7 @@
 		display: none !important;
 	}
 }
-// Hide nags from other plugins
-.error, .notice, .update-nag, .notice-info {
-	&:not(.really-simple-plugins) {
-		display: none !important;
-	}
-	&.really-simple-plugins{
-		margin: var(--cmplz-legacy-grid-gap);
-	}
-}
+// Other-plugins notice hiding (was `.error, .notice, .update-nag, .notice-info` block) relocated to
+// the page-level settings/src/styles/page.css, scoped to body.toplevel_page_complianz (T-037,
+// ADR-001/ADR-005). Kept-notice margin re-expressed as the resolved literal there (the
+// --cmplz-legacy-grid-gap token is banned in settings/src by ADR-004/T-018).

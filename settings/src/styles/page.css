@@ -1,0 +1,43 @@
+/* page.css — the ONLY unscoped page-level stylesheet for the Complianz settings screen (ADR-001).
+ *
+ * Unlike tokens.css and base.css (scoped to the `[data-cmplz-ui]` islands), this file styles the
+ * wp-admin page chrome that sits OUTSIDE those islands. Consequences:
+ *   - it must NOT reference the redesign `--cmplz-*` tokens — those are declared only on the islands
+ *     (tokens.css), so they would be undefined out here; page-chrome values are therefore literals;
+ *   - it carries NO Preflight / utility reset, so nothing leaks onto wp-admin or other plugins;
+ *   - it is imported LAST (settings/src/index.js, after tailwind.css) so it forms the final,
+ *     page-level cascade layer, and it is enqueued only on the Complianz settings screen;
+ *   - logical properties only (ADR-007): the physical `margin-left` originals became
+ *     `margin-inline-start`.
+ *
+ * Relocated here from assets/css/admin/base.scss (ADR-005 — relocate, don't duplicate):
+ *   - mount-point offset: `.cmplz { margin-left: -20px }` + `@media … { margin-left: -9px }`
+ *     (base.scss:4 and 10-12), narrowed out of the still-needed `.cmplz` legacy typography rule;
+ *   - other-plugins notice hiding: the top-level `.error, .notice, .update-nag, .notice-info`
+ *     block (base.scss:97-105), removed in full (it served only this page concern).
+ */
+
+/* Mount-point offset (DB-04): pull the app to the wp-admin content edge. `#complianz` is rendered
+ * only on this page (settings/settings.php), so targeting it directly is page-scoped. In LTR,
+ * margin-inline-start resolves to the left margin the page-rules characterization reads. */
+#complianz {
+  margin-inline-start: -20px;
+}
+
+@media (max-width: 768px) {
+  #complianz {
+    margin-inline-start: -9px;
+  }
+}
+
+/* Hide other plugins' admin notices on the Complianz screen, but keep Really Simple Plugins' own
+ * notices (DB-04). Scoped to this single admin page via its wp-admin body class so it never affects
+ * other screens. The legacy kept-notice margin used a legacy grid-gap token (= 20px); those
+ * legacy-SCSS-only token names are banned in settings/src (ADR-004/T-018), so the literal is used. */
+body.toplevel_page_complianz :is(.error, .notice, .update-nag, .notice-info):not(.really-simple-plugins) {
+  display: none !important;
+}
+
+body.toplevel_page_complianz :is(.error, .notice, .update-nag, .notice-info).really-simple-plugins {
+  margin: 20px;
+}

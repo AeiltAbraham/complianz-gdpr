@@ -2,6 +2,9 @@ import {
     render,createRoot
 } from '@wordpress/element';
 import './styles/tailwind.css';
+// page.css is the ONLY unscoped page-level stylesheet (ADR-001). Imported after tailwind.css so it
+// forms the final page-level cascade layer; it carries no Preflight/utilities and no island tokens.
+import './styles/page.css';
 import Page from './Page';
 
 /**
