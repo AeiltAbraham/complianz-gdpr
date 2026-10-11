@@ -13,6 +13,35 @@ import useProgress from "./Dashboard/Progress/ProgressData";
 import PreloadFields from "./Settings/Fields/PreloadFields";
 import {__, setLocaleData} from "@wordpress/i18n";
 import ErrorBoundary from "./utils/ErrorBoundary";
+import { clsx } from "./components/ui/cx";
+
+// Redesigned grid FRAME (T-038, DB-07, ADR-005). The `.cmplz-content-area .cmplz-grid` container is
+// restyled with `tw-` utilities (logical/block-axis only, ADR-007) matching
+// docs/specs/001-settings-ui-redesign/design/shell-preview.html. The legacy `.cmplz-grid` CONTAINER
+// rules and the whole `.cmplz-grid-item*` family moved out of layout.scss to legacy-globals.scss
+// (imported last) so the still-legacy consumers keep them (PagePlaceholder's error/lock grid, the
+// banner `.cmplz-grid` margin, and all Phase-4 screen content) — relocate, not orphan.
+//
+// NO `data-cmplz-ui` on this container (it would be wrong here): the grid WRAPS unmigrated Phase-4
+// screen bodies, and the scoped base (base.css B1–B5, `[data-cmplz-ui] *`, specificity (1,0,0)) would
+// then reach every legacy button/input/svg under it and strip its class-based styling (≤(0,N,0)) with
+// no `tw-` utilities to restore it. The marker belongs on fully-migrated subtrees only (the migrated
+// primitives inside keep their OWN `data-cmplz-ui`; Header/Menu get theirs in T-039/T-040); it moves to
+// the app root in Phase 5 (ADR-001) once all bodies are migrated. tw- utilities still apply (scoped by
+// `important: :is(#complianz,#complianz-portal)`, not the marker), so the frame gets the redesign look.
+// Frame spacing references `--cmplz-space-l` with a `24px` fallback (= the token's value): no ancestor
+// island defines the token for this container today, so it resolves to 24px now and auto-upgrades to the
+// token when the Phase-5 marker move lands on the app root.
+//
+// DOM structure, the `cmplz-content-area cmplz-grid cmplz-<section>` class hooks and routing unchanged
+// (C-3): the classes still drive the retained Phase-4 modules (CookieBannerPreview's
+// `.cmplz-grid.cmplz-banner`, wizard/dashboard content), while the tw- utilities win on specificity
+// (1,1,0 > the relocated legacy rules). Both grid tracks preserved; the preview's <1080px single-column
+// collapse is deferred to Phase 4 (it needs the grid-item `grid-column` rules to migrate with it).
+const CONTENT_AREA_FRAME = clsx(
+	"tw-mx-auto tw-mt-[var(--cmplz-space-l,_24px)] tw-grid tw-gap-[var(--cmplz-space-l,_24px)] tw-pb-[var(--cmplz-space-l,_24px)]",
+	"tw-max-w-[clamp(300px,calc(100%_-_var(--cmplz-space-l,_24px)*2),1600px)]"
+);
 
 const Page = () => {
 	const {progressLoaded, fetchProgressData} = useProgress();
@@ -135,7 +164,15 @@ const Page = () => {
 				{ showTour && Tour && <Tour />}
 				{ showNewOnboarding && NewOnboarding && <NewOnboarding/>}
 
-				<div className={"cmplz-content-area cmplz-grid cmplz-" + selectedMainMenuItem}>
+				<div
+					className={clsx(
+						"cmplz-content-area cmplz-grid cmplz-" + selectedMainMenuItem,
+						CONTENT_AREA_FRAME,
+						selectedMainMenuItem === 'dashboard'
+							? "tw-grid-cols-[repeat(auto-fit,minmax(18rem,1fr))]"
+							: "tw-grid-cols-[28ch_1fr_1fr_1fr]"
+					)}
+				>
 					{ selectedMainMenuItem !== 'dashboard' &&
 						<>
 							{Menu && <Menu/>}

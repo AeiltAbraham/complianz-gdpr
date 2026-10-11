@@ -178,3 +178,154 @@ a.button, button.button, input.button {
 		}
 	}
 }
+
+// Relocated from the emptied grid section of layout.scss (ADR-005, T-038 — the Page.js grid shell
+// migration). Page.js's own `.cmplz-content-area .cmplz-grid` is now restyled onto the redesign tokens
+// with `tw-` utilities (which win on specificity, 1,1,0 > these 0,2,0 rules). These legacy rules are NOT
+// last-consumed by Page.js, so they RELOCATE here (imported last) instead of being deleted — grep shows
+// the still-legacy consumers that keep needing them:
+//   - `.cmplz-grid` (container): rendered unchanged by the error/lock page shell in
+//     Placeholder/PagePlaceholder.js (`cmplz-content-area cmplz-grid cmplz-dashboard …`, migrated at
+//     T-041), and relied on as the base grid by CookieBannerPreview.scss's `#complianz .cmplz-grid.cmplz-banner`.
+//   - `.cmplz-grid.cmplz-dashboard` (auto-fit variant): the same PagePlaceholder dashboard grid.
+//   - the whole `.cmplz-grid-item*` family: the Phase-4 SCREEN content (wizard.scss targets
+//     `.cmplz-wizard-settings .cmplz-grid-item`; GridBlock.js / Dashboard/* and PagePlaceholder.js
+//     render `.cmplz-grid-item` + `.cmplz-column-2`/`.cmplz-row-2`). Migrates with those screens in Phase 4.
+// The mixins (`cmplz-block`, `cmplz-inline-block-padding`) resolve from variables.scss (imported first).
+//
+// CASCADE-PRESERVATION (ADR-005; learnings 2026-10-10 / T-030): in layout.scss these rules were
+// imported EARLY (before every module below), so the many retained modules that customise grid items at
+// EQUAL specificity won by source order — e.g. dashboard.scss `.border-to-border .cmplz-grid-item-content
+// { padding: 0 }` (0,2,0) overrode the base `-content` inline padding to make its rows edge-to-edge.
+// legacy-globals is imported LAST, so a verbatim `.cmplz`-scoped copy (0,2,0) would now WIN that tie and
+// silently re-pad border-to-border content (measured: 0 → 25px) and invert every other such override.
+// Wrapping the scope in `:where(.cmplz)` (0 specificity) drops the whole family to one class (0,1,0): it
+// still beats unlayered wp-admin element rules (0,0,1) and the migrated Page.js grid still wins via its
+// `tw-` utilities (1,1,0), but every (0,2,0)+ module override keeps winning exactly as it did when these
+// rules sat first — preserving the cascade rather than the source position.
+:where(.cmplz) {
+	.cmplz-grid {
+		max-width: clamp(300px, calc(100% - var(--cmplz-legacy-grid-gap) * 2), 1600px);
+		margin: 0 auto;
+		display: grid;
+		gap: var(--cmplz-legacy-grid-gap);
+		grid-template-columns: 28ch 1fr 1fr 1fr;
+		margin-top: var(--cmplz-legacy-grid-gap);
+	}
+
+	.cmplz-grid.cmplz-dashboard {
+		grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+	}
+
+	.cmplz-grid-item {
+		@include cmplz-block;
+		transition: all 1s ease;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-start;
+		flex-direction: column;
+		flex-basis: 100%;
+		grid-column: span 1;
+		grid-row: span 1;
+		overflow: hidden;
+
+		&.cmplz-column-2 {
+			grid-column: span 2;
+		}
+
+		&.cmplz-row-2 {
+			grid-row: span 2;
+		}
+
+		&.cmplz-disabled {
+			min-height: 200px; //add min height on disabled so the settings is visible behind the locked div.
+		}
+
+		&.no-background {
+			background: none;
+			border: none;
+			box-shadow: none;
+		}
+
+		&.cmplz-column-2 {
+			grid-column: span 2;
+		}
+
+		&.cmplz-row-2 {
+			grid-row: span 2;
+			min-height: 400px;
+		}
+
+		&-header {
+			width: 100%;
+			box-sizing: border-box;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			min-height: calc(30px + var(--cmplz-legacy-spacing-s) * 2);
+			@include cmplz-inline-block-padding;
+
+			&:empty {
+				display: none;
+			}
+		}
+
+		&-title {
+			margin: 4px 0 4px 0;
+		}
+
+		&-controls {
+			font-size: var(--cmplz-legacy-fs-200);
+			display: flex;
+			gap: var(--cmplz-legacy-spacing-s);
+		}
+
+		&-content {
+			width: 100%;
+			box-sizing: border-box;
+			@include cmplz-inline-block-padding;
+			flex-grow: 100;
+
+			&:empty {
+				display: none;
+			}
+		}
+
+		&-footer {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: center;
+			align-self: flex-end;
+			gap: var(--cmplz-legacy-grid-margin);
+			width: 100%;
+			min-height: calc(30px + var(--cmplz-legacy-spacing-s) * 2);
+			box-sizing: border-box;
+			@include cmplz-inline-block-padding;
+
+			.cmplz-legend {
+				display: flex;
+				line-height: var(--cmplz-legacy-fs-100);
+				font-size: var(--cmplz-legacy-fs-100);
+				width: max-content;
+				color: var(--cmplz-legacy-text-color-light);
+				align-items: center;
+				min-width: 0;
+				gap: var(--cmplz-legacy-spacing-xxs);
+				text-decoration: none;
+			}
+
+			&:empty {
+				display: none;
+			}
+		}
+
+		.cmplz-flex-push-right {
+			margin-left: auto;
+		}
+
+		.cmplz-flex-push-left {
+			margin-right: auto;
+		}
+	}
+}
