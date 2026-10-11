@@ -86,3 +86,37 @@ message (the leading path is the `ROOT` that was passed):
 ```
 report-asset-weight: missing build artifact: <ROOT>/assets/css/admin.min.css
 ```
+
+## Visual baselines — first intentional re-baseline (Stage-G exit, T-043)
+
+Separate from the SC-03/SC-04 asset-weight figures above: this records the e2e SCREENSHOT
+baselines under `tests/e2e/admin/__screenshots__/`. They were first captured against the
+shipped 7.5.5 look (T-010 `admin`, T-013 `admin-rtl`) and are **regenerated here, for the
+first time, against the redesigned shell** (Phase 3 / Stage G). The gate-G3 sign-off
+authorizes it: the redesigned screenshots become the new baseline.
+
+- **When / how:** on a RESET wp-env DB (`npx wp-env clean all` → `start`) plus a fresh
+  `npm run build:all`, via `npm run e2e -- --update-snapshots` across the 4 admin projects —
+  the real CI condition (learnings 2026-10-08), one pass.
+- **Which projects have baselines:** `visual.spec.js` runs in `admin` and `admin-rtl`
+  (per-screen app-container shots at 1440 and 768); `isolation.spec.js` runs in `admin` only
+  (banner preview/website per layout, wp-admin chrome, media modal, non-Complianz screen).
+  `admin-min-wp` and `admin-i18n` run no screenshot spec, so they carry no PNG baselines.
+- **What the new baselines capture:** the redesigned shell FRAME — the Page grid
+  (spacing/tracks), Header (tokens, section tabs, active underline, black Go-Pro CTA), Menu +
+  per-section sub-menu (active wash, step-progress icons) and the Placeholder/Skeleton loading
+  states — wrapping still-LEGACY screen BODIES (fields, panels, data tables, dashboard blocks,
+  date range), which migrate per section in Phase 4. So every app-container shot drifts
+  intentionally at the frame; the bodies are unchanged pending their Phase-4 section PR.
+- **Real redesign drift vs stale-admin.css noise:** the pre-migration baselines were captured
+  against the committed, STALE `admin.css` (ADR-006: build artifacts are rebuilt only at
+  release, so the tracked CSS lags its SCSS — the recurring pre-existing drift on dynamic
+  screens noted in T-021/T-030). These new baselines are captured against a FRESH build
+  (admin.css rebuilt from SCSS + the new scoped `index.css` pipeline), so they no longer carry
+  that staleness. The drift from the old PNGs therefore = the intended shell redesign PLUS the
+  one-time correction of that stale-CSS noise.
+- **Gating:** the visual + isolation screenshot assertions stay NON-BLOCKING (Option B /
+  ADR-008 — macOS-captured baselines cannot pixel-match the Linux CI render, and the snapshot
+  path has no `{platform}` token); the committed PNGs are the human review reference and the
+  Phase-5 re-baseline starting point. The banner PREVIEW/website shots are re-baselined again
+  in Phase 5 against the frontend banner (ADR-008, DB-06).
