@@ -787,6 +787,41 @@ acceptance:
 
 ---
 
+## Stage H (Phase 4 — screens) · section 1 of 7: Wizard fields
+
+Numbering continues at T-044. Section order and the per-section recipe are fixed by plan.md §5
+and the "Not yet tasked" block below; only section 1 (wizard field-row chrome) is tasked here —
+later sections get their `## T-` blocks when their design sign-off opens (C-2).
+
+## T-044 Wizard-fields design note + preview + new-token proposal (Stage-H section-1 gate)
+mode: agentic
+status: done (2026-10-11) — PROPOSAL produced; awaiting maintainer sign-off in design/wizard-fields.md §7
+outcome: Produced design/wizard-fields.md (section design note: scope, a 7-token proposal, the error/highlight/comment state design, the marker-discipline rule and the T-045 migration plan) and design/wizard-fields-preview.html (a self-contained preview rendering every field-row TYPE — text/email(error)/textarea/select/radio-cards/toggle/text_checkbox/multicheckbox/segmented/button/document/colorpicker — and every STATE — required/tooltip/error/comment(info/success/warning/error)/disabled/premium-locked/save-highlight — on the approved C-2 tokens plus the 7 proposed additions; verified in-browser). Scope ratified by maintainer 2026-10-11: (1) section 1 = field-row chrome only (screen frame is section 1b, panel.scss is cross-section/later); (2) tints modernized/C-2-consistent; (3) de-hardcode the shipped primitives in T-045. 7 new tokens proposed: --cmplz-{success,danger,warning}-surface, --cmplz-accent-subtle (replaces #E7F1F9 ×7), --cmplz-surface-disabled (replaces #f7f7f7), --cmplz-text-disabled (replaces #c6c6c6), --cmplz-space-2xs (4px) — all on the island selector, no reserved-banner-name collision. No settings/src / assets/css / tokens.css / build / test file touched (proposal only, like T-034/T-035). PAUSE: T-045 is blocked until design/wizard-fields.md §7 is ticked.
+depends: T-043
+files: docs/specs/001-settings-ui-redesign/design/wizard-fields.md, docs/specs/001-settings-ui-redesign/design/wizard-fields-preview.html
+proof: visual review of wizard-fields-preview.html in a browser (design artifact; no build/test)
+serves: C-2, DB-07, DB-08; Stage-H section-1 gate
+acceptance:
+- a self-contained HTML preview renders the redesigned field-row chrome (all types + required/error/disabled/highlight/comment/premium states) on the approved C-2 tokens + the proposed additions
+- the new-token proposal lists each token with its legacy source + proposed value + use, declared on the island selector, no reserved frontend-banner name collision
+- maintainer sign-off recorded in design/wizard-fields.md §7 before T-045 runs
+
+## T-045 Migrate the wizard field-row chrome; retire fields.scss + premium-fields.scss
+mode: agentic
+status: blocked (awaiting T-044 sign-off)
+depends: T-044
+files: settings/src/styles/tokens.css (add 7 tokens), settings/src/Settings/Fields/Field.js, settings/src/Settings/Fields/LabelWrapper.js, settings/src/Settings/Premium.js, settings/src/Settings/Inputs/* + settings/src/components/ui/* (de-hardcode accent-subtle/disabled), settings/src/Menu/MenuItem.js, assets/css/admin/modules/wizard/fields.scss (DELETE), assets/css/admin/modules/wizard/premium-fields.scss (DELETE), assets/css/admin/legacy-globals.scss (relocate shared globals), assets/css/admin.scss (drop imports), tests/e2e/admin/**/__screenshots__ (re-baseline), tests/e2e/admin/helpers/axe.js (MIGRATED_SCREENS eval)
+proof: npm run build:all && node settings/scripts/check-physical-utilities.js && npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/fields.spec.js
+serves: DB-07, DB-08, SC-02, ADR-005; Stage-H section-1
+acceptance:
+- the 7 approved tokens are added to tokens.css on the island selector; no --cmplz-legacy-* left in the migrated field-row chrome; no reserved-banner-name collision
+- Field.js + LabelWrapper.js + Premium.js render on tw- utilities + token-literal fallbacks; NO data-cmplz-ui on the field-row wrapper (marker discipline); error/highlight/comment/required re-implemented as primitive/row state, not wrapper→descendant SCSS
+- shipped primitives de-hardcoded to the new accent-subtle/disabled tokens; stale JSDoc values corrected
+- fields.scss + premium-fields.scss deleted with their last consumers; shared-global rules relocated to legacy-globals.scss; @imports dropped (no dangling; build compiles)
+- functional specs green; compiled output restored (ADR-006); affected screenshots re-baselined; axe gating evaluated (likely no MIGRATED_SCREENS addition yet — the screen frame + composite bodies remain legacy)
+
+---
+
 ## Not yet tasked — per-section sign-off (Phase 4), CP4 (Phase 5)
 
 Prose only, deliberately without `## T-` headings: these phases depend on per-section

@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Complianz 001 — redesigned wizard-fields preview</title>
+<!--
+  Standalone design review reference for the redesigned FIELD-ROW chrome (feature 001,
+  Stage H / Phase 4 section 1 — wizard fields). Mirrors Settings/Fields/Field.js,
+  LabelWrapper.js and Premium.js over the Phase-2 migrated input primitives, rendered with
+  the approved C-2 tokens PLUS seven proposed NEW tokens (status-surface tints, accent-subtle,
+  disabled surface/text, a 4px spacing step). Self-contained: inline CSS, no external deps.
+  Scope = field ROW chrome only; the settings-screen FRAME (card/footer/help) is the next slice
+  and here is only context. Logical CSS properties only (ADR-007): switch <html dir> to "rtl"
+  to see it mirror. Demo declares tokens on :root; production keeps them on the scoped islands
+  :is(#complianz,#complianz-portal) :where([data-cmplz-ui]) (ADR-001/004).
+-->
+<style>
+  :root {
+    /* ---- Approved C-2 tokens (tokens.css, unchanged) ---- */
+    --cmplz-surface: #ffffff;
+    --cmplz-surface-sunken: #f1f5f9;
+    --cmplz-field-surface: #ffffff;
+    --cmplz-text: #0f172a;
+    --cmplz-text-muted: #475569;
+    --cmplz-text-on-accent: #ffffff;
+    --cmplz-border: #e2e8f0;
+    --cmplz-field-border: #94a3b8;
+
+    --cmplz-accent: #009fff;
+    --cmplz-accent-strong: #1e73be;
+    --cmplz-success: #1f7a34;
+    --cmplz-warning: #eab308;
+    --cmplz-danger: #d7263d;
+
+    --cmplz-radius: 12px;
+    --cmplz-radius-s: 8px;
+    --cmplz-radius-field: 6px;
+
+    --cmplz-space-xs: 8px;
+    --cmplz-space-s: 12px;
+    --cmplz-space-m: 16px;
+    --cmplz-space-l: 24px;
+
+    --cmplz-font-size: 0.875rem;
+    --cmplz-font-size-xs: 0.6875rem;
+    --cmplz-font-size-sm: 0.8125rem;
+    --cmplz-font-size-lg: 1rem;
+    --cmplz-font-size-xl: 1.25rem;
+    --cmplz-line-height: 1.5;
+
+    --cmplz-shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.06);
+    --cmplz-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.10), 0 1px 2px -1px rgba(15, 23, 42, 0.06);
+    --cmplz-shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.18), 0 8px 10px -6px rgba(15, 23, 42, 0.10);
+
+    --cmplz-z-sticky: 20;
+    --cmplz-z-overlay: 30;
+
+    --cmplz-duration-fast: 120ms;
+    --cmplz-duration: 200ms;
+    --cmplz-duration-slow: 300ms;
+    --cmplz-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ---- PROPOSED NEW tokens for sign-off (modernized, C-2-consistent) ---- */
+    --cmplz-success-surface: #e9f6ec;  /* faded green  — save-highlight, selected radio, success comment */
+    --cmplz-danger-surface:  #fdebed;  /* faded red    — invalid field halo, error-text callout */
+    --cmplz-warning-surface: #fbf4da;  /* faded amber  — caution comment / scan status */
+    --cmplz-accent-subtle:   #e3f2ff;  /* faded blue   — toggle-on, selected option, info comment (replaces hardcoded #E7F1F9) */
+    --cmplz-surface-disabled:#f1f5f9;  /* disabled field surface (replaces #f7f7f7) */
+    --cmplz-text-disabled:   #94a3b8;  /* disabled text (replaces #c6c6c6) */
+    --cmplz-space-2xs:       4px;      /* the missing 4px grid step */
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--cmplz-surface-sunken); color: var(--cmplz-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: var(--cmplz-font-size); line-height: var(--cmplz-line-height);
+  }
+
+  /* ---------- Header (context only) ---------- */
+  .cmplz-header-container { background: var(--cmplz-surface); border-block-end: 1px solid var(--cmplz-border); }
+  .cmplz-settings-header {
+    max-width: clamp(300px, calc(100% - var(--cmplz-space-l) * 2), 1600px);
+    margin-inline: auto; display: flex; flex-wrap: wrap; align-items: center; gap: var(--cmplz-space-m);
+    min-height: 70px; padding-inline: var(--cmplz-space-l);
+  }
+  .cmplz-header-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: var(--cmplz-font-size-lg); letter-spacing: -.2px; }
+  .cmplz-header-logo .mark { width: 26px; height: 26px; border-radius: 7px; background: linear-gradient(135deg, var(--cmplz-accent), var(--cmplz-accent-strong)); }
+  .button-black { background: #111827; color: #fff; text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: var(--cmplz-radius-field); font-size: var(--cmplz-font-size-sm); }
+  .cmplz-header-right { margin-inline-start: auto; display: flex; align-items: center; gap: var(--cmplz-space-m); }
+
+  /* ---------- Layout ---------- */
+  .wrap { max-width: clamp(300px, calc(100% - var(--cmplz-space-l) * 2), 980px); margin-inline: auto; margin-block: var(--cmplz-space-l); display: flex; flex-direction: column; gap: var(--cmplz-space-l); padding-inline: var(--cmplz-space-l); }
+  .reviewbar .badge { display:inline-block; padding: 3px 10px; border-radius: 999px; background:#fef9c3; color:#713f12; border:1px solid #fde68a; font-size: var(--cmplz-font-size-xs); font-weight: 700; }
+  .reviewbar .dir-note { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); margin-block-start: 6px; }
+
+  .cmplz-card { background: var(--cmplz-surface); border: 1px solid var(--cmplz-border); border-radius: var(--cmplz-radius); box-shadow: var(--cmplz-shadow); display: flex; flex-direction: column; overflow: hidden; }
+  .cmplz-grid-item-header { display: flex; align-items: center; justify-content: space-between; padding: var(--cmplz-space-m) var(--cmplz-space-l); border-block-end: 1px solid var(--cmplz-border); min-height: 56px; }
+  .cmplz-grid-item-header h2 { margin: 0; font-size: var(--cmplz-font-size-lg); }
+  .cmplz-grid-item-header .sub { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-xs); }
+  .cmplz-grid-item-content { padding: var(--cmplz-space-m) var(--cmplz-space-l); flex-grow: 1; }
+
+  /* ---------- Token swatches (sign-off aid) ---------- */
+  .tokens { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: var(--cmplz-space-s); }
+  .tok { display: flex; align-items: center; gap: var(--cmplz-space-s); border: 1px solid var(--cmplz-border); border-radius: var(--cmplz-radius-s); padding: var(--cmplz-space-xs); }
+  .tok .sw { width: 40px; height: 40px; border-radius: var(--cmplz-radius-field); border: 1px solid var(--cmplz-border); flex: none; }
+  .tok code { font-size: var(--cmplz-font-size-xs); color: var(--cmplz-text); }
+  .tok .val { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-xs); }
+
+  /* ---------- FIELD ROW chrome (Field.js + LabelWrapper.js) ---------- */
+  .field-row { padding-block: var(--cmplz-space-m); border-block-end: 1px solid var(--cmplz-border); }
+  .field-row:last-child { border-block-end: 0; }
+  .field-row.parent { background: linear-gradient(90deg, var(--cmplz-surface-sunken), transparent 60%); margin-inline: calc(var(--cmplz-space-l) * -1); padding-inline: var(--cmplz-space-l); }
+  .label-container { display: flex; align-items: center; gap: var(--cmplz-space-2xs); margin-block-end: var(--cmplz-space-xs); }
+  .label-container.parent label { font-size: var(--cmplz-font-size-lg); }
+  .field-row label { font-weight: 600; color: var(--cmplz-text); }
+  .cmplz-required { color: var(--cmplz-danger); font-weight: 700; }
+  .tooltip-ico { width: 14px; height: 14px; color: var(--cmplz-text-muted); cursor: help; }
+  .help { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); margin-block-start: var(--cmplz-space-xs); }
+
+  /* input primitives (match components/ui/* look) */
+  .field { width: 100%; padding: 8px 12px; background: var(--cmplz-field-surface); border: 1px solid var(--cmplz-field-border); border-radius: var(--cmplz-radius-field); font: inherit; color: var(--cmplz-text); transition: border-color var(--cmplz-duration) var(--cmplz-ease), box-shadow var(--cmplz-duration) var(--cmplz-ease); }
+  .field:focus { outline: none; border-color: var(--cmplz-accent-strong); box-shadow: 0 0 0 2px var(--cmplz-accent-strong); }
+  .field::placeholder { color: var(--cmplz-text-muted); }
+  textarea.field { resize: vertical; min-height: 68px; }
+  select.field { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23475569'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px 16px; padding-inline-end: 34px; }
+  html[dir="rtl"] select.field { background-position: left 12px center; }
+
+  /* error / invalid state */
+  .field.error { border-color: var(--cmplz-danger); box-shadow: 0 0 0 2px var(--cmplz-danger-surface); }
+  .error-text { display: flex; align-items: center; gap: var(--cmplz-space-2xs); color: var(--cmplz-danger); font-size: var(--cmplz-font-size-sm); margin-block-start: var(--cmplz-space-xs); }
+  .error-text .ico { width: 14px; height: 14px; flex: none; }
+
+  /* disabled state */
+  .field:disabled, .field.disabled { background: var(--cmplz-surface-disabled); color: var(--cmplz-text-disabled); border-color: var(--cmplz-border); cursor: not-allowed; }
+  .field-row.disabled label { color: var(--cmplz-text-disabled); }
+
+  /* save-highlight flash */
+  .field-row.highlight { background: var(--cmplz-success-surface); margin-inline: calc(var(--cmplz-space-l) * -1); padding-inline: var(--cmplz-space-l); border-radius: var(--cmplz-radius-s); }
+
+  /* comment blocks (cmplz-comment-<status>) */
+  .comment { display: flex; gap: var(--cmplz-space-xs); align-items: flex-start; border-radius: var(--cmplz-radius-s); padding: var(--cmplz-space-xs) var(--cmplz-space-s); margin-block-start: var(--cmplz-space-xs); font-size: var(--cmplz-font-size-sm); color: var(--cmplz-text); }
+  .comment .ico { width: 16px; height: 16px; flex: none; margin-block-start: 1px; }
+  .comment.info    { background: var(--cmplz-accent-subtle); }
+  .comment.success { background: var(--cmplz-success-surface); }
+  .comment.warning { background: var(--cmplz-warning-surface); }
+  .comment.error   { background: var(--cmplz-danger-surface); }
+
+  /* toggle (checkbox-switch) */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: var(--cmplz-space-m); }
+  .switch { position: relative; width: 40px; height: 22px; border-radius: 999px; background: var(--cmplz-field-border); flex: none; transition: background var(--cmplz-duration) var(--cmplz-ease); }
+  .switch .knob { position: absolute; inset-block-start: 2px; inset-inline-start: 2px; width: 18px; height: 18px; border-radius: 999px; background: #fff; box-shadow: var(--cmplz-shadow-sm); transition: inset-inline-start var(--cmplz-duration) var(--cmplz-ease); }
+  .switch.on { background: var(--cmplz-accent); }
+  .switch.on .knob { inset-inline-start: 20px; }
+
+  /* radio cards */
+  .radio-cards { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cmplz-space-s); }
+  @media (max-width: 560px) { .radio-cards { grid-template-columns: 1fr; } }
+  .radio-card { display: flex; gap: var(--cmplz-space-s); align-items: flex-start; border: 2px solid var(--cmplz-border); border-radius: var(--cmplz-radius-field); padding: var(--cmplz-space-s); background: var(--cmplz-surface); }
+  .radio-card.selected { border-color: var(--cmplz-accent-strong); background: var(--cmplz-accent-subtle); }
+  .radio-card .dot { width: 16px; height: 16px; border-radius: 999px; border: 2px solid var(--cmplz-field-border); flex: none; margin-block-start: 2px; }
+  .radio-card.selected .dot { border-color: var(--cmplz-accent-strong); background: var(--cmplz-accent-strong); box-shadow: inset 0 0 0 3px var(--cmplz-surface); }
+  .radio-card h5 { margin: 0 0 2px; font-size: var(--cmplz-font-size); }
+  .radio-card p { margin: 0; color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); }
+
+  /* multicheckbox list */
+  .check-list { display: flex; flex-direction: column; gap: var(--cmplz-space-xs); }
+  .check-item { display: flex; align-items: center; gap: var(--cmplz-space-xs); }
+  .box { width: 18px; height: 18px; border-radius: 4px; border: 1px solid var(--cmplz-field-border); flex: none; display: grid; place-items: center; }
+  .box.checked { background: var(--cmplz-accent); border-color: var(--cmplz-accent); }
+  .box.checked svg { width: 12px; height: 12px; }
+
+  /* segmented control (borderradius / borderwidth) */
+  .segmented { display: inline-flex; border: 1px solid var(--cmplz-field-border); border-radius: var(--cmplz-radius-field); overflow: hidden; }
+  .segmented button { border: 0; background: var(--cmplz-field-surface); color: var(--cmplz-text); font: inherit; padding: 7px 14px; cursor: pointer; border-inline-end: 1px solid var(--cmplz-field-border); }
+  .segmented button:last-child { border-inline-end: 0; }
+  .segmented button.on { background: var(--cmplz-accent-subtle); color: var(--cmplz-accent-strong); font-weight: 600; }
+
+  /* button-action */
+  .btn-tertiary { background: transparent; border: 1px solid var(--cmplz-field-border); color: var(--cmplz-text); font: inherit; padding: 8px 16px; border-radius: var(--cmplz-radius-field); cursor: pointer; }
+  .btn-tertiary:hover { border-color: var(--cmplz-accent-strong); color: var(--cmplz-accent-strong); }
+
+  /* premium upsell label */
+  .cmplz-premium { display: inline-flex; }
+  .cmplz-premium a { background: var(--cmplz-accent-subtle); color: var(--cmplz-accent-strong); text-decoration: none; font-weight: 600; font-size: var(--cmplz-font-size-xs); padding: 2px 10px; border-radius: 999px; }
+
+  /* document field (radio + combobox + url input) */
+  .combobox { display: flex; align-items: center; gap: var(--cmplz-space-xs); width: 100%; padding: 8px 12px; background: var(--cmplz-field-surface); border: 1px solid var(--cmplz-field-border); border-radius: var(--cmplz-radius-field); color: var(--cmplz-text-muted); }
+  .combobox .ico { width: 16px; height: 16px; margin-inline-start: auto; }
+
+  /* colorpicker (isolated) */
+  .color-swatch { display: inline-flex; align-items: center; gap: var(--cmplz-space-xs); }
+  .color-swatch .chip { width: 34px; height: 34px; border-radius: var(--cmplz-radius-field); border: 1px solid var(--cmplz-field-border); background: var(--cmplz-accent); }
+  .isolate-note { font-size: var(--cmplz-font-size-xs); color: var(--cmplz-text-muted); border: 1px dashed var(--cmplz-field-border); border-radius: var(--cmplz-radius-field); padding: 2px 8px; }
+
+  .section-eyebrow { text-transform: uppercase; letter-spacing: .06em; font-size: var(--cmplz-font-size-xs); font-weight: 700; color: var(--cmplz-text-muted); margin-block: var(--cmplz-space-s) var(--cmplz-space-2xs); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+  <div class="cmplz-header-container">
+    <div class="cmplz-settings-header">
+      <div class="cmplz-header-logo"><span class="mark"></span>Complianz</div>
+      <div class="cmplz-header-right"><a class="button-black" href="#pro">Go Pro</a></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <div class="reviewbar">
+      <span class="badge">WIZARD-FIELDS PREVIEW — design review reference (proposal, awaiting sign-off)</span>
+      <div class="dir-note">Stage H / Phase 4, section 1 = field-ROW chrome only (the screen frame is the next slice).
+        Seven new tokens proposed below. Logical properties throughout — set <code>&lt;html dir="rtl"&gt;</code> to mirror (ADR-007).</div>
+    </div>
+
+    <!-- Proposed new tokens -->
+    <section class="cmplz-card">
+      <div class="cmplz-grid-item-header"><h2>Proposed new tokens</h2><span class="sub">7 additions · values for sign-off</span></div>
+      <div class="cmplz-grid-item-content">
+        <div class="tokens">
+          <div class="tok"><span class="sw" style="background:var(--cmplz-success-surface)"></span><div><code>--cmplz-success-surface</code><div class="val">#e9f6ec</div></div></div>
+          <div class="tok"><span class="sw" style="background:var(--cmplz-danger-surface)"></span><div><code>--cmplz-danger-surface</code><div class="val">#fdebed</div></div></div>
+          <div class="tok"><span class="sw" style="background:var(--cmplz-warning-surface)"></span><div><code>--cmplz-warning-surface</code><div class="val">#fbf4da</div></div></div>
+          <div class="tok"><span class="sw" style="background:var(--cmplz-accent-subtle)"></span><div><code>--cmplz-accent-subtle</code><div class="val">#e3f2ff · replaces #E7F1F9</div></div></div>
+          <div class="tok"><span class="sw" style="background:var(--cmplz-surface-disabled)"></span><div><code>--cmplz-surface-disabled</code><div class="val">#f1f5f9 · replaces #f7f7f7</div></div></div>
+          <div class="tok"><span class="sw" style="background:var(--cmplz-text-disabled)"></span><div><code>--cmplz-text-disabled</code><div class="val">#94a3b8 · replaces #c6c6c6</div></div></div>
+          <div class="tok"><span class="sw" style="background:var(--cmplz-surface);display:grid;place-items:center"><span style="width:4px;height:16px;background:var(--cmplz-accent)"></span></span><div><code>--cmplz-space-2xs</code><div class="val">4px grid step</div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Field rows: every type -->
+    <section class="cmplz-card" aria-label="Field types">
+      <div class="cmplz-grid-item-header"><h2>Who we are</h2><span class="sub">field-row chrome over Phase-2 inputs</span></div>
+      <div class="cmplz-grid-item-content" style="padding-block:0">
+
+        <!-- text, required, tooltip -->
+        <div class="field-row">
+          <div class="label-container">
+            <label for="f1">Website name</label>
+            <span class="cmplz-required" title="Required">*</span>
+            <svg class="tooltip-ico" viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm-40-176h24V272H216c-13 0-24-11-24-24s11-24 24-24h48c13 0 24 11 24 24v88h8c13 0 24 11 24 24s-11 24-24 24H216c-13 0-24-11-24-24s11-24 24-24zm40-168a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg>
+          </div>
+          <input id="f1" class="field" type="text" value="example.com">
+          <div class="help">Shown in your generated privacy documents.</div>
+        </div>
+
+        <!-- email, error state -->
+        <div class="field-row">
+          <div class="label-container"><label for="f2">Administrator email</label><span class="cmplz-required">*</span></div>
+          <input id="f2" class="field error" type="email" value="privacy@@example" aria-invalid="true">
+          <div class="error-text">
+            <svg class="ico" viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="M256 32a224 224 0 1 0 0 448 224 224 0 1 0 0-448zm0 128c13 0 24 11 24 24v96c0 13-11 24-24 24s-24-11-24-24v-96c0-13 11-24 24-24zm0 224a28 28 0 1 1 0-56 28 28 0 1 1 0 56z"/></svg>
+            Enter a valid email address.
+          </div>
+        </div>
+
+        <!-- textarea + info comment -->
+        <div class="field-row">
+          <div class="label-container"><label for="f3">Notes for your DPO</label></div>
+          <textarea id="f3" class="field" rows="3">Review retention periods before launch.</textarea>
+          <div class="comment info">
+            <svg class="ico" viewBox="0 0 512 512" aria-hidden="true"><path fill="var(--cmplz-accent-strong)" d="M256 32a224 224 0 1 0 0 448 224 224 0 1 0 0-448zm0 96a28 28 0 1 1 0 56 28 28 0 1 1 0-56zm40 256h-80c-13 0-24-11-24-24s11-24 24-24h16v-56h-8c-13 0-24-11-24-24s11-24 24-24h32c13 0 24 11 24 24v80h16c13 0 24 11 24 24s-11 24-24 24z"/></svg>
+            These notes stay private to your team.
+          </div>
+        </div>
+
+        <!-- select -->
+        <div class="field-row">
+          <div class="label-container"><label for="f4">Default region</label></div>
+          <select id="f4" class="field"><option>European Union (GDPR)</option><option>United Kingdom</option><option>United States</option></select>
+        </div>
+
+        <!-- radio cards -->
+        <div class="field-row">
+          <div class="label-container"><label>Consent type for this region</label></div>
+          <div class="radio-cards">
+            <div class="radio-card selected"><span class="dot"></span><div><h5>Opt-in</h5><p>Ask consent before any cookies are placed (EU default).</p></div></div>
+            <div class="radio-card"><span class="dot"></span><div><h5>Opt-out</h5><p>Allow cookies until the visitor objects.</p></div></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- More types + states -->
+    <section class="cmplz-card" aria-label="More field types and states">
+      <div class="cmplz-grid-item-header"><h2>Field types &amp; states</h2></div>
+      <div class="cmplz-grid-item-content" style="padding-block:0">
+
+        <!-- toggle on -->
+        <div class="field-row">
+          <div class="toggle-row">
+            <div><div class="label-container"><label for="t1">Enable statistics</label></div><div class="help" style="margin:0">Track anonymized consent statistics.</div></div>
+            <span class="switch on" id="t1" role="switch" aria-checked="true"><span class="knob"></span></span>
+          </div>
+        </div>
+
+        <!-- text_checkbox composite -->
+        <div class="field-row">
+          <div class="label-container"><label for="tc1">Custom data-processing region</label></div>
+          <div class="toggle-row">
+            <input id="tc1" class="field" type="text" value="eu-west-1" style="max-width:260px">
+            <span class="switch on" role="switch" aria-checked="true"><span class="knob"></span></span>
+          </div>
+        </div>
+
+        <!-- multicheckbox -->
+        <div class="field-row">
+          <div class="label-container"><label>Purposes you use</label></div>
+          <div class="check-list">
+            <label class="check-item"><span class="box checked"><svg viewBox="0 0 448 512" aria-hidden="true"><path fill="#fff" d="M438 105a24 24 0 0 1 0 34L183 394a24 24 0 0 1-34 0L9 254a24 24 0 1 1 34-34l123 123L404 105a24 24 0 0 1 34 0z"/></svg></span> Functional</label>
+            <label class="check-item"><span class="box checked"><svg viewBox="0 0 448 512" aria-hidden="true"><path fill="#fff" d="M438 105a24 24 0 0 1 0 34L183 394a24 24 0 0 1-34 0L9 254a24 24 0 1 1 34-34l123 123L404 105a24 24 0 0 1 34 0z"/></svg></span> Statistics</label>
+            <label class="check-item"><span class="box"></span> Marketing</label>
+          </div>
+        </div>
+
+        <!-- segmented (borderradius) -->
+        <div class="field-row">
+          <div class="label-container"><label>Banner corner radius</label></div>
+          <div class="segmented" role="group">
+            <button type="button">None</button>
+            <button type="button" class="on">Rounded</button>
+            <button type="button">Pill</button>
+          </div>
+        </div>
+
+        <!-- button-action -->
+        <div class="field-row">
+          <div class="label-container"><label>Re-scan your website</label></div>
+          <button class="btn-tertiary" type="button">Start scan</button>
+          <div class="help">Looks for new cookies and scripts.</div>
+        </div>
+
+        <!-- document field -->
+        <div class="field-row">
+          <div class="label-container"><label>Privacy Statement</label></div>
+          <div class="radio-cards" style="margin-block-end:var(--cmplz-space-s)">
+            <div class="radio-card selected"><span class="dot"></span><div><h5>Generate with Complianz</h5><p>Create and keep it up to date automatically.</p></div></div>
+            <div class="radio-card"><span class="dot"></span><div><h5>Use an existing page</h5><p>Point to a page you already have.</p></div></div>
+          </div>
+          <div class="combobox">Select a page… <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path fill="var(--cmplz-text-muted)" d="M4 6l4 4 4-4"/></svg></div>
+        </div>
+
+        <!-- colorpicker (isolated) -->
+        <div class="field-row">
+          <div class="label-container"><label>Accent color</label><span class="isolate-note">data-cmplz-isolate — react-color unchanged</span></div>
+          <div class="color-swatch"><span class="chip"></span> <input class="field" value="#009fff" style="max-width:120px"></div>
+        </div>
+
+        <!-- warning comment -->
+        <div class="field-row">
+          <div class="label-container"><label for="w1">Cookie expiry (days)</label></div>
+          <input id="w1" class="field" type="number" value="365" style="max-width:160px">
+          <div class="comment warning">
+            <svg class="ico" viewBox="0 0 576 512" aria-hidden="true"><path fill="var(--cmplz-warning)" d="M288 0c11 0 21 6 27 15l264 448c6 10 6 22 0 32s-16 16-27 16H24c-11 0-21-6-27-16s-6-22 0-32L261 15c6-9 16-15 27-15zm0 160c-13 0-24 11-24 24v112c0 13 11 24 24 24s24-11 24-24V184c0-13-11-24-24-24zm0 224a28 28 0 1 0 0-56 28 28 0 0 0 0 56z"/></svg>
+            Values above 365 may not comply with some regional guidelines.
+          </div>
+        </div>
+
+        <!-- disabled (conditionally-disabled) -->
+        <div class="field-row disabled">
+          <div class="label-container"><label for="d1">Sub-option (requires the toggle above)</label></div>
+          <input id="d1" class="field" type="text" value="unavailable" disabled>
+          <div class="help">Enabled once its parent option is turned on.</div>
+        </div>
+
+        <!-- premium-locked field -->
+        <div class="field-row">
+          <div class="label-container"><label>A/B test your banner</label><span class="cmplz-premium"><a href="#pro">Upgrade</a></span></div>
+          <input class="field" type="text" value="" placeholder="Available on Complianz Premium" disabled>
+        </div>
+
+        <!-- save-highlight flash -->
+        <div class="field-row highlight">
+          <div class="label-container"><label for="h1">Consent banner expiration</label></div>
+          <input id="h1" class="field" type="text" value="365" style="max-width:160px">
+          <div class="comment success">
+            <svg class="ico" viewBox="0 0 448 512" aria-hidden="true"><path fill="var(--cmplz-success)" d="M438 105a24 24 0 0 1 0 34L183 394a24 24 0 0 1-34 0L9 254a24 24 0 1 1 34-34l123 123L404 105a24 24 0 0 1 34 0z"/></svg>
+            Saved — the row flashes with the success-surface tint.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>
