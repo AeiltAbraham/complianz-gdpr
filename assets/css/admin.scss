@@ -63,7 +63,11 @@
 	  @import 'admin/modules/CookieBannerPreview.scss';
 
   @import 'admin/modules/cookiescan.scss';
-  @import 'admin/modules/notices.scss';
+  // modules/notices.scss removed (ADR-005, T-042): the file was empty (only a `/** Admin notice */`
+  // comment, no rules). In-app notices are react-toastify toasts (the shell ToastContainer in Page.js,
+  // a third-party widget) and the `.cmplz-wscscan-alert` screen callout (wizard/suggested-plugins.scss,
+  // Phase-4); Complianz's own PHP admin notices live in wp-admin markup governed by page.css (T-037).
+  // There is no `.cmplz-notice` React component, so nothing migrated here.
   @import 'admin/modules/datatables.scss';
   @import 'admin/modules/new-features.scss';
   @import 'admin/modules/integrations/integrations.scss';
