@@ -359,3 +359,21 @@ a.button, button.button, input.button {
 		}
 	}
 }
+
+// Relocated from the deleted modules/placeholder.scss (ADR-005, T-041 — the loading placeholders migrated
+// to the Skeleton primitive, which now carries the skeleton look). Only this rule survives relocation: the
+// skeleton row rules (`.cmplz-placeholder` / `.cmplz-placeholder-line` / `-count-*`) and the grid-item
+// shimmer (`.cmplz-page-placeholder .cmplz-grid-item:after`, `.cmplz-grid-item-placeholder`) were
+// last-consumed by the now-migrated Placeholder/PagePlaceholder.js and are reproduced by the Skeleton
+// pulse, so they are deleted. This opacity/filter transition is still used by the STILL-LEGACY Statistics
+// chart (Statistics/Statistics.js renders `<Bar className="cmplz-loading-container …">` and toggles
+// `.cmplz-loading` while the chart data loads) — grep confirms Statistics is its only consumer. No other
+// rule targets these classes, so the verbatim relocation keeps the behavior; it migrates with Statistics in
+// Phase 4. Delete in Phase 5.
+.cmplz-loading-container {
+	transition: opacity 0.2s ease-in-out, filter 0.2s ease-in-out;
+
+	&.cmplz-loading {
+		opacity: 0.3;
+	}
+}

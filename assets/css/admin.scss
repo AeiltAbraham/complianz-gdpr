@@ -33,7 +33,9 @@
 
   @import 'admin/modules/onboarding.scss';
   @import 'admin/modules/progress.scss';
-  @import "admin/modules/placeholder.scss";
+  // modules/placeholder.scss removed (ADR-005, T-041): the loading placeholders migrated to the Skeleton
+  // primitive (settings/src/Placeholder/*.js); its one still-needed rule (.cmplz-loading-container, used by
+  // the legacy Statistics chart) relocated to legacy-globals.scss, the rest deleted (reproduced via Skeleton).
   @import 'admin/modules/other-plugins.scss';
   @import 'admin/modules/tips-tricks.scss';
   @import 'admin/modules/dashboard/dashboard.scss';
