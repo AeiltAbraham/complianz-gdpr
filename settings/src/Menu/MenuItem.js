@@ -23,7 +23,8 @@ import { clsx } from "../components/ui/cx";
 // (`getIconProps`), and the legacy class hooks (`cmplz-wizard-menu-item`, `cmplz-main`/`cmplz-sub`,
 // `cmplz-active`, `cmplz-featured`, `cmplz-premium`, `cmplz-submenu-items`, `cmplz-menu-item-featured-pill`)
 // are all kept. Restyle only. Logical CSS only (ADR-007: `ps`/`pe`/`ms` on the inline axis; `py`/`my`/`mt`
-// are block-axis and RTL-safe). `#e9f5ff` is the preview's `--accent-wash` tint (no wash token exists).
+// are block-axis and RTL-safe). The active main-item wash uses --cmplz-accent-subtle (T-045; replaced the
+// hardcoded #e9f5ff when the token landed).
 const ITEM_BASE = clsx(
 	"cmplz-wizard-menu-item",
 	"tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs)] tw-no-underline",
@@ -38,7 +39,7 @@ const MAIN_BASE = clsx(
 const MAIN_INACTIVE = "tw-text-[color:var(--cmplz-text)]";
 const MAIN_ACTIVE = clsx(
 	"cmplz-active",
-	"tw-text-[color:var(--cmplz-accent-strong)] tw-bg-[#e9f5ff] tw-shadow-[var(--cmplz-shadow-sm)]"
+	"tw-text-[color:var(--cmplz-accent-on-subtle,_#17608f)] tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)] tw-shadow-[var(--cmplz-shadow-sm)]"
 );
 const SUB_BASE = clsx(
 	"cmplz-sub",

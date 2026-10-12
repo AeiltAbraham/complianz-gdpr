@@ -42,7 +42,7 @@ import { clsx } from './cx';
 import { getPortalContainer } from './PortalContainer';
 
 // Complete literal class strings (ADR-013). The control reproduces the TextField look (1px field
-// border, 5px radius, 5px/10px padding, 13px text, field surface) with its focus ring on
+// border, the 6px field radius, 5px/8px padding, 13px text, field surface) with its focus ring on
 // `focus-within` because the real focus target is the inner input. Logical utilities only (ADR-007).
 const controlCls = clsx(
 	'tw-relative tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs)]',
@@ -52,7 +52,7 @@ const controlCls = clsx(
 	'focus-within:tw-border-[color:var(--cmplz-accent-strong)] focus-within:tw-shadow-[0_0_0_2px_var(--cmplz-accent-strong)]'
 );
 const controlDisabledCls =
-	'tw-cursor-not-allowed tw-bg-[#f7f7f7] tw-text-[color:#c6c6c6]';
+	'tw-cursor-not-allowed tw-bg-[var(--cmplz-surface-disabled,_#f1f5f9)] tw-text-[color:var(--cmplz-text-disabled,_#94a3b8)]';
 const inputCls =
 	'tw-flex-1 tw-min-w-0 tw-border-0 tw-bg-transparent tw-p-0 tw-text-inherit tw-outline-none disabled:tw-cursor-not-allowed';
 // The placeholder is rendered as real text (not the native `placeholder` attribute) so it reads like

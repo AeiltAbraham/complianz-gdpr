@@ -8,7 +8,8 @@ const TextInput = ({
 	disabled,
 	id,
 	name,
-	placeholder
+	placeholder,
+	error
 }) => {
 	const inputId = id || name;
 	const [inputValue, setInputValue] = useState('');
@@ -48,6 +49,7 @@ const TextInput = ({
 				required={required}
 				disabled={disabled}
 				placeholder={placeholder}
+				invalid={error}
 			/>
 		</div>
 	);

@@ -9,6 +9,7 @@ const PhoneInput = ({
 	disabled,
 	id,
 	name,
+	error,
 }) => {
 	const inputId = id || name;
 	const [inputValue, setInputValue] = useState('');
@@ -55,6 +56,7 @@ const PhoneInput = ({
 				onChange={(event) => handleChange(event.target.value)}
 				required={required}
 				disabled={disabled}
+				invalid={error}
 			/>
 		</div>
 	);

@@ -132,16 +132,43 @@ exactly as the shell frame was. The input primitives keep their own self-marked 
 
 Adversarial review + CI-green under the implement → review → commit → push gate.
 
+## 6b. Post-review adjustments (T-045, 2026-10-12)
+
+The pre-push adversarial review (5 dimensions, each finding verified) surfaced fixes applied before
+push. None changes the approved direction; two touch the token set / previewed look:
+
+- **AA contrast (maintainer call, "darker blue text").** `--cmplz-accent-strong` (#1e73be) text on the
+  `--cmplz-accent-subtle` tint is only 4.33:1 — below WCAG AA (constitution §5) for the ~11px Upgrade pill
+  and the active main-menu item. Added an 8th token **`--cmplz-accent-on-subtle: #17608f`** (a darker blue,
+  ~5.9:1 on the tint) for interactive text/icons ON the accent-subtle tint; applied to `Premium.js` (pill)
+  and `Menu/MenuItem.js` (active main). The segmented control was already AA-safe (its icon is text-muted
+  on the tint, 6.66:1), so it needed no change. The submenu-active text on the sunken menu bg (~4.46:1) is a
+  pre-existing shell pairing, out of this section's scope — noted as a shell follow-up.
+- **Save-highlight = transient flash (not a permanent fill).** The first cut applied a static
+  `--cmplz-success-surface` background that never cleared (`highLightField` is never reset). Restored the
+  legacy one-shot behaviour: a `@keyframes` flash that fades back out + a persistent green inline-start
+  marker, in `page.css` (`#complianz .cmplz-highlight`, literal colours — the row is outside the islands).
+- **`.cmplz-error-text` / `.cmplz-comment` relocation (ADR-005).** Both were GLOBAL `#complianz`-level
+  rules with non-Field consumers (Ace-editor warning, processing-agreements upload error / unsaved-service
+  + safe-mode hints). Relocated verbatim to `legacy-globals.scss`; Field's migrated error-text drops the
+  `.cmplz-error-text` hook so the relocated `p` rule can't re-style it.
+- **Deferred (noted, not fixed here):** a ~1px datatables full-bleed seam (the field-wrap padding moved
+  25px→24px with the C-2 token; the still-legacy `datatables.scss` counter-margin is −25px) → resolves when
+  the tables section migrates; and the Combobox / DocumentControl raw-input invalid ring → resolves with the
+  DocumentControl slice (the error-text message still renders).
+
 ---
 
 ## 7. Sign-off
 
 Wizard-fields migration (T-045) starts only when this is approved.
 
-- **Token values + field-row look approved:** [ ] — maintainer, ____________
+- **Token values + field-row look approved:** [x] — maintainer, 2026-10-11, AS PROPOSED (all 7 tokens at the listed values; the field-row look as previewed; no changes).
+
+Wizard-fields migration (T-045) authorized to run autonomously under the implement → adversarial-review → commit → push → CI-green gate.
 
 Maintainer notes / requested changes:
 
 ```
-(awaiting review)
+Approved as-is; no requested changes. Proceed autonomously through T-045.
 ```

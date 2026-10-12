@@ -10,19 +10,20 @@ import { getPortalContainer } from '../../components/ui/PortalContainer';
 // into `#complianz-portal-root[data-cmplz-ui]` (ADR-001/ADR-014), so the scoped base and the
 // semantic `--cmplz-*` tokens reach it. Complete literal class strings on those tokens (ADR-013),
 // logical utilities only (ADR-007). Values mirror the deleted SelectInput.scss: field-surface
-// trigger with a 1px field border and 5px radius, 5px/10px padding, 13px muted text, blue-faded
-// hover (#E7F1F9, no token), a 2px accent-strong focus ring; the content drops the top corners
-// (`rounded-b`) and top border to sit flush under the trigger.
+// trigger with a 1px field border and the 6px field radius, 5px/8px padding, 13px muted text, the
+// accent-subtle hover tint (--cmplz-accent-subtle, T-045), a 2px accent-strong focus ring, and the
+// disabled surface/text tokens; the content drops the top corners (`rounded-b`) and top border to sit
+// flush under the trigger.
 const triggerCls = clsx(
 	'tw-inline-flex tw-items-center tw-justify-between tw-gap-[5px]',
 	'tw-py-[5px] tw-px-[var(--cmplz-space-xs)]',
 	'tw-text-[0.8125rem] tw-leading-normal tw-text-[color:var(--cmplz-text-muted)]',
 	'tw-bg-[var(--cmplz-field-surface)] tw-rounded-[var(--cmplz-radius-field)]',
 	'tw-border tw-border-[color:var(--cmplz-field-border)] tw-outline-none',
-	'hover:enabled:tw-bg-[#E7F1F9]',
+	'hover:enabled:tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)]',
 	'focus:tw-shadow-[0_0_0_2px_var(--cmplz-accent-strong)]',
-	'data-[placeholder]:tw-text-[color:#c6c6c6]',
-	'disabled:tw-bg-[#f7f7f7] disabled:tw-text-[color:#c6c6c6]'
+	'data-[placeholder]:tw-text-[color:var(--cmplz-text-disabled,_#94a3b8)]',
+	'disabled:tw-bg-[var(--cmplz-surface-disabled,_#f1f5f9)] disabled:tw-text-[color:var(--cmplz-text-disabled,_#94a3b8)]'
 );
 const contentCls = clsx(
 	'tw-w-[var(--radix-select-trigger-width)]',
@@ -39,7 +40,7 @@ const itemCls = clsx(
 	'tw-text-[0.8125rem] tw-text-[color:var(--cmplz-text-muted)]',
 	'data-[disabled]:tw-bg-[#ededed] data-[disabled]:tw-text-[color:#737373]',
 	'data-[disabled]:tw-pointer-events-none data-[disabled]:tw-cursor-not-allowed',
-	'data-[highlighted]:tw-bg-[#E7F1F9] data-[highlighted]:tw-text-[color:var(--cmplz-text)]'
+	'data-[highlighted]:tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)] data-[highlighted]:tw-text-[color:var(--cmplz-text)]'
 );
 const scrollBtnCls = 'tw-flex tw-items-center tw-justify-center tw-h-[25px] tw-bg-white tw-cursor-default';
 

@@ -377,3 +377,153 @@ a.button, button.button, input.button {
 		opacity: 0.3;
 	}
 }
+
+// Relocated from the deleted modules/wizard/fields.scss (ADR-005, T-045 — the wizard field-ROW chrome
+// migrated to tw- utilities on the semantic tokens in Settings/Fields/Field.js + LabelWrapper.js +
+// Premium.js, which win via the `important:` config). These fields.scss rules were NOT last-consumed by the
+// migrated row — each still styles a NON-migrated consumer — so they RELOCATE here (imported last) instead
+// of being deleted. The Field-only row-chrome rules (`.cmplz-label-container`, `.cmplz-required`,
+// `.cmplz-field-wrap` layout + row-type variants, the `.cmplz-error` input ring) are gone (reproduced in
+// JS); `.cmplz-highlight` + its flash keyframes moved to page.css (T-045 review); the two GLOBAL
+// `#complianz`-level rules `.cmplz-error-text` and `.cmplz-comment` (italic) are RELOCATED below — they
+// also style non-Field consumers. The dead rules (`.cmplz-parent-label`,
+// `.cmplz_multicheckbox`, `.cmplz-text-control`, `.components-form-file-upload button`,
+// `input[type=checkbox].indeterminate` — no JS producer, grep-verified) are dropped. Verbatim relocation on
+// the legacy tokens, same `#complianz div[class^="cmplz-wizard-"]` scope. Delete in Phase 5. Consumers:
+//   - `.cmplz-grid-item-content` flex body + `.cmplz-settings-block-intro` padding: the SettingsGroup card
+//     is section 1b (still legacy); SettingsPlaceholder.js also renders block-intro.
+//   - `.cmplz-create-document`: CreateDocuments/CreateDocument.js.
+//   - the @wordpress/components tweaks: CheckboxControl.js / License.js / Password.js (ToggleControl, Flex).
+//   - `.button` row layout + `.cmplz-field-button`/`.cmplz-export`/`.cmplz-import`: the export / import /
+//     records-export / proof-of-consent bodies.
+//   - the `.cmplz-license` task tail: License/License.js.
+#complianz {
+	div[class^="cmplz-wizard-"] {
+		.cmplz-create-document {
+			padding: 10px 0;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+
+			.cmplz-icon {
+				margin-right: 10px;
+			}
+
+			input {
+				width: 50%;
+				min-width: 200px;
+				margin-right: 10px;
+			}
+		}
+
+		.components-flex {
+			.components-flex-item label {
+				margin: 0;
+			}
+
+			.components-input-control__container {
+				max-width: max-content;
+			}
+		}
+
+		.components-base-control__field {
+			margin-bottom: 0;
+			display: flex;
+			flex-flow: column;
+		}
+
+		.components-toggle-control {
+			.components-base-control__field, .components-flex {
+				display: flex;
+				flex-direction: row-reverse;
+				align-items: center;
+				justify-content: space-between;
+				width: 100%;
+
+				.components-form-toggle {
+					margin-right: 0;
+				}
+			}
+		}
+
+		.components-form-toggle.is-checked .components-form-toggle__track {
+			background-color: var(--cmplz-legacy-green);
+		}
+
+		.cmplz-grid-item {
+			.cmplz-grid-item-content {
+				margin-block: var(--cmplz-legacy-spacing-l);
+				display: flex;
+				flex-direction: column;
+				gap: var(--cmplz-legacy-spacing-l);
+				padding-inline: 0;
+			}
+		}
+
+		// block-intro keeps only its inline padding (the original deliberately withheld display:flex here —
+		// it broke the sanitized HTML intro — so flex-direction/gap were no-ops, kept verbatim).
+		.cmplz-settings-block-intro {
+			flex-direction: column;
+			gap: var(--cmplz-legacy-spacing-xs);
+			padding-inline: var(--cmplz-legacy-spacing-l);
+		}
+
+		.button {
+			display: flex;
+			align-items: center;
+			flex-direction: row;
+			justify-content: space-between;
+			gap: var(--cmplz-legacy-spacing-s);
+			flex-wrap: wrap;
+		}
+
+		.cmplz-field-button, .cmplz-export, .cmplz-import {
+			display: flex;
+			justify-content: space-between;
+			flex-wrap: wrap;
+
+			&-form {
+				display: flex;
+			}
+		}
+	}
+
+	// Global `#complianz`-level rules (NOT under the wizard div — their original fields.scss scope),
+	// relocated for their NON-Field consumers: `.cmplz-error-text` styles the Ace-editor script-tag warning
+	// (AceEditorControl.js) and the processing-agreements upload error (CreateProcessingAgreements.js);
+	// `.cmplz-comment` italic styles the unsaved-service hint (Service.js) and the safe-mode hint
+	// (PlaceholderPreview.js). Field.js's own error-text is tw-migrated and drops the `.cmplz-error-text`
+	// hook, so the `p` sub-rule never reaches it; its comment keeps `.cmplz-comment` but its tw- classes
+	// (equal specificity, loaded later) win, so the callout stays non-italic.
+	.cmplz-error-text {
+		display: flex;
+		gap: var(--cmplz-legacy-spacing-xxs);
+
+		p {
+			color: var(--cmplz-legacy-red);
+			font-size: var(--cmplz-legacy-fs-200);
+			font-weight: 400;
+			font-style: italic;
+		}
+	}
+
+	.cmplz-comment {
+		font-style: italic;
+	}
+
+	// switch padding to top, to prevent tasks from getting stuck to text field
+	.cmplz-license {
+		.cmplz-processing {
+			opacity: 0.3;
+		}
+
+		.cmplz-task-element {
+			padding-top: var(--cmplz-legacy-spacing-s);
+			padding-bottom: 0;
+		}
+
+		.cmplz-license-field {
+			display: flex;
+		}
+	}
+}

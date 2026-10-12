@@ -36,12 +36,34 @@
   --cmplz-warning: #eab308;
   --cmplz-danger: #d7263d;
 
+  /* Status-surface tints (T-045, DB-08): light washes derived from the C-2 status hues above,
+   * for faded status backgrounds the solid hues can't give — the invalid-field halo, save-highlight
+   * flash, `cmplz-comment-<status>` callouts and the selected radio-card tint. --cmplz-accent-subtle
+   * doubles as the info-comment tint AND the interactive selected/hover tint (toggle-on, selected
+   * option, segmented-on), replacing the #E7F1F9/#e9f5ff hardcoded across the shipped primitives.
+   * Body text (#0f172a) stays >=15:1 on every tint. No reserved frontend-banner name (ADR-004/008). */
+  --cmplz-success-surface: #e9f6ec;
+  --cmplz-danger-surface: #fdebed;
+  --cmplz-warning-surface: #fbf4da;
+  --cmplz-accent-subtle: #e3f2ff;
+  /* Interactive text/icons sitting ON --cmplz-accent-subtle (the Upgrade pill, the active main-menu
+   * item): a darker blue than --cmplz-accent-strong so small (~11px) text clears WCAG AA — ~5.9:1 on
+   * the tint, where --cmplz-accent-strong is only 4.33:1. T-045 post-review AA fix (constitution §5). */
+  --cmplz-accent-on-subtle: #17608f;
+
+  /* Disabled state (T-045): the disabled field surface + text, replacing the #f7f7f7/#c6c6c6
+   * hardcoded in the primitives. --cmplz-text-disabled is a readable slate-400, not the near-invisible
+   * legacy grey. */
+  --cmplz-surface-disabled: #f1f5f9;
+  --cmplz-text-disabled: #94a3b8;
+
   /* Radius */
   --cmplz-radius: 12px;
   --cmplz-radius-s: 8px;
   --cmplz-radius-field: 6px;
 
   /* Spacing — 4px grid */
+  --cmplz-space-2xs: 4px;
   --cmplz-space-xs: 8px;
   --cmplz-space-s: 12px;
   --cmplz-space-m: 16px;

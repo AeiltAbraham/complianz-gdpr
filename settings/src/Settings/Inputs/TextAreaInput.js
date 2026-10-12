@@ -9,6 +9,7 @@ const TextAreaInput = ({
 	disabled,
 	id,
 	name,
+	error,
 }) => {
 	const inputId = id || name;
 	const textareaRef = useRef(null);
@@ -63,6 +64,7 @@ const TextAreaInput = ({
 				required={required}
 				placeholder={placeholder}
 				disabled={disabled}
+				invalid={error}
 			/>
 		</div>
 	);

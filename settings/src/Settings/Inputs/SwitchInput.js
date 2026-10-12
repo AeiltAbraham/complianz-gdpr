@@ -12,7 +12,7 @@ import { clsx } from '../../components/ui/cx';
 // since a logical property cannot express the horizontal slide; the RTL variants reproduce the flip
 // rtlcss used to generate for the legacy stylesheet.
 const rootBase = clsx(
-	'tw-relative tw-rounded-full tw-border tw-border-[#a4b1d2] tw-bg-[#E7F1F9]',
+	'tw-relative tw-rounded-full tw-border tw-border-[#a4b1d2] tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)]',
 	'disabled:tw-opacity-50 disabled:tw-cursor-not-allowed',
 	'data-[state=checked]:tw-bg-[var(--cmplz-accent-strong)]'
 );

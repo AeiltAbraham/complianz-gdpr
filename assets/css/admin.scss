@@ -46,12 +46,16 @@
   @import 'admin/modules/errorboundary.scss';
     @import 'admin/modules/wizard/notice.scss';
     @import 'admin/modules/wizard/borderradius.scss';
-    @import 'admin/modules/wizard/fields.scss';
+    // modules/wizard/fields.scss removed (ADR-005, T-045): the wizard field-ROW chrome migrated to tw-
+    // utilities on the semantic tokens (Settings/Fields/Field.js + LabelWrapper.js + Premium.js); its
+    // still-consumed global rules (card body, block-intro, create-document, WP-component tweaks, export/
+    // import/license layout) relocated to legacy-globals.scss.
     @import 'admin/modules/wizard/documents.scss';
     @import 'admin/modules/wizard/snackbar.scss';
     @import 'admin/modules/wizard/panel.scss';
     @import 'admin/modules/wizard/suggested-plugins.scss';
-    @import 'admin/modules/wizard/premium-fields.scss';
+    // modules/wizard/premium-fields.scss removed (ADR-005, T-045): the `.cmplz-premium` upsell label
+    // migrated to tw- utilities in Settings/Premium.js (the accent-subtle pill). No surviving consumer.
     @import 'admin/modules/wizard/documents-menu.scss';
     @import 'admin/modules/wizard/editor.scss';
     @import 'admin/modules/wizard/processors-thirdparties.scss';

@@ -8,6 +8,7 @@ const NumberInput = ({
 	disabled,
 	id,
 	name,
+	error,
 }) => {
 	const inputId = id || name;
 	const [inputValue, setInputValue] = useState('');
@@ -47,6 +48,7 @@ const NumberInput = ({
 				onChange={(event) => handleChange(event.target.value)}
 				required={required}
 				disabled={disabled}
+				invalid={error}
 			/>
 		</div>
 	);

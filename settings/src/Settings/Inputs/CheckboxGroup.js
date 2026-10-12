@@ -8,14 +8,14 @@ import { clsx } from '../../components/ui/cx';
 // Look-preserving restyle of the Radix checkbox group (ADR-002 behaviour kept; ADR-005 SCSS
 // deleted). Complete literal class strings on the semantic `--cmplz-*` tokens (ADR-013), logical
 // utilities only (ADR-007). Values mirror the deleted CheckboxGroup.scss: 16x16 box, 3px radius,
-// 1px field-border outline, blue-faded hover (#E7F1F9, no token), the two-layer focus ring
-// (surface-sunken gap + accent-strong), disabled grey (#ededed), 13px muted labels.
+// 1px field-border outline, the accent-subtle hover tint (--cmplz-accent-subtle, T-045), the two-layer
+// focus ring (surface-sunken gap + accent-strong), disabled grey (#ededed), 13px muted labels.
 const checkboxCls = clsx(
 	'tw-flex tw-content-center tw-items-center tw-justify-center',
 	'tw-w-[16px] tw-h-[16px] tw-aspect-square tw-mt-[2px] tw-rounded-[3px]',
 	'tw-outline tw-outline-1 tw-outline-[color:var(--cmplz-field-border)]',
 	'tw-transition-colors tw-duration-200 tw-ease-in-out',
-	'hover:tw-bg-[#E7F1F9]',
+	'hover:tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)]',
 	'focus:tw-shadow-[0_0_0_3px_var(--cmplz-surface-sunken),0_0_0_5px_var(--cmplz-accent-strong)]',
 	'disabled:tw-bg-[#ededed] disabled:tw-cursor-not-allowed'
 );

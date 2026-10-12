@@ -12,27 +12,42 @@
  * Props: label association left to the caller (`id` + external `<label htmlFor>`, or
  * `aria-labelledby` / `aria-label`); `id`, `value`, `onChange`, `disabled`, `placeholder`,
  * `rows`, `aria-*` and any other native textarea props spread through, and the ref is forwarded.
+ * `invalid` (T-045) renders the error ring and sets `aria-invalid`, matching TextField — the
+ * field-row validation state moved off the deleted `.cmplz-error textarea` selector.
  */
 import { forwardRef } from '@wordpress/element';
 import { clsx } from './cx';
 
 // Complete literal class string (ADR-013) matching TextAreaInput.scss: full width, 50px min-height,
 // no resize, 8px padding, 13px font (0.8125rem), text-colour token, 1px field border, 4px radius
-// (TextAreaInput.scss uses a literal 4px, kept concrete so it is not shifted to the 5px field-radius
-// token), hidden overflow and a border-colour transition. Focus and disabled match TextField, and
-// never the renamed legacy token names.
+// (TextAreaInput.scss uses a literal 4px, kept concrete so it is not shifted to the 6px field-radius
+// token), hidden overflow and a border-colour transition. Disabled greys the fill and text via the
+// --cmplz-surface-disabled / --cmplz-text-disabled tokens (T-045, literal fallback), never a legacy name.
 const base = clsx(
 	'tw-w-full tw-min-h-[50px] tw-resize-none tw-overflow-hidden',
 	'tw-p-[8px] tw-text-[0.8125rem] tw-text-[color:var(--cmplz-text)]',
-	'tw-border tw-border-[color:var(--cmplz-field-border)] tw-rounded-[4px]',
+	'tw-border tw-rounded-[4px]',
 	'tw-bg-[var(--cmplz-field-surface)] tw-outline-none',
 	'tw-transition-[border-color] tw-duration-200 tw-ease-[ease-in-out]',
-	'focus:tw-border-[color:var(--cmplz-accent-strong)] focus:tw-shadow-[0_0_0_2px_var(--cmplz-accent-strong)]',
-	'disabled:tw-bg-[#f7f7f7] disabled:tw-text-[color:#c6c6c6] disabled:tw-cursor-not-allowed'
+	'disabled:tw-bg-[var(--cmplz-surface-disabled,_#f1f5f9)] disabled:tw-text-[color:var(--cmplz-text-disabled,_#94a3b8)] disabled:tw-cursor-not-allowed'
+);
+// Ring variants as complete-literal maps (ADR-013: no merge), matching TextField: the default field
+// border + accent-strong focus ring, or the --cmplz-danger border + --cmplz-danger-surface halo when
+// invalid, with the focus ring still winning while focused.
+const FOCUS_RING = 'focus:tw-border-[color:var(--cmplz-accent-strong)] focus:tw-shadow-[0_0_0_2px_var(--cmplz-accent-strong)]';
+const defaultRing = clsx( 'tw-border-[color:var(--cmplz-field-border)]', FOCUS_RING );
+const invalidRing = clsx(
+	'tw-border-[color:var(--cmplz-danger,_#d7263d)] tw-shadow-[0_0_0_2px_var(--cmplz-danger-surface,_#fdebed)]',
+	FOCUS_RING
 );
 
-const Textarea = forwardRef( ( { className, ...props }, ref ) => (
-	<textarea ref={ ref } className={ clsx( base, className ) } { ...props } />
+const Textarea = forwardRef( ( { className, invalid, ...props }, ref ) => (
+	<textarea
+		ref={ ref }
+		aria-invalid={ invalid ? 'true' : undefined }
+		className={ clsx( base, invalid ? invalidRing : defaultRing, className ) }
+		{ ...props }
+	/>
 ) );
 Textarea.displayName = 'Textarea';
 

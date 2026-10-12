@@ -24,12 +24,12 @@ const inputBase = clsx(
 	'tw-text-[color:var(--cmplz-text-muted)] tw-bg-[var(--cmplz-field-surface)]',
 	'tw-outline-none',
 	'focus:tw-border-[color:var(--cmplz-accent-strong)] focus:tw-shadow-[0_0_0_2px_var(--cmplz-accent-strong)]',
-	'disabled:tw-bg-[#f7f7f7] disabled:tw-text-[color:#c6c6c6]'
+	'disabled:tw-bg-[var(--cmplz-surface-disabled,_#f1f5f9)] disabled:tw-text-[color:var(--cmplz-text-disabled,_#94a3b8)]'
 );
 
 const sideLabelCls = 'tw-m-0 tw-text-center tw-text-[0.6875rem] tw-text-[color:var(--cmplz-text-muted)]';
 
-// The link toggle: white (or blue-faded when linked) square that caps the segmented row on its end,
+// The link toggle: white (or accent-subtle when linked) square that caps the segmented row on its end,
 // reproducing the deleted `.cmplz-border-input-link` (grid-area button, 1px field border, rounded end,
 // centred icon whose path takes the muted text colour).
 const linkButtonBase = clsx(
@@ -141,7 +141,7 @@ const BorderInput = ({ label, id, value, onChange, required, defaultValue, disab
 					)
 				})
 			}
-			{link && <button type="button" className={clsx(linkButtonBase, 'tw-bg-[#E7F1F9]')} style={{ gridArea: 'button' }} onClick={() => setLink(!link)}>
+			{link && <button type="button" className={clsx(linkButtonBase, 'tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)]')} style={{ gridArea: 'button' }} onClick={() => setLink(!link)}>
 				<Icon name={'linked'} size={16} tooltip={__('Unlink values', 'complianz-gdpr')} />
 			</button> }
 			{!link && <button type="button" className={clsx(linkButtonBase, 'tw-bg-[var(--cmplz-field-surface)]')} style={{ gridArea: 'button' }} onClick={() => setLink(!link)}>

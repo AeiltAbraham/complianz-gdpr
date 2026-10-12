@@ -8,7 +8,8 @@ const PasswordInput = ({
 					   disabled,
 					   id,
 					   name,
-					   placeholder
+					   placeholder,
+					   error
 				   }) => {
 	const inputId = id || name;
 	const [inputValue, setInputValue] = useState('');
@@ -60,6 +61,7 @@ const PasswordInput = ({
 				required={required}
 				disabled={disabled}
 				placeholder={placeholder}
+				invalid={error}
 			/>
 			<div
 				className="tw-absolute tw-end-[15px] tw-top-[8px] tw-cursor-pointer"

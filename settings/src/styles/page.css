@@ -41,3 +41,25 @@ body.toplevel_page_complianz :is(.error, .notice, .update-nag, .notice-info):not
 body.toplevel_page_complianz :is(.error, .notice, .update-nag, .notice-info).really-simple-plugins {
   margin: 20px;
 }
+
+/* Save-highlight (T-045): a dashboard task can jump the user to a field, which gets `cmplz-highlight`.
+ * This reproduces the deleted fields.scss `.cmplz-highlight` — a one-shot background FLASH that fades
+ * back out (not a permanent fill) plus a persistent green inline-start marker. The field ROW is NOT in a
+ * [data-cmplz-ui] island (marker discipline), so it lives here with LITERAL colours (= the token values
+ * --cmplz-success-surface #e9f6ec / --cmplz-success #1f7a34), per this sheet's literals-only rule. */
+@keyframes cmplz-field-flash {
+  0% { background-color: transparent; }
+  30% { background-color: #e9f6ec; }
+  100% { background-color: transparent; }
+}
+
+#complianz .cmplz-highlight {
+  border-inline-start: 4px solid #1f7a34;
+  animation: cmplz-field-flash 3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #complianz .cmplz-highlight {
+    animation: none;
+  }
+}

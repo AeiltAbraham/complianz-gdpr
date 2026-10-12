@@ -5,6 +5,47 @@ import Icon from "../../utils/Icon";
 import LabelWrapper from "./LabelWrapper";
 import DOMPurify from "dompurify";
 import Placeholder from "../../Placeholder/Placeholder";
+import { clsx } from "../../components/ui/cx";
+
+// Field-row chrome (T-045, DB-07/DB-08). Migrated off assets/css/admin/modules/wizard/fields.scss
+// (`.cmplz-field-wrap`, the row-direction field-type variants, `.cmplz-error-text`, `.cmplz-comment`,
+// `.cmplz-highlight`) onto `tw-` utilities on the semantic `--cmplz-*` tokens with LITERAL FALLBACKS. The
+// row wrapper carries NO `data-cmplz-ui` (marker discipline, learnings 2026-10-11): it can still wrap
+// unmigrated composite bodies (finish/plugins_overview/documents_menu/cookiedatabase_sync/create-documents/
+// cookie_scan) and DocumentControl's raw url <input>, so a marker would strip their legacy styling via the
+// scoped base reset. The row look comes from `tw-` utilities (specificity 1,1,0 via the `important:` config),
+// not the marker. The card frame (SettingsGroup grid-item-content) is section 1b and stays legacy, so its
+// layout relocates to legacy-globals.scss unchanged and the row keeps its own inline padding. Legacy class
+// hooks (`cmplz-field-wrap`, `cmplz-<type>`, `cmplz-highlight`, `cmplz-error`, `cmplz-comment`) are kept.
+// §4 state design: the invalid ring now lives on the TextField/Textarea primitives (`invalid` prop driven
+// by the error path), not a wrapper->descendant selector; the save-highlight is a `--cmplz-success-surface`
+// row flash; `cmplz-comment-<status>` maps to the four tint callouts; the required marker uses `--cmplz-danger`.
+
+// Field types whose row lays the label and control out on one line (was the legacy
+// `.cmplz-field-wrap.cmplz-checkbox/.cmplz-button/...` flex-row block).
+const ROW_FLEX_TYPES = ['checkbox', 'banner-reset-button', 'copy-multisite', 'export', 'button'];
+
+// cmplz-comment-<status> -> faded status surface callout (wizard-fields.md §4).
+const COMMENT_TINT = {
+	info: 'tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)]',
+	success: 'tw-bg-[var(--cmplz-success-surface,_#e9f6ec)]',
+	warning: 'tw-bg-[var(--cmplz-warning-surface,_#fbf4da)]',
+	error: 'tw-bg-[var(--cmplz-danger-surface,_#fdebed)]',
+};
+const COMMENT_CALLOUT = clsx(
+	'tw-not-italic tw-rounded-[var(--cmplz-radius-s,_8px)]',
+	'tw-px-[var(--cmplz-space-s,_12px)] tw-py-[var(--cmplz-space-xs,_8px)]',
+	'tw-text-[length:var(--cmplz-font-size-sm,_0.8125rem)] tw-text-[color:var(--cmplz-text,_#0f172a)]'
+);
+const COMMENT_PLAIN = 'tw-italic tw-text-[length:var(--cmplz-font-size-sm,_0.8125rem)]';
+// No `cmplz-error-text` hook: this migrated element is fully tw-styled, and the legacy global
+// `#complianz .cmplz-error-text` rule is relocated to legacy-globals.scss for its non-migrated consumers
+// (AceEditorControl, CreateProcessingAgreements) — keeping the hook here would let that rule's `p`
+// sub-selector (1,1,1) override this element's danger/size/non-italic (T-045 review fix).
+const ERROR_TEXT_CLS = clsx(
+	'tw-flex tw-items-center tw-gap-[var(--cmplz-space-2xs,_4px)]',
+	'tw-text-[color:var(--cmplz-danger,_#d7263d)] tw-text-[length:var(--cmplz-font-size-sm,_0.8125rem)]'
+);
 
 const COMPONENT_MAP = {
 	'multicheckbox': {
@@ -256,12 +297,32 @@ const Field = ({field, highLightField, isCustomField, customChangeHandler}) => {
 	}
 
 	if ( !field.conditionallyDisabled && ComponentInfo) {
-		const errorClass = error ? 'cmplz-error' : '';
-		const highLightClass = highLightField === field.id ? 'cmplz-field-wrap cmplz-highlight' : 'cmplz-field-wrap';
-		const fieldClass = highLightClass + ' ' + errorClass + ' cmplz-' + field.type;
+		const isRowFlex = ROW_FLEX_TYPES.includes(field.type);
+		const isHighlighted = highLightField === field.id;
+		const fieldClass = clsx(
+			'cmplz-field-wrap',
+			'cmplz-' + field.type,
+			isRowFlex
+				? 'tw-flex tw-flex-row tw-items-center tw-justify-between tw-flex-wrap tw-gap-[var(--cmplz-space-s,_12px)]'
+				: 'tw-flex tw-flex-col tw-gap-[var(--cmplz-space-xs,_8px)]',
+			'tw-px-[var(--cmplz-space-l,_24px)]',
+			'[&>.cmplz-field-wrap]:tw-ps-0',
+			// Save-highlight: the transient one-shot flash + persistent green inline-start marker live in
+			// page.css (`#complianz .cmplz-highlight`, literals — the row is outside the token islands), so
+			// the row flashes and fades out as before instead of a static permanent fill (T-045 review fix).
+			isHighlighted && 'cmplz-highlight',
+			error && 'cmplz-error'
+		);
 
 		const {customProps} = ComponentInfo;
 		const commentStatusClass = field.comment_status ? 'cmplz-comment-' + field.comment_status : '';
+		const commentTint = COMMENT_TINT[field.comment_status];
+		const commentClass = clsx(
+			'cmplz-comment',
+			commentStatusClass,
+			commentTint ? clsx(COMMENT_CALLOUT, commentTint) : COMMENT_PLAIN,
+			field.type === 'checkbox' && 'tw-w-full'
+		);
 		let label = field.label;
 		if ( label ) {
 			//allow for dynamic content in labels, like in the compile_statistics field, where the tool is replaced in the label.
@@ -315,6 +376,7 @@ const Field = ({field, highLightField, isCustomField, customChangeHandler}) => {
 						field={field}
 						placeholder={field.placeholder}
 						onError={onError}
+						error={!!error}
 						{...customProps}
 					/>
 				)}
@@ -325,15 +387,15 @@ const Field = ({field, highLightField, isCustomField, customChangeHandler}) => {
 					<>
 						{/* nosemgrep: react-dangerouslysetinnerhtml */}
 						<div
-							className={"cmplz-comment "+commentStatusClass}
+							className={commentClass}
 							dangerouslySetInnerHTML={ { __html: DOMPurify.sanitize(field.comment) } } >
 						</div>
 					</>
 				)}
 				{error && (
-					<div className="cmplz-error-text">
+					<div className={clsx(ERROR_TEXT_CLS, isRowFlex && 'tw-w-full')}>
 						<Icon name={'error'} size={13} color={'red'}/>
-						<p>{error}</p>
+						<p className="tw-m-0">{error}</p>
 					</div>
 
 				)}
