@@ -188,9 +188,11 @@ a.button, button.button, input.button {
 //     Placeholder/PagePlaceholder.js (`cmplz-content-area cmplz-grid cmplz-dashboard …`, migrated at
 //     T-041), and relied on as the base grid by CookieBannerPreview.scss's `#complianz .cmplz-grid.cmplz-banner`.
 //   - `.cmplz-grid.cmplz-dashboard` (auto-fit variant): the same PagePlaceholder dashboard grid.
-//   - the whole `.cmplz-grid-item*` family: the Phase-4 SCREEN content (wizard.scss targets
-//     `.cmplz-wizard-settings .cmplz-grid-item`; GridBlock.js / Dashboard/* and PagePlaceholder.js
-//     render `.cmplz-grid-item` + `.cmplz-column-2`/`.cmplz-row-2`). Migrates with those screens in Phase 4.
+//   - the whole `.cmplz-grid-item*` family: the Phase-4 SCREEN content. The settings-screen frame
+//     (SettingsGroup.js card + Settings.js footer, section 1b / T-046) is now migrated to tw- utilities
+//     (1,1,0) that layer ON TOP of this base on their OWN nodes, so this family STAYS for the still-legacy
+//     GridBlock.js / Dashboard/* and PagePlaceholder.js (which render `.cmplz-grid-item` +
+//     `.cmplz-column-2`/`.cmplz-row-2`). Deleted with the Dashboard section in Phase 4/5.
 // The mixins (`cmplz-block`, `cmplz-inline-block-padding`) resolve from variables.scss (imported first).
 //
 // CASCADE-PRESERVATION (ADR-005; learnings 2026-10-10 / T-030): in layout.scss these rules were
@@ -241,6 +243,9 @@ a.button, button.button, input.button {
 			min-height: 200px; //add min height on disabled so the settings is visible behind the locked div.
 		}
 
+		// `.cmplz-grid-item.no-background` STAYS: the dashboard `other-plugins` block (settings/config/blocks.php)
+		// still renders it via GridBlock.js (unmigrated) — a JS-scoped grep missed the PHP block config, so
+		// deletion is deferred to the Dashboard section (T-046 review fix).
 		&.no-background {
 			background: none;
 			border: none;
@@ -270,9 +275,7 @@ a.button, button.button, input.button {
 			}
 		}
 
-		&-title {
-			margin: 4px 0 4px 0;
-		}
+		// `.cmplz-grid-item-title` dropped (ADR-005, T-046): dead rule, no JS consumer (grep-verified).
 
 		&-controls {
 			font-size: var(--cmplz-legacy-fs-200);
@@ -390,8 +393,8 @@ a.button, button.button, input.button {
 // `.cmplz_multicheckbox`, `.cmplz-text-control`, `.components-form-file-upload button`,
 // `input[type=checkbox].indeterminate` — no JS producer, grep-verified) are dropped. Verbatim relocation on
 // the legacy tokens, same `#complianz div[class^="cmplz-wizard-"]` scope. Delete in Phase 5. Consumers:
-//   - `.cmplz-grid-item-content` flex body + `.cmplz-settings-block-intro` padding: the SettingsGroup card
-//     is section 1b (still legacy); SettingsPlaceholder.js also renders block-intro.
+//   - `.cmplz-grid-item-content` flex body + `.cmplz-settings-block-intro` padding: DELETED at T-046
+//     (section 1b migrated SettingsGroup.js + SettingsPlaceholder.js, their only consumers, to tw-).
 //   - `.cmplz-create-document`: CreateDocuments/CreateDocument.js.
 //   - the @wordpress/components tweaks: CheckboxControl.js / License.js / Password.js (ToggleControl, Flex).
 //   - `.button` row layout + `.cmplz-field-button`/`.cmplz-export`/`.cmplz-import`: the export / import /
@@ -450,23 +453,10 @@ a.button, button.button, input.button {
 			background-color: var(--cmplz-legacy-green);
 		}
 
-		.cmplz-grid-item {
-			.cmplz-grid-item-content {
-				margin-block: var(--cmplz-legacy-spacing-l);
-				display: flex;
-				flex-direction: column;
-				gap: var(--cmplz-legacy-spacing-l);
-				padding-inline: 0;
-			}
-		}
-
-		// block-intro keeps only its inline padding (the original deliberately withheld display:flex here —
-		// it broke the sanitized HTML intro — so flex-direction/gap were no-ops, kept verbatim).
-		.cmplz-settings-block-intro {
-			flex-direction: column;
-			gap: var(--cmplz-legacy-spacing-xs);
-			padding-inline: var(--cmplz-legacy-spacing-l);
-		}
+		// The wizard-div `.cmplz-grid-item .cmplz-grid-item-content` flex body + `.cmplz-settings-block-intro`
+		// padding (relocated here at T-045) are DELETED at T-046: their only two consumers — SettingsGroup.js
+		// and Placeholder/SettingsPlaceholder.js (grep-verified) — are both migrated to tw- utilities in
+		// section 1b, so these rules are last-consumed (ADR-005).
 
 		.button {
 			display: flex;
@@ -525,5 +515,90 @@ a.button, button.button, input.button {
 		.cmplz-license-field {
 			display: flex;
 		}
+	}
+}
+
+// Relocated from the retired assets/css/admin/modules/wizard.scss (ADR-005, T-046 — the settings-screen
+// frame migrated to tw- utilities). The in-card locked/premium overlay is MULTI-CONSUMER: SettingsGroup.js
+// renders it with tw- utilities (the approved look, NO marker — ADR-001 / learnings 2026-10-11, so its
+// tw- 1,1,0 win on its own nodes), but the still-legacy composite bodies SecurityMeasures.js /
+// CreateProcessingAgreements.js / CreateDataBreachReport.js render their OWN `.cmplz-locked` inside the
+// card and rely on this legacy look. Kept verbatim on the legacy tokens, scoped to the wizard body as
+// before; SettingsGroup's own card provides the positioned (relative) containing block via `tw-relative`.
+// The dead `.cmplz-progress-status` child (no JS consumer, grep-verified) is dropped. Delete in Phase 5.
+.cmplz .cmplz-wizard-settings {
+	.cmplz-locked {
+		position: absolute;
+		z-index: 10;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		background: rgba(255, 255, 255, 0.8);
+		border-radius: var(--cmplz-legacy-border-radius);
+
+		.cmplz-locked-overlay {
+			z-index: 1;
+			top: calc(100% - 95px);
+			position: relative;
+			display: flex;
+			align-items: center;
+			gap: var(--cmplz-legacy-spacing-s);
+			background-color: var(--cmplz-legacy-white);
+			@include cmplz-block-padding;
+			border-radius: var(--cmplz-legacy-border-radius-input);
+			margin: var(--cmplz-legacy-spacing-s);
+			box-shadow: var(--cmplz-legacy-box-shadow);
+
+			.cmplz-open {
+				float: left;
+				margin-right: 12px;
+			}
+		}
+	}
+}
+
+// Relocated from the retired assets/css/admin/modules/wizard.scss (ADR-005, T-046). The cookie-banner
+// preview controls are a consent-banner concern (CookieBannerControls.js), still legacy — this block
+// moves here unchanged and migrates with the consent-banner section's slice. Verbatim on the legacy tokens.
+.cmplz-cookiebanner-preview-controls {
+	display: flex;
+	justify-content: stretch;
+	flex-wrap: wrap;
+	margin-top: var(--cmplz-legacy-spacing-l);
+	h6 {
+		margin-top: var(--cmplz-legacy-spacing-s);
+		margin-bottom: var(--cmplz-legacy-spacing-xxs);
+		width: 100%;
+	}
+	button {
+
+		background: var(--cmplz-legacy-grey-200);
+		padding: var(--cmplz-legacy-spacing-xxs) var(--cmplz-legacy-spacing-xs);
+		border-radius: var(--cmplz-legacy-border-radius-input);
+		border: 1px solid var(--cmplz-legacy-grey-300);
+		&:hover {
+			background: var(--cmplz-legacy-grey-300);
+		}
+		&.active {
+			background: var(--cmplz-legacy-blue);
+			color: var(--cmplz-legacy-white);
+			border: 1px solid var(--cmplz-legacy-blue);
+			&:hover {
+				background: var(--cmplz-legacy-blue);
+			}
+		}
+		&.inactive {
+			cursor: pointer;
+		}
+
+	}
+	&-buttons {
+		width: 100%;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-start;
+		align-items: center;
+		gap: var(--cmplz-legacy-spacing-xxs);
 	}
 }

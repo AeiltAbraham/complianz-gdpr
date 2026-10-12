@@ -10,6 +10,64 @@ import UseBannerData from './CookieBannerPreview/CookieBannerData';
 import useProgress from '../Dashboard/Progress/ProgressData';
 import SettingsPlaceholder from '../Placeholder/SettingsPlaceholder';
 import ErrorBoundary from '../utils/ErrorBoundary';
+import { clsx } from '../components/ui/cx';
+
+// Settings-screen frame (T-046, DB-07/DB-08; Stage-H section 1b). The two-column body, the sticky save/nav
+// footer (scroll-progress + upsell + buttons) and the help sidebar migrated off the retired
+// assets/css/admin/modules/wizard.scss + wizard/notice.scss onto `tw-` utilities on the semantic `--cmplz-*`
+// tokens WITH LITERAL FALLBACKS, reusing the gate-G3-approved sticky-footer look (shell-preview.html: footer
+// bar bg = the literal #f8fafc, Save = accent-strong/text-on-accent primary, Back = tertiary, scroll-progress
+// track = --cmplz-border / fill = --cmplz-accent, footer-container z = --cmplz-z-sticky). NO `data-cmplz-ui`
+// on the body or help sidebar (ADR-001 marker discipline): the body wraps every still-legacy composite body +
+// the Panel.js accordion, and the help sidebar renders DOMPurify-sanitized notice HTML — a scoped base reset
+// would strip their legacy styling. Look comes from the `tw-` utilities (1,1,0 via the `important:` config).
+// Legacy class hooks are kept. Logical utilities only (ADR-007). The footer buttons drop the WP-core
+// `button`/`button-primary` classes (FR-020, matching components/ui/Button) and are fully tw-styled, so the
+// relocated legacy `.button{display:flex}` rule (legacy-globals) no longer reaches them (its inline-block
+// !important workaround is retired). frame.md §3 defaults: the "Get Premium" upsell CTA reuses the approved
+// tertiary button look; the two-column body spans 2 at ≥1080px (`md`) and FULL WIDTH (span 4, the legacy
+// `.cmplz-column-2` @media(max-width:1080){span 4}) below it — Page.js's content grid stays 4-col (its own
+// single-column collapse is deferred), so the body wraps to its own full-width row at narrow widths.
+const bodyCls = clsx(
+	"tw-col-span-4 md:tw-col-span-2",
+	// last card before the sticky footer merges into it: flat bottom corners + no gap + no bottom edge, so the
+	// card + the bordered footer-container below read as one card (legacy nth-last-of-type(2) corner-merge).
+	"[&>div:nth-last-of-type(2)]:tw-mb-0 [&>div:nth-last-of-type(2)]:tw-rounded-b-none [&>div:nth-last-of-type(2)]:tw-border-b-0"
+);
+// The footer-container carries the card's side + bottom edges + the bottom radius (block-axis / logical inline
+// border utilities, RTL-safe — Header.js convention), so last-card + footer render as one bordered card; the
+// footer bar inside supplies the content/footer divider via its top border.
+const footerContainerCls = clsx(
+	"tw-sticky tw-bottom-0 tw-z-[var(--cmplz-z-sticky,_20)] tw-flex tw-flex-col tw-overflow-hidden",
+	"tw-border-s tw-border-e tw-border-b tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)]",
+	"tw-rounded-b-[var(--cmplz-radius,_12px)]"
+);
+const scrollTrackCls = "tw-flex tw-flex-col tw-w-full tw-h-[3px] tw-overflow-hidden tw-bg-[var(--cmplz-border,_#e2e8f0)]";
+const scrollFillCls = "tw-h-full tw-bg-[var(--cmplz-accent,_#009fff)]";
+const footerCls = clsx(
+	"tw-flex tw-items-center tw-gap-[var(--cmplz-space-m,_16px)]",
+	"tw-bg-[#f8fafc] tw-border-t tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)]",
+	"tw-py-[var(--cmplz-space-m,_16px)] tw-px-[var(--cmplz-space-l,_24px)] empty:tw-hidden"
+);
+const footerButtonsCls = "tw-flex tw-items-center tw-justify-end tw-gap-[var(--cmplz-space-s,_12px)] tw-ms-auto";
+const primaryBtn = clsx(
+	"tw-inline-flex tw-items-center tw-justify-center tw-cursor-pointer tw-no-underline tw-border-0",
+	"tw-bg-[var(--cmplz-accent-strong,_#1e73be)] tw-text-[color:var(--cmplz-text-on-accent,_#ffffff)] tw-font-semibold",
+	"tw-py-[9px] tw-px-[20px] tw-rounded-[var(--cmplz-radius-field,_6px)]",
+	"tw-transition-opacity tw-duration-[var(--cmplz-duration,_200ms)] tw-ease-[var(--cmplz-ease,_cubic-bezier(0.4,0,0.2,1))]",
+	// shell used filter:brightness(1.08); the build has no filter utilities configured, so a robust opacity dim.
+	"hover:tw-opacity-90",
+	"[&[disabled]]:tw-opacity-60 [&[disabled]]:tw-cursor-not-allowed"
+);
+const tertiaryBtn = clsx(
+	"tw-inline-flex tw-items-center tw-justify-center tw-cursor-pointer tw-no-underline",
+	"tw-bg-transparent tw-border tw-border-solid tw-border-[color:var(--cmplz-field-border,_#94a3b8)]",
+	"tw-text-[color:var(--cmplz-text,_#0f172a)]",
+	"tw-py-[9px] tw-px-[16px] tw-rounded-[var(--cmplz-radius-field,_6px)]"
+);
+const helpSidebarCls = "tw-flex tw-flex-wrap tw-content-start tw-gap-[var(--cmplz-space-xs,_8px)]";
+const helpHeaderCls = "tw-w-full tw-flex tw-p-[10px]";
+const helpControlCls = "tw-ms-auto tw-cursor-pointer";
 
 /**
  * Renders the selected settings
@@ -201,28 +259,28 @@ const Settings = () => {
 	finishLink = nextButtonDisabled ? `#${selectedMainMenuItem}/${selectedSubMenuItem}` : finishLink;
 	return (
 		<>
-			{isExploding && ConfettiExplosion && <div className="cmplz-confetti"><ConfettiExplosion zIndex={999999}/></div>}
-			<div className="cmplz-wizard-settings cmplz-column-2">
+			{isExploding && ConfettiExplosion && <div className="cmplz-confetti tw-absolute tw-start-1/2"><ConfettiExplosion zIndex={999999}/></div>}
+			<div className={clsx("cmplz-wizard-settings cmplz-column-2", bodyCls)}>
 				{groups.map((group, i) =>
 					<ErrorBoundary key={"groups-"+i} fallback={"Could not load: Banner preview"}>
 						<SettingsGroup key={i} index={i} group={group} fields={selectedFields}/>
 					</ErrorBoundary>)
 				}
-				<div className="cmplz-grid-item-footer-container">
+				<div className={clsx("cmplz-grid-item-footer-container", footerContainerCls)}>
 					<ScrollProgress/>
-					<div className="cmplz-grid-item-footer">
+					<div className={clsx("cmplz-grid-item-footer", footerCls)}>
 						{selectedMainMenuItem !== 'wizard' &&
 							<div className="cmplz-grid-item-footer-upsell-bar">
 								{ !cmplz_settings.is_premium &&
-									<a className="button button-default"
+									<a className={tertiaryBtn}
 										 href="https://complianz.io/pricing/"
 										 target="_blank" rel="noopener noreferrer">{__(
 										'Get Premium', 'complianz-gdpr')}</a>}
 							</div>}
-						<div className={'cmplz-grid-item-footer-buttons'}>
+						<div className={clsx('cmplz-grid-item-footer-buttons', footerButtonsCls)}>
 							{/*This will be shown only if current step is not the first one*/}
 							{previousMenuItem !== '#' &&
-								<a href={previousMenuItem} onClick={() => {
+								<a className={tertiaryBtn} href={previousMenuItem} onClick={() => {
 									window.scrollTo({
 										top: 0,
 										behavior: 'smooth',
@@ -233,7 +291,7 @@ const Settings = () => {
 							}
 							{saveButtonsRequired() &&
 								<button
-									className="button button-default"
+									className={tertiaryBtn}
 									onClick={(e) => saveData(false, true)}>
 									{__('Save', 'complianz-gdpr')}
 								</button>
@@ -243,7 +301,7 @@ const Settings = () => {
 								<>
 									{saveButtonsRequired() &&
 										<a disabled={nextButtonDisabled}
-											 className="button button-primary" href={continueLink}
+											 className={primaryBtn} href={continueLink}
 											 onClick={(e) => {
 												 saveData(false, false)
 												 // smooth scroll to top
@@ -256,7 +314,7 @@ const Settings = () => {
 										</a>
 									}
 									{!saveButtonsRequired() &&
-										<a className="button button-primary" href={continueLink}
+										<a className={primaryBtn} href={continueLink}
 											 onClick={(e) => saveData(false, false)}>
 											{__('Continue', 'complianz-gdpr')}
 										</a>
@@ -267,7 +325,7 @@ const Settings = () => {
 							{selectedMainMenuItem === 'wizard' && selectedSubMenuItem ===
 								menuItems[menuItems.length - 1].id &&
 								<a disabled={nextButtonDisabled || saving || finishDisabled }
-									 className="button button-primary" href="#"
+									 className={primaryBtn} href="#"
 									 onClick={(e) => finish(e)}>
 									{__('Finish', 'complianz-gdpr')}
 								</a>
@@ -276,12 +334,12 @@ const Settings = () => {
 					</div>
 				</div>
 			</div>
-			<div className="cmplz-wizard-help">
-				<div className="cmplz-help-header">
+			<div className={clsx("cmplz-wizard-help", helpSidebarCls)}>
+				<div className={clsx("cmplz-help-header", helpHeaderCls)}>
 					<h3 className="cmplz-h4">
 						{__('Notifications', 'complianz-gdpr')}
 					</h3>
-					<div className="cmplz-help-control" onClick={() => toggleNotices()}>
+					<div className={clsx("cmplz-help-control", helpControlCls)} onClick={() => toggleNotices()}>
 						{!noticesExpanded && __('Expand all', 'complianz-gdpr')}
 						{noticesExpanded && __('Collapse all', 'complianz-gdpr')}
 					</div>
@@ -318,9 +376,9 @@ export const ScrollProgress = () => {
 		return null;
 	}
 	return (
-		// add width to span
-		<span className={'cmplz-grid-item-footer-scroll-progress-container'}>
-			<span className={'cmplz-grid-item-footer-scroll-progress'}
+		// add width to span (inline width beats tw-; kept, per ADR gotcha)
+		<span className={clsx('cmplz-grid-item-footer-scroll-progress-container', scrollTrackCls)}>
+			<span className={clsx('cmplz-grid-item-footer-scroll-progress', scrollFillCls)}
 						style={{width: scrollProgress + '%'}}>{scrollProgress}%</span>
 		</span>
 	);

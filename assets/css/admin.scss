@@ -42,9 +42,15 @@
   @import 'admin/modules/dashboard/documents.scss';
   @import 'admin/modules/dashboard/tools.scss';
   @import 'admin/modules/dashboard/statistics.scss';
-  @import 'admin/modules/wizard.scss';
+  // modules/wizard.scss removed (ADR-005, T-046): the settings-screen frame (SettingsGroup card +
+  // Settings.js two-column body / sticky footer / scroll-progress / upsell / confetti + SettingsPlaceholder)
+  // migrated to tw- utilities on the semantic tokens. Its still-consumed rules relocated to legacy-globals.scss:
+  // the MULTI-CONSUMER `.cmplz-locked` overlay (SecurityMeasures/CreateProcessingAgreements/CreateDataBreachReport
+  // render their own) and the `.cmplz-cookiebanner-preview-controls` block (consent-banner, CookieBannerControls.js).
+  // The last-consumed footer-container/scroll-progress/buttons/upsell-bar/confetti rules were deleted.
   @import 'admin/modules/errorboundary.scss';
-    @import 'admin/modules/wizard/notice.scss';
+    // modules/wizard/notice.scss removed (ADR-005, T-046): the help sidebar + help-notice accordion migrated
+    // to tw- utilities (Settings.js help sidebar + Help.js); it had no other consumer, so the file was deleted.
     @import 'admin/modules/wizard/borderradius.scss';
     // modules/wizard/fields.scss removed (ADR-005, T-045): the wizard field-ROW chrome migrated to tw-
     // utilities on the semantic tokens (Settings/Fields/Field.js + LabelWrapper.js + Premium.js); its
