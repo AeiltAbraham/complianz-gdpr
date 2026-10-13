@@ -2,9 +2,9 @@
 
 ## Status
 
-Proposed
+Accepted
 
-Source: spec DB-17 + C-4, clarify Q-04, plan.md §2 + §5 (Dashboard section). Recorded 2026-10-13 during the Phase-4 Dashboard section of 001-settings-ui-redesign. **Awaiting maintainer ratification of the forward vocabulary (§Decision) — nothing migrates until this is Accepted.**
+Source: spec DB-17 + C-4, clarify Q-04, plan.md §2 + §5 (Dashboard section). Recorded 2026-10-13 during the Phase-4 Dashboard section of 001-settings-ui-redesign. Ratified by the maintainer 2026-10-13 — the forward vocabulary (§Decision) approved as proposed: `width ∈ {1,2}`, `variant ∈ {default, edge-to-edge, borderless}`.
 
 ## Context
 

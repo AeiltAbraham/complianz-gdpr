@@ -6,15 +6,19 @@ import {
 } from "../components/ui/Tooltip";
 const IconHtml = React.forwardRef(function IconHtml(props, ref){
 	const {name, color, size} = props;
+	// Literal fallbacks on every semantic token ref (T-048): Icon fills are var(--cmplz-*) which resolve
+	// only inside a [data-cmplz-ui] island, but the markerless Dashboard (and the already-migrated
+	// markerless field rows) render icons OUTSIDE any island — so each ref carries the tokens.css value as
+	// a fallback, keeping icons coloured everywhere. A safe cross-cutting robustness fix.
 	const iconColors = {
-		'black': 'var(--cmplz-text)',
-		'green': 'var(--cmplz-success)',
-		'blue': 'var(--cmplz-accent)',
-		'dark-blue': 'var(--cmplz-accent-strong)',
-		'yellow': 'var(--cmplz-warning)',
-		'orange': 'var(--cmplz-warning)',
-		'red': 'var(--cmplz-danger)',
-		'grey': 'var(--cmplz-text-muted)',
+		'black': 'var(--cmplz-text, #0f172a)',
+		'green': 'var(--cmplz-success, #1f7a34)',
+		'blue': 'var(--cmplz-accent, #009fff)',
+		'dark-blue': 'var(--cmplz-accent-strong, #1e73be)',
+		'yellow': 'var(--cmplz-warning, #eab308)',
+		'orange': 'var(--cmplz-warning, #eab308)',
+		'red': 'var(--cmplz-danger, #d7263d)',
+		'grey': 'var(--cmplz-text-muted, #475569)',
 	};
 	let renderedIcon = '';
 

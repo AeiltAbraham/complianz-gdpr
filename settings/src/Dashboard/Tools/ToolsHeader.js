@@ -33,7 +33,7 @@ const ToolsHeader = () => {
 
 	return (
 		<>
-			<h3 className="cmplz-grid-title cmplz-h4">
+			<h3 className="cmplz-grid-title cmplz-h4 tw-m-0">
 				{ consentStatisticsEnabled && __( "Statistics", 'complianz-gdpr' ) }
 				{ !consentStatisticsEnabled && __( "Tools", 'complianz-gdpr' ) }
 			</h3>

@@ -45,8 +45,8 @@ const SingleDocument = (props) => {
 	// let createLink = document.create_link ? document.create_link : '#wizard/manage-documents';
 	// let plugin = pluginData ? pluginData.find(plugin => plugin.slug === 'complianz-terms-conditions') : false;
 	return (
-			<div className="cmplz-single-document">
-				<div className="cmplz-single-document-title" >
+			<div className="cmplz-single-document tw-flex tw-items-center tw-gap-[var(--cmplz-space-s,_12px)] tw-py-[var(--cmplz-space-s,_12px)] tw-px-[var(--cmplz-space-l,_24px)] tw-border-b tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)] [&:last-child]:tw-border-b-0">
+				<div className="cmplz-single-document-title tw-flex-1" >
 					{ document.permalink && <a href={document.permalink}>{document.title}</a>}
 					{ !document.permalink && document.readmore && <a href={document.readmore}>{document.title}</a>}
 					{ !document.permalink && !document.readmore && document.title }

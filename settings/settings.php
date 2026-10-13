@@ -244,7 +244,7 @@ function cmplz_plugin_admin_scripts() {
 					'upgrade_link'         => cmplz_get_referral_url( 'menu', 'header' ),
 					'plugin_url'           => CMPLZ_URL,
 					'license_url'          => is_multisite() ? cmplz_main_site_url( '#settings/license' ) : '#settings/license',
-					'blocks'               => cmplz_blocks(),
+					'blocks'               => cmplz_normalize_blocks( cmplz_blocks() ),
 					'is_premium'           => defined( 'cmplz_premium' ),
 					'nonce'                => wp_create_nonce( 'wp_rest' ), // to authenticate the logged in user
 					'cmplz_nonce'          => wp_create_nonce( 'cmplz_react' ),

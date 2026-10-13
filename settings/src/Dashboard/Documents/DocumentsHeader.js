@@ -40,7 +40,7 @@ const DocumentsHeader = (props) => {
 
 	return (
 		<>
-			<h3 className="cmplz-grid-title cmplz-h4">{ __( "Documents", 'complianz-gdpr' ) }</h3>
+			<h3 className="cmplz-grid-title cmplz-h4 tw-m-0">{ __( "Documents", 'complianz-gdpr' ) }</h3>
 			<div className="cmplz-grid-item-controls">
 				<SelectInput defaultValue={'all'} canBeEmpty={false} onChange={(value) => setRegion(value)} value={region} options={regionsOptions} />
 			</div>

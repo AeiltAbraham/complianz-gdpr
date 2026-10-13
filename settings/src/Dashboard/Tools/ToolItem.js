@@ -31,9 +31,9 @@ const ToolItem = (props) => {
 		if ( !pluginActive) return null;
 
 		return (
-			<div className="cmplz-tool">
-				<div className="cmplz-tool-title">{item.title}</div>
-				<div className="cmplz-tool-link">
+			<div className="cmplz-tool tw-flex tw-items-center tw-py-[var(--cmplz-space-s,_12px)] tw-px-[var(--cmplz-space-l,_24px)] tw-border-b tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)] [&:last-child]:tw-border-b-0">
+				<div className="cmplz-tool-title tw-flex-1">{item.title}</div>
+				<div className="cmplz-tool-link tw-flex tw-items-center">
 					<a href={item.link} target="_blank" rel="noopener noreferrer">{<Icon name={'circle-chevron-right'} color="black" size={14} />}</a>
 				</div>
 			</div>
@@ -58,11 +58,11 @@ const ToolItem = (props) => {
 	let icon = isExternal ? 'external-link' : 'circle-chevron-right';
 
 	return (
-		<div className="cmplz-tool">
-			<div className="cmplz-tool-title">{item.title}
+		<div className="cmplz-tool tw-flex tw-items-center tw-py-[var(--cmplz-space-s,_12px)] tw-px-[var(--cmplz-space-l,_24px)] tw-border-b tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)] [&:last-child]:tw-border-b-0">
+			<div className="cmplz-tool-title tw-flex tw-flex-1 tw-items-center">{item.title}
 				{item.plusone && item.plusone }
 			</div>
-			<div className="cmplz-tool-link">
+			<div className="cmplz-tool-link tw-flex tw-items-center">
 				<a href={link} target={target} rel={isExternal ? "noopener noreferrer" : ""}><Icon name={icon} color="black" size={14} /></a>
 			</div>
 		</div>

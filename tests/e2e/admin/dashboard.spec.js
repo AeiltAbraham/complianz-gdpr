@@ -25,15 +25,17 @@ const { test, expect } = require( '@playwright/test' );
 const { APP, gotoSettings, waitForAppMounted } = require( './helpers/menu' );
 
 // ---------------------------------------------------------------------------------------------------
-// DB-17 baseline: the legacy `class` token set per block, exactly as the server ships it today. This
-// is the width/border/background layout the Phase-4 cmplz_normalize_blocks() must reproduce (C-4).
+// DB-17 contract: the forward width/variant keys per block, as cmplz_normalize_blocks() ships them
+// (ADR-015, Accepted). This replaces the pre-migration legacy `class` baseline — the normalizer emits
+// NO raw `class` string (GridBlock reads width/variant). The width/border/background layout is preserved:
+// column-2 -> width 2; border-to-border -> edge-to-edge; no-border/no-background -> borderless (C-4).
 // ---------------------------------------------------------------------------------------------------
 const DB17_BLOCK_LAYOUT = {
-	progress: ' cmplz-column-2',
-	documents: 'border-to-border',
-	tools: 'border-to-border',
-	tips_tricks: ' cmplz-column-2',
-	'other-plugins': ' cmplz-column-2 no-border no-background',
+	progress: { width: 2, variant: 'default' },
+	documents: { width: 1, variant: 'edge-to-edge' },
+	tools: { width: 1, variant: 'edge-to-edge' },
+	tips_tricks: { width: 2, variant: 'default' },
+	'other-plugins': { width: 2, variant: 'borderless' },
 };
 
 async function gotoDashboard( page ) {
@@ -48,14 +50,17 @@ test.describe.configure( { mode: 'serial', timeout: 300_000 } );
 test( 'records the DB-17 block layout (width/variant per block)', async ( { page } ) => {
 	await gotoDashboard( page );
 	const blocks = await page.evaluate( () =>
-		( window.cmplz_settings.blocks || [] ).map( ( b ) => ( { id: b.id, class: b.class } ) )
+		( window.cmplz_settings.blocks || [] ).map( ( b ) => ( { id: b.id, width: b.width, variant: b.variant, class: b.class } ) )
 	);
-	const byId = Object.fromEntries( blocks.map( ( b ) => [ b.id, b.class ] ) );
+	const byId = Object.fromEntries( blocks.map( ( b ) => [ b.id, b ] ) );
 
-	// Exactly these blocks, in this order (the dashboard grid order), with these legacy class tokens.
+	// Exactly these blocks, in this order (the dashboard grid order), with the ADR-015 width/variant keys.
 	expect( blocks.map( ( b ) => b.id ) ).toEqual( [ 'progress', 'documents', 'tools', 'tips_tricks', 'other-plugins' ] );
-	for ( const [ id, cls ] of Object.entries( DB17_BLOCK_LAYOUT ) ) {
-		expect( byId[ id ], `DB-17 baseline drift for block "${ id }"` ).toBe( cls );
+	for ( const [ id, layout ] of Object.entries( DB17_BLOCK_LAYOUT ) ) {
+		expect( byId[ id ].width, `DB-17 width drift for block "${ id }"` ).toBe( layout.width );
+		expect( byId[ id ].variant, `DB-17 variant drift for block "${ id }"` ).toBe( layout.variant );
+		// ADR-015: normalization emits no raw `class` string — GridBlock consumes width/variant only.
+		expect( byId[ id ].class, `block "${ id }" must not emit a legacy class` ).toBeUndefined();
 	}
 } );
 

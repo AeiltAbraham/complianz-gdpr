@@ -243,14 +243,10 @@ a.button, button.button, input.button {
 			min-height: 200px; //add min height on disabled so the settings is visible behind the locked div.
 		}
 
-		// `.cmplz-grid-item.no-background` STAYS: the dashboard `other-plugins` block (settings/config/blocks.php)
-		// still renders it via GridBlock.js (unmigrated) — a JS-scoped grep missed the PHP block config, so
-		// deletion is deferred to the Dashboard section (T-046 review fix).
-		&.no-background {
-			background: none;
-			border: none;
-			box-shadow: none;
-		}
+		// `.cmplz-grid-item.no-background` REMOVED (ADR-005, T-048): the only consumer was the dashboard
+		// `other-plugins` block, which now takes the `variant: 'borderless'` key (settings/config/blocks.php ->
+		// cmplz_normalize_blocks -> GridBlock.js maps it to a literal tw- no-bg/border/shadow set). No consumer
+		// remains (JS + settings/config PHP + e2e grepped), so the sub-rule retires with the Dashboard section.
 
 		&.cmplz-column-2 {
 			grid-column: span 2;
@@ -601,4 +597,62 @@ a.button, button.button, input.button {
 		align-items: center;
 		gap: var(--cmplz-legacy-spacing-xxs);
 	}
+}
+
+// Relocated from the (now deleted) assets/css/admin/modules/progress.scss (ADR-005, T-048 — the Dashboard
+// section). `.cmplz-task-status` is CROSS-SECTION: besides Dashboard/TaskElement.js it styles the status
+// pill in Settings/SettingsGroup.js (cmplz-premium Upgrade pill), Settings/SecurityMeasures (cmplz-open),
+// Settings/ProcessingAgreements/CreateProcessingAgreements (cmplz-warning) and
+// Settings/DataBreachReports/CreateDataBreachReport (cmplz-warning) — none of which migrate in this section —
+// so the rules RELOCATE here (imported last) rather than retire with the dashboard. Copied VERBATIM at the
+// same specificity (0,1,0 base / 0,2,0 variants): nothing else styles `.cmplz-task-status`, so there is no
+// equal-specificity tie to protect with a `:where()` wrap. NOTE: `.cmplz-task-status.cmplz-warning` has NO
+// colour rule today (a pre-existing gap: warning badges fall back to the base pill); preserved as-is — no
+// behaviour change without approval (CLAUDE.md).
+.cmplz-task-status {
+	display: block;
+	min-width: 100px;
+	text-align: center;
+	border-radius: 15px;
+	padding: 4px 8px;
+	font-size: var(--cmplz-legacy-fs-100);
+	font-weight: 500;
+	@media(max-width: $cmplz-legacy-break-m) {
+		min-width: 80px;
+	}
+	@media(max-width: $cmplz-legacy-break-s) {
+		aspect-ratio: 1 / 1;
+		min-width: 10px;
+		height: 16px;
+		border-radius: 100%;
+		text-indent: -9999px; /* sends the text off-screen */
+		white-space: nowrap;
+	}
+
+	&.cmplz-completed, &.cmplz-success {
+		background-color: var(--cmplz-legacy-color-success);
+		color: var(--cmplz-legacy-text-color-white);
+	}
+
+	&.cmplz-open {
+		background-color: var(--cmplz-legacy-color-open);
+	}
+
+	&.cmplz-urgent {
+		background-color: var(--cmplz-legacy-color-error);
+		color: var(--cmplz-legacy-text-color-white);
+	}
+
+	&.cmplz-premium {
+		background-color: var(--cmplz-legacy-blue);
+		color: var(--cmplz-legacy-text-color-white);
+	}
+}
+
+// Relocated from the (now deleted) assets/css/admin/modules/dashboard/dashboard.scss (ADR-005, T-048). The
+// generic `.cmplz-hidden { display:none }` hides preloaded settings fields and is consumed OUTSIDE the
+// dashboard by Settings/Fields/PreloadFields.js and Settings/CookieBannerPreview/CookieBannerPreview.js, so
+// it relocates here instead of retiring with the dashboard module. Verbatim (0,1,0).
+.cmplz-hidden {
+	display: none;
 }

@@ -68,11 +68,13 @@ Adversarial review + CI-green under the implement → review → commit → push
 
 Dashboard migration (T-048) starts only when **both** are approved.
 
-- **ADR-015 forward `width`/`variant` vocabulary approved:** [ ] — maintainer, ____________
-- **Dashboard look + token decision approved:** [ ] — maintainer, ____________
+- **ADR-015 forward `width`/`variant` vocabulary approved:** [x] — maintainer, 2026-10-13, AS PROPOSED (`width ∈ {1,2}`, `variant ∈ {default, edge-to-edge, borderless}`).
+- **Dashboard look + token decision approved:** [x] — maintainer, 2026-10-13, AS PROPOSED (zero new tokens; progress-track reuses `--cmplz-surface-sunken`; legacy pink dropped).
+
+Dashboard migration (T-048) authorized to run autonomously under the implement → adversarial-review → commit → push → CI-green gate.
 
 Maintainer notes / requested changes:
 
 ```
-(awaiting review)
+Approved as-is; no requested changes. Proceed autonomously through T-048.
 ```

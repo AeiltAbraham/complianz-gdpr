@@ -45,19 +45,19 @@ const TaskElement = ({notice, index}) => {
 	let urlIsExternal = notice.url && notice.url.indexOf('complianz.io') !== -1;
 	let statusNice =  notice.status.charAt(0).toUpperCase() +  notice.status.slice(1);
 	return(
-		<div key={index} className="cmplz-task-element" data-testid={'cmplz-task-' + notice.id}>
+		<div key={index} className="cmplz-task-element tw-flex tw-items-start tw-gap-[var(--cmplz-space-s,_12px)] tw-py-[var(--cmplz-space-s,_12px)] tw-border-b tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)] [&:last-child]:tw-border-b-0" data-testid={'cmplz-task-' + notice.id}>
 			<span className={'cmplz-task-status cmplz-' + notice.status}>{ statusNice }</span>
-			<p className="cmplz-task-message"
+			<p className="cmplz-task-message tw-flex-1 tw-m-0"
 		    	dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(notice.message) }}></p>{/* nosemgrep: react-dangerouslysetinnerhtml */}
 			{urlIsExternal && notice.url && <a target="_blank" href={notice.url} rel="noopener noreferrer">{__("More info", "complianz-gdpr")}</a> }
 			{notice.clear_cache_id && <span className="cmplz-task-enable button button-secondary" onClick={ () => handleClearCache(notice.clear_cache_id ) }>{__("Re-check", "complianz-gdpr")}</span> }
 			{!premium && !urlIsExternal && notice.url && <a className="cmplz-task-enable button button-secondary" href={notice.url}>{__("View", "complianz-gdpr")}</a> }
 			{!premium && notice.highlight_field_id && <span className="cmplz-task-enable button button-secondary" onClick={() => handleClick()}>{__("View", "complianz-gdpr")}</span> }
-			{notice.plus_one && <span className='cmplz-plusone'>1</span>}
+			{notice.plus_one && <span className='cmplz-plusone tw-inline-block tw-min-w-[15px] tw-h-[18px] tw-rounded-full tw-bg-[#d63638] tw-px-[5px] tw-py-[2px] tw-text-center tw-leading-none tw-text-[length:var(--cmplz-font-size-xs,_0.6875rem)] tw-text-[color:#ffffff]'>1</span>}
 			{notice.dismissible && notice.status!=='completed' &&
-				<div className="cmplz-task-dismiss">
-					<button type='button' onClick={(e) => dismissNotice(notice.id) }>
-						<Icon name='times' />
+				<div className="cmplz-task-dismiss tw-flex tw-items-center hover:tw-opacity-70">
+					<button type='button' className="tw-cursor-pointer tw-border-0 tw-bg-transparent tw-p-[4px] tw-leading-none" onClick={(e) => dismissNotice(notice.id) }>
+						<Icon name='times' size={12} />
 					</button>
 				</div>
 			}

@@ -117,37 +117,37 @@ const Statistics = () => {
 	}
  
 	return (
-		<div className="cmplz-statistics">
-			<div className="cmplz-statistics-select">
-			<div className="cmplz-statistics-select-item">
+		<div className="cmplz-statistics tw-w-full">
+			<div className="cmplz-statistics-select tw-grid tw-grid-cols-3 tw-gap-[var(--cmplz-space-s,_12px)] tw-w-full tw-px-[var(--cmplz-space-l,_24px)] tw-py-[var(--cmplz-space-m,_16px)] tw-bg-[var(--cmplz-success-surface,_#e9f6ec)]">
+			<div className="cmplz-statistics-select-item tw-flex tw-flex-col tw-items-center tw-justify-center tw-text-center tw-py-[var(--cmplz-space-s,_12px)] tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-surface,_#ffffff)] [&_h2]:tw-mt-[var(--cmplz-space-2xs,_4px)] [&_h2]:tw-font-extrabold [&_span]:tw-flex [&_span]:tw-justify-center [&_span]:tw-gap-[3px]">
 					<Icon name = "dial-max-light" color={"blue"} size="22"/>
 					<h2>{total}</h2>
 					<span>{__('Total', 'complianz-gdpr')}</span>
 				</div>
-				<div className="cmplz-statistics-select-item">
+				<div className="cmplz-statistics-select-item tw-flex tw-flex-col tw-items-center tw-justify-center tw-text-center tw-py-[var(--cmplz-space-s,_12px)] tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-surface,_#ffffff)] [&_h2]:tw-mt-[var(--cmplz-space-2xs,_4px)] [&_h2]:tw-font-extrabold [&_span]:tw-flex [&_span]:tw-justify-center [&_span]:tw-gap-[3px]">
 					<Icon name = "dial-med-light" color={"green"} size="22"/>
 					<h2>{fullConsent}</h2>
 					<span>{__('Full Consent', 'complianz-gdpr')}</span>
 				</div>
-				<div className="cmplz-statistics-select-item">
+				<div className="cmplz-statistics-select-item tw-flex tw-flex-col tw-items-center tw-justify-center tw-text-center tw-py-[var(--cmplz-space-s,_12px)] tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-surface,_#ffffff)] [&_h2]:tw-mt-[var(--cmplz-space-2xs,_4px)] [&_h2]:tw-font-extrabold [&_span]:tw-flex [&_span]:tw-justify-center [&_span]:tw-gap-[3px]">
 					<Icon name = "dial-min-light" color={"red"} size="22"/>
 					<h2>{noConsent}</h2>
 					<span>{__('No Consent', 'complianz-gdpr')}</span>
 				</div>
 			</div>
-			<div className="cmplz-statistics-list">
+			<div className="cmplz-statistics-list tw-w-full tw-h-[230px] tw-overflow-y-auto">
 				{labels.length > 0 && labels.map((label, index) =>
-					<div className="cmplz-statistics-list-item" key={index}>
+					<div className="cmplz-statistics-list-item tw-grid tw-grid-cols-[auto_2fr_1fr] tw-gap-[var(--cmplz-space-s,_12px)] tw-items-center tw-py-[var(--cmplz-space-xs,_8px)] tw-px-[var(--cmplz-space-l,_24px)] [&:nth-of-type(even)]:tw-bg-[var(--cmplz-surface-sunken,_#f1f5f9)]" key={index}>
 						{getRowIcon(index)}
-						<p className="cmplz-statistics-list-item-text">{label}</p>
-						<p className="cmplz-statistics-list-item-number" onClick={() => toggleItemDisplay(index)}>
+						<p className="cmplz-statistics-list-item-text tw-w-full tw-me-auto">{label}</p>
+						<p className="cmplz-statistics-list-item-number tw-font-semibold tw-w-full tw-text-end tw-cursor-pointer" onClick={() => toggleItemDisplay(index)}>
 							<span>{data.hasOwnProperty(index) && handleCategoryData(data[index], index)}</span>
 						</p>
 					</div>
 				)}
 				{labels.length === 0 && 
-				<div className="cmplz-statistics-list-item" >
-					<p className="cmplz-statistics-list-item-text">{__('No data.', 'complianz-gdpr')}</p>
+				<div className="cmplz-statistics-list-item tw-grid tw-grid-cols-[auto_2fr_1fr] tw-gap-[var(--cmplz-space-s,_12px)] tw-items-center tw-py-[var(--cmplz-space-xs,_8px)] tw-px-[var(--cmplz-space-l,_24px)] [&:nth-of-type(even)]:tw-bg-[var(--cmplz-surface-sunken,_#f1f5f9)]" >
+					<p className="cmplz-statistics-list-item-text tw-w-full tw-me-auto">{__('No data.', 'complianz-gdpr')}</p>
 				</div>
 				}
 			</div>

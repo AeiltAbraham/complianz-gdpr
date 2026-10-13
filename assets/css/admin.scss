@@ -32,16 +32,31 @@
   @import 'admin/modules/icons.scss';
 
   @import 'admin/modules/onboarding.scss';
-  @import 'admin/modules/progress.scss';
+  // modules/progress.scss removed (ADR-005, T-048): the Dashboard progress block + task list/switcher +
+  // plus-one badge migrated to tw- utilities (Dashboard/Progress/* + TaskElement.js + Tools.js). The ONE
+  // cross-section rule, the `.cmplz-task-status` pill family (also used by SettingsGroup/SecurityMeasures/
+  // CreateProcessingAgreements/CreateDataBreachReport), relocated to legacy-globals.scss; the rest was
+  // dashboard-only or dead (header-html/footer-left/toggle-active/progress-status-container, grep-verified).
   // modules/placeholder.scss removed (ADR-005, T-041): the loading placeholders migrated to the Skeleton
   // primitive (settings/src/Placeholder/*.js); its one still-needed rule (.cmplz-loading-container, used by
   // the legacy Statistics chart) relocated to legacy-globals.scss, the rest deleted (reproduced via Skeleton).
+  // modules/other-plugins.scss KEPT (ADR-005, T-048): the live `.cmplz-other-plugins*` container/placeholder
+  // rules still back the dashboard Other-Plugins block, and the `.cmplz-other-plugins-element`/`.cmplz-bullet`
+  // rules may back premium blocks via the `cmplz_blocks` filter (the T-046 `.no-background` landmine: a JS-only
+  // grep can miss a PHP consumer) — left untouched, deletion deferred until premium can be verified.
   @import 'admin/modules/other-plugins.scss';
-  @import 'admin/modules/tips-tricks.scss';
-  @import 'admin/modules/dashboard/dashboard.scss';
-  @import 'admin/modules/dashboard/documents.scss';
-  @import 'admin/modules/dashboard/tools.scss';
-  @import 'admin/modules/dashboard/statistics.scss';
+  // modules/tips-tricks.scss removed (ADR-005, T-048): the Dashboard Tips & Tricks block migrated to tw-
+  // utilities (Dashboard/TipsTricks/TipsTricks.js). No other consumer (grep-verified).
+  // modules/dashboard/dashboard.scss removed (ADR-005, T-048): `.border-to-border` + the `.cmplz-dashboard
+  // .cmplz-statistics` padding were dashboard-only (the edge-to-edge content padding now lives in GridBlock.js);
+  // the generic `.cmplz-hidden { display:none }` (consumed by PreloadFields/CookieBannerPreview) relocated to
+  // legacy-globals.scss.
+  // modules/dashboard/documents.scss removed (ADR-005, T-048): dashboard-only; the Documents block rows
+  // (Dashboard/Documents/*) migrated to tw- utilities.
+  // modules/dashboard/tools.scss removed (ADR-005, T-048): dashboard-only; the Tools block rows
+  // (Dashboard/Tools/{Tools,ToolItem}.js) migrated to tw- utilities.
+  // modules/dashboard/statistics.scss removed (ADR-005, T-048): dashboard-only; the summary stats tiles + list
+  // (Dashboard/Tools/Statistics.js) migrated to tw- utilities.
   // modules/wizard.scss removed (ADR-005, T-046): the settings-screen frame (SettingsGroup card +
   // Settings.js two-column body / sticky footer / scroll-progress / upsell / confetti + SettingsPlaceholder)
   // migrated to tw- utilities on the semantic tokens. Its still-consumed rules relocated to legacy-globals.scss:

@@ -10,7 +10,7 @@ import ToolItem from "./ToolItem";
 
 const PlusOnes = (props) => {
 	return (
-		<div className="cmplz-plusone">{props.count}</div>
+		<div className="cmplz-plusone tw-inline-block tw-min-w-[15px] tw-h-[18px] tw-ms-[10px] tw-rounded-full tw-bg-[#d63638] tw-px-[5px] tw-py-[2px] tw-text-center tw-leading-none tw-text-[length:var(--cmplz-font-size-xs,_0.6875rem)] tw-text-[color:#ffffff]">{props.count}</div>
 	)
 }
 

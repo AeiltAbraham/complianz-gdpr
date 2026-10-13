@@ -69,19 +69,26 @@ const ProgressBlock = () => {
 		}
 	});
 	let openNotices = noticesOutput.filter(notice => notice.status==='open' || notice.status==='urgent');
+    // Progress block body (T-048). Migrated off assets/css/admin/modules/progress.scss onto tw- utilities
+    // on the semantic tokens WITH LITERAL FALLBACKS, matching design/dashboard-preview.html. Markerless
+    // (GridBlock wraps unmigrated bodies). The <80% warning tint keeps the legacy .cmplz-orange hook + logic.
+    // The progress-track reuses --cmplz-surface-sunken (ADR-015 / dashboard.md §3: zero new tokens).
+    const barColorCls = percentageCompleted < 80
+        ? 'tw-bg-[var(--cmplz-warning,_#eab308)]'
+        : 'tw-bg-[var(--cmplz-success,_#1f7a34)]';
     return (
-        <div className="cmplz-progress-block">
-            <div className="cmplz-progress-bar">
-                <div className="cmplz-progress">
-                    <div className={'cmplz-bar ' + progressBarColor} style={getStyles()}></div>
+        <div className="cmplz-progress-block tw-flex tw-flex-col">
+            <div className="cmplz-progress-bar tw-mb-[var(--cmplz-space-m,_16px)]">
+                <div className="cmplz-progress tw-h-[10px] tw-overflow-hidden tw-rounded-full tw-bg-[var(--cmplz-surface-sunken,_#f1f5f9)]">
+                    <div className={'cmplz-bar ' + progressBarColor + ' tw-h-full tw-rounded-full ' + barColorCls} style={getStyles()}></div>
                 </div>
             </div>
 
-            <div className="cmplz-progress-text">
-                <h1 className="cmplz-progress-percentage">
+            <div className="cmplz-progress-text tw-flex tw-items-center tw-gap-[var(--cmplz-space-m,_16px)] tw-mb-[var(--cmplz-space-m,_16px)]">
+                <h1 className="cmplz-progress-percentage tw-m-0 tw-text-[2rem] tw-font-extrabold tw-leading-none">
                     {percentageCompleted}%
                 </h1>
-                <h5 className="cmplz-progress-text-span">
+                <h5 className="cmplz-progress-text-span tw-m-0 tw-font-medium tw-text-[length:var(--cmplz-font-size-sm,_0.8125rem)] tw-text-[color:var(--cmplz-text-muted,_#475569)]">
                     {percentageCompleted < 100 && __( 'Consent Management is activated on your site.',  'complianz-gdpr' )+' ' }
                     {percentageCompleted< 100 && openNotices.length===1 && __( 'You still have 1 task open.', 'complianz-gdpr' )}
                     {percentageCompleted < 100 && openNotices.length>1 && __( 'You still have %s tasks open.','complianz-gdpr' ).replace('%s', openNotices.length) }
@@ -90,7 +97,7 @@ const ProgressBlock = () => {
                 </h5>
             </div>
 
-            <div className="cmplz-scroll-container">
+            <div className="cmplz-scroll-container tw-h-[230px] tw-overflow-y-auto">
                 {noticesOutput.map((notice, i) => <TaskElement key={i} index={i} notice={notice}/>)}
             </div>
         </div>

@@ -55,8 +55,8 @@ const SingleDocument = (props) => {
 		};
 	}
 	return (
-		<div className="cmplz-single-document-other-documents">
-			<SelectInput onChange={ (value) => setUrl(value) } defaultValue={'0'} canBeEmpty={false} value={url} options={options} />
+		<div className="cmplz-single-document-other-documents tw-flex tw-items-center tw-gap-[var(--cmplz-space-s,_12px)] tw-py-[var(--cmplz-space-xs,_8px)] tw-px-[var(--cmplz-space-l,_24px)]">
+			<div className="tw-flex-1"><SelectInput onChange={ (value) => setUrl(value) } defaultValue={'0'} canBeEmpty={false} value={url} options={options} /></div>
 			<div onClick={()=> Download()}>
 				<Icon name={'file-download'} color={ (url!=0 && !disabled) ? 'black' : 'grey'} tooltip={__("Download file","complianz-gdpr")} size={14} />
 			</div>
