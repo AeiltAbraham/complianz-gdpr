@@ -836,6 +836,35 @@ acceptance:
 - wizard/notice.scss DELETED (last consumer migrated); wizard.scss frame rules migrated, its still-consumed rules + the .cmplz-cookiebanner-preview-controls block RELOCATED to legacy-globals.scss, the last-consumed footer-container/scroll-progress/upsell/confetti rules DELETED, imports adjusted (no dangling); the shared .cmplz-grid-item* base family + -footer base LEFT (Dashboard/PagePlaceholder); the T-045 wizard-div content-override + block-intro deleted iff SettingsPlaceholder migrated off them; grep-verified dead rules dropped
 - build:all green; physical-utilities exit 0; stylelint OK; token hygiene clean (no --cmplz-legacy-/--rsp-/banner names in the migrated files); functional specs green; reset-DB re-baseline of the affected screens; axe gating evaluated; compiled output restored (ADR-006)
 
+## Stage H (Phase 4 — screens) · section 2 of 7: Dashboard
+
+## T-047 Dashboard design note + preview + the block extension-point ADR (two-gate sign-off)
+mode: agentic
+status: done (2026-10-13) — PROPOSALS produced; awaiting TWO maintainer sign-offs in design/dashboard.md §7 (ADR-015 vocabulary + the dashboard look/token decision)
+outcome: Produced docs/adr/ADR-015-dashboard-block-extension-point.md (Proposed — the forward width/variant vocabulary + the consumer-side cmplz_normalize_blocks() contract; DB-17 mapping/precedence/_doing_it_wrong already fixed), design/dashboard.md (scope, token decision, marker discipline, migration plan, sign-off), and design/dashboard-preview.html (the 5 block internals — Progress bar+filter+task pills, Documents region-select+sync/validate rows, Tools rows, Tips bullet list, borderless Other-Plugins card — on the APPROVED tokens; verified in-browser). Scope settled by investigation: chart.js/readToken()/ADR-009/the Statistics screen/DateRange are OUT (dashboard statistics is summary-only); the shared .cmplz-grid-item* base + .cmplz-task-status + .cmplz-hidden RELOCATE/STAY (cross-section); new-features.scss/bullets.scss/stale other-plugins rules LEFT (likely-dead but premium-unverifiable). RECOMMENDED: width ∈ {1,2}, variant ∈ {default,edge-to-edge,borderless}; ZERO new tokens (progress-track reuses --cmplz-surface-sunken; legacy pink dropped as dead); Icon.js gains literal fallbacks (markerless blocks). No settings/src / assets/css / PHP / test file touched (proposals only). PAUSE: T-048 blocked until BOTH boxes in design/dashboard.md §7 are ticked.
+depends: T-046
+files: docs/adr/ADR-015-dashboard-block-extension-point.md, docs/specs/001-settings-ui-redesign/design/dashboard.md, docs/specs/001-settings-ui-redesign/design/dashboard-preview.html
+proof: visual review of dashboard-preview.html in a browser; maintainer ratification of ADR-015 + the dashboard look (design artifacts; no build/test)
+serves: C-2, C-4, DB-07, DB-08, DB-17; Stage-H Dashboard gate
+acceptance:
+- a self-contained HTML preview renders the 5 dashboard block internals on the approved tokens (zero new tokens recommended), markerless, width/variant per ADR-015
+- ADR-015 states the forward width/variant vocabulary + the fixed DB-17 contract, backward-compatible, normalize-on-output
+- BOTH sign-offs recorded in design/dashboard.md §7 before T-048 runs
+
+## T-048 Migrate the Dashboard: cmplz_normalize_blocks() + tests + GridBlock width/variant + block bodies; retire dashboard SCSS
+mode: agentic
+status: blocked (awaiting T-047 two-gate sign-off)
+depends: T-047
+files: settings/config/blocks.php (add cmplz_normalize_blocks() outside the pluggable guard + rewrite 5 blocks to width/variant), settings/settings.php (wrap :247 in normalize), tests/test-blocks.php (NEW PHPUnit), settings/src/Dashboard/GridBlock.js (read width/variant via complete-literal tw- maps) + the 5 block bodies/headers/footers under settings/src/Dashboard/*, settings/src/utils/Icon.js (add literal fallbacks), assets/css/admin/legacy-globals.scss (relocate .cmplz-task-status + .cmplz-hidden; drop the .cmplz-grid-item.no-background sub-rule), assets/css/admin/modules/dashboard/* + progress.scss + tips-tricks.scss (delete dashboard-exclusive) , assets/css/admin.scss (drop retired imports), tests/e2e/admin/**/__screenshots__ (re-baseline), tests/e2e/admin/helpers/axe.js (MIGRATED_SCREENS eval)
+proof: composer install && vendor/bin/phpunit --filter test-blocks && npm run build:all && node settings/scripts/check-physical-utilities.js && npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/dashboard.spec.js tests/e2e/admin/smoke.spec.js
+serves: C-4, DB-07, DB-08, DB-17, SC-02, ADR-005, ADR-015; Stage-H Dashboard
+acceptance:
+- cmplz_normalize_blocks() per ADR-015 (legacy class->width/variant; explicit keys win; variant conflict->borderless; unknown dropped; _doing_it_wrong under WP_DEBUG; runs on cmplz_blocks() output at settings.php); blocks.php 5 blocks rewritten to width/variant; backward-compatible (legacy class + pluggable signature + filter preserved); PHP escapes/sanitizes/caps
+- tests/test-blocks.php covers the ADR-015 §Consequences cases; green under the PHP gate
+- GridBlock reads width/variant via complete-literal tw- maps (ADR-013), keeps cmplz-grid-item + cmplz-<id> hooks, emits no raw class; the 5 block bodies migrated to tw- + token-literal fallbacks, NO marker (markerless — they wrap unmigrated bodies); Icon.js gets literal fallbacks so icons render colored outside islands; behavior preserved (filter/dismiss/nav/selectors/copy/install)
+- ADR-005: relocate .cmplz-task-status + .cmplz-hidden to legacy-globals; delete dashboard-exclusive SCSS + the .cmplz-grid-item.no-background sub-rule; KEEP the grid-item base + the likely-dead premium modules; drop retired imports (no dangling)
+- build green; phpunit green; physical-utilities exit 0; token hygiene clean; functional specs green; reset-DB re-baseline; axe gating evaluated; compiled output restored (ADR-006); ADR-015 flipped to Accepted
+
 ---
 
 ## Not yet tasked — per-section sign-off (Phase 4), CP4 (Phase 5)

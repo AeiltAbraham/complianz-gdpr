@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Complianz 001 — redesigned dashboard preview</title>
+<!--
+  Design review reference for the DASHBOARD block internals (feature 001, Stage H section 2).
+  Mirrors DashboardPage/GridBlock + the five blocks (Progress, Documents, Tools, Tips & Tricks,
+  Other Plugins) on the APPROVED tokens — ZERO new tokens (progress track reuses surface-sunken;
+  status pills + bar use existing hues; legacy pink dropped). Self-contained, inline CSS, no deps.
+  Blocks are MARKERLESS (they wrap unmigrated bodies) — look comes from tw--equivalent utilities +
+  token refs with literal fallbacks. Logical properties only (ADR-007): set <html dir="rtl"> to mirror.
+  Demo declares tokens on :root; production keeps them on the scoped islands (ADR-001/004).
+  The auto-fit grid is the dashboard variant: repeat(auto-fit, minmax(18rem, 1fr)).
+-->
+<style>
+  :root {
+    --cmplz-surface: #ffffff; --cmplz-surface-sunken: #f1f5f9; --cmplz-field-surface: #ffffff;
+    --cmplz-text: #0f172a; --cmplz-text-muted: #475569; --cmplz-text-on-accent: #ffffff;
+    --cmplz-border: #e2e8f0; --cmplz-field-border: #94a3b8;
+    --cmplz-accent: #009fff; --cmplz-accent-strong: #1e73be; --cmplz-accent-on-subtle: #17608f;
+    --cmplz-success: #1f7a34; --cmplz-warning: #eab308; --cmplz-danger: #d7263d;
+    --cmplz-success-surface: #e9f6ec; --cmplz-danger-surface: #fdebed; --cmplz-warning-surface: #fbf4da; --cmplz-accent-subtle: #e3f2ff;
+    --cmplz-surface-disabled: #f1f5f9; --cmplz-text-disabled: #94a3b8;
+    --cmplz-radius: 12px; --cmplz-radius-s: 8px; --cmplz-radius-field: 6px;
+    --cmplz-space-2xs: 4px; --cmplz-space-xs: 8px; --cmplz-space-s: 12px; --cmplz-space-m: 16px; --cmplz-space-l: 24px;
+    --cmplz-font-size: 0.875rem; --cmplz-font-size-xs: 0.6875rem; --cmplz-font-size-sm: 0.8125rem; --cmplz-font-size-lg: 1rem; --cmplz-font-size-xl: 1.25rem; --cmplz-line-height: 1.5;
+    --cmplz-shadow-sm: 0 1px 2px 0 rgba(15,23,42,0.06);
+    --cmplz-shadow: 0 1px 3px 0 rgba(15,23,42,0.10), 0 1px 2px -1px rgba(15,23,42,0.06);
+    --cmplz-duration: 200ms; --cmplz-ease: cubic-bezier(0.4,0,0.2,1);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--cmplz-surface-sunken); color: var(--cmplz-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: var(--cmplz-font-size); line-height: var(--cmplz-line-height); }
+
+  /* Header (context) */
+  .hdr { background: var(--cmplz-surface); border-block-end: 1px solid var(--cmplz-border); }
+  .hdr-in { max-width: clamp(300px, calc(100% - var(--cmplz-space-l)*2), 1600px); margin-inline: auto; display:flex; align-items:center; gap: var(--cmplz-space-m); min-height:70px; padding-inline: var(--cmplz-space-l); }
+  .logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size: var(--cmplz-font-size-lg); }
+  .logo .mark { width:26px; height:26px; border-radius:7px; background: linear-gradient(135deg, var(--cmplz-accent), var(--cmplz-accent-strong)); }
+  .hdr-right { margin-inline-start:auto; display:flex; align-items:center; gap: var(--cmplz-space-m); }
+  .button-black { background:#111827; color:#fff; text-decoration:none; font-weight:600; padding:8px 16px; border-radius: var(--cmplz-radius-field); font-size: var(--cmplz-font-size-sm); }
+
+  .reviewbar { max-width: clamp(300px, calc(100% - var(--cmplz-space-l)*2), 1600px); margin: var(--cmplz-space-l) auto 0; padding-inline: var(--cmplz-space-l); }
+  .badge { display:inline-block; padding:3px 10px; border-radius:999px; background:#fef9c3; color:#713f12; border:1px solid #fde68a; font-size: var(--cmplz-font-size-xs); font-weight:700; }
+  .dir-note { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); margin-block-start:6px; }
+
+  /* Dashboard grid (auto-fit) */
+  .grid { max-width: clamp(300px, calc(100% - var(--cmplz-space-l)*2), 1600px); margin-inline:auto; margin-block: var(--cmplz-space-l);
+    display:grid; gap: var(--cmplz-space-l); grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); padding-inline: var(--cmplz-space-l); align-items:start; }
+  .col-2 { grid-column: span 2; }
+  @media (max-width: 680px) { .col-2 { grid-column: span 1; } }
+
+  .card { background: var(--cmplz-surface); border:1px solid var(--cmplz-border); border-radius: var(--cmplz-radius); box-shadow: var(--cmplz-shadow); display:flex; flex-direction:column; overflow:hidden; }
+  .card.borderless { background:none; border:none; box-shadow:none; }
+  .card-header { display:flex; align-items:center; justify-content:space-between; gap: var(--cmplz-space-s); padding: var(--cmplz-space-m) var(--cmplz-space-l); border-block-end:1px solid var(--cmplz-border); min-height:56px; }
+  .card.borderless .card-header { border-block-end:0; padding-inline:0; }
+  .card-header h2 { margin:0; font-size: var(--cmplz-font-size-lg); }
+  .card-content { padding: var(--cmplz-space-m) var(--cmplz-space-l); flex-grow:1; }
+  .card.edge .card-content { padding-inline:0; }
+  .card.borderless .card-content { padding-inline:0; }
+  .card-footer { display:flex; align-items:center; gap: var(--cmplz-space-m); background:#f8fafc; border-block-start:1px solid var(--cmplz-border); padding: var(--cmplz-space-s) var(--cmplz-space-l); flex-wrap:wrap; }
+
+  .ico { width:16px; height:16px; flex:none; vertical-align:middle; }
+  .muted { color: var(--cmplz-text-muted); }
+  .btn-primary { margin-inline-start:auto; border:0; cursor:pointer; background: var(--cmplz-accent-strong); color: var(--cmplz-text-on-accent); font:inherit; font-weight:600; padding:8px 16px; border-radius: var(--cmplz-radius-field); text-decoration:none; }
+  .btn-tertiary { background:transparent; border:1px solid var(--cmplz-field-border); color: var(--cmplz-text); font:inherit; padding:6px 14px; border-radius: var(--cmplz-radius-field); cursor:pointer; text-decoration:none; }
+
+  /* Filter pills (All / Remaining) */
+  .filter { display:inline-flex; gap: var(--cmplz-space-2xs); }
+  .filter button { border:1px solid var(--cmplz-border); background: var(--cmplz-surface); color: var(--cmplz-text-muted); font:inherit; font-size: var(--cmplz-font-size-sm); padding:4px 10px; border-radius:999px; cursor:pointer; }
+  .filter button.on { background: var(--cmplz-accent-subtle); color: var(--cmplz-accent-on-subtle); border-color: var(--cmplz-accent-subtle); font-weight:600; }
+
+  /* Progress */
+  .pct { font-size:2rem; font-weight:800; line-height:1; }
+  .pct small { font-size: var(--cmplz-font-size-sm); font-weight:600; color: var(--cmplz-text-muted); margin-inline-start: var(--cmplz-space-xs); }
+  .bar { height:10px; border-radius:999px; background: var(--cmplz-surface-sunken); overflow:hidden; margin-block: var(--cmplz-space-s) var(--cmplz-space-m); }
+  .bar > span { display:block; height:100%; width:72%; background: var(--cmplz-success); border-radius:999px; }
+  .bar.low > span { background: var(--cmplz-warning); width:48%; }
+
+  .task { display:flex; align-items:flex-start; gap: var(--cmplz-space-s); padding-block: var(--cmplz-space-s); border-block-end:1px solid var(--cmplz-border); }
+  .task:last-child { border-block-end:0; }
+  .task .msg { flex:1; }
+  .task .msg p { margin:0; }
+  .pill { display:inline-flex; align-items:center; padding:2px 10px; border-radius:999px; font-size: var(--cmplz-font-size-xs); font-weight:700; white-space:nowrap; }
+  .pill.completed { background: var(--cmplz-success-surface); color: var(--cmplz-success); }
+  .pill.open { background: var(--cmplz-warning-surface); color:#7a5c00; }
+  .pill.urgent { background: var(--cmplz-danger-surface); color: var(--cmplz-danger); }
+  .pill.premium { background: var(--cmplz-accent-subtle); color: var(--cmplz-accent-on-subtle); }
+  .task-actions { display:flex; align-items:center; gap: var(--cmplz-space-xs); }
+  .icon-btn { border:0; background:transparent; cursor:pointer; color: var(--cmplz-text-muted); padding:2px; line-height:0; }
+  .legend { display:flex; align-items:center; gap: var(--cmplz-space-s); flex-wrap:wrap; color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); }
+  .legend span { display:inline-flex; align-items:center; gap:4px; }
+
+  /* Documents / Tools rows */
+  .row { display:flex; align-items:center; gap: var(--cmplz-space-s); padding: var(--cmplz-space-s) var(--cmplz-space-l); border-block-end:1px solid var(--cmplz-border); }
+  .row:last-child { border-block-end:0; }
+  .row .name { flex:1; display:flex; align-items:center; gap: var(--cmplz-space-xs); }
+  .row a { color: var(--cmplz-accent-strong); text-decoration:none; font-size: var(--cmplz-font-size-sm); }
+  .region-select { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--cmplz-field-border); border-radius: var(--cmplz-radius-field); padding:6px 10px; background: var(--cmplz-field-surface); color: var(--cmplz-text); font-size: var(--cmplz-font-size-sm); }
+
+  /* Tips & Tricks */
+  .tips { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap: var(--cmplz-space-s); }
+  .tips li { display:flex; gap: var(--cmplz-space-s); align-items:flex-start; }
+  .tips li a { color: var(--cmplz-accent-strong); text-decoration:none; }
+  .tips .dot { width:8px; height:8px; border-radius:999px; background: var(--cmplz-accent); margin-block-start:7px; flex:none; }
+
+  /* Other plugins (borderless) */
+  .plugin { display:flex; align-items:center; gap: var(--cmplz-space-m); background: var(--cmplz-surface); border:1px solid var(--cmplz-border); border-radius: var(--cmplz-radius); padding: var(--cmplz-space-m); box-shadow: var(--cmplz-shadow-sm); }
+  .plugin .thumb { width:48px; height:48px; border-radius: var(--cmplz-radius-s); background: linear-gradient(135deg, var(--cmplz-accent-subtle), #c7e6ff); flex:none; }
+  .plugin .meta { flex:1; }
+  .plugin .meta strong { display:block; }
+  .plugin .meta p { margin:2px 0 0; color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); }
+
+  .svgchk { color: var(--cmplz-success); } .svgsync { color: var(--cmplz-text-muted); }
+</style>
+</head>
+<body>
+  <div class="hdr"><div class="hdr-in">
+    <div class="logo"><span class="mark"></span>Complianz</div>
+    <div class="hdr-right"><a class="button-black" href="#pro">Go Pro</a></div>
+  </div></div>
+
+  <div class="reviewbar">
+    <span class="badge">DASHBOARD PREVIEW — design review reference (proposal, awaiting sign-off)</span>
+    <div class="dir-note">Stage H section 2. ZERO new tokens. Blocks are markerless; width/variant per ADR-015.
+      Logical properties throughout — set <code>&lt;html dir="rtl"&gt;</code> to mirror (ADR-007).</div>
+  </div>
+
+  <div class="grid">
+
+    <!-- PROGRESS (width 2) -->
+    <section class="card col-2">
+      <div class="card-header">
+        <h2>Progress</h2>
+        <div class="filter"><button class="on">Remaining (3)</button><button>All (8)</button></div>
+      </div>
+      <div class="card-content">
+        <div><span class="pct">72%<small>complete</small></span></div>
+        <div class="bar"><span></span></div>
+        <div>
+          <div class="task">
+            <span class="pill urgent">Urgent</span>
+            <div class="msg"><p>Your cookie banner is not yet configured for all regions.</p></div>
+            <div class="task-actions"><a class="btn-tertiary" href="#view">View</a>
+              <button class="icon-btn" title="Dismiss"><svg class="ico" viewBox="0 0 384 512" aria-hidden="true"><path fill="currentColor" d="M342 150a24 24 0 0 0-34-34L192 232 76 116a24 24 0 0 0-34 34l116 116L42 382a24 24 0 1 0 34 34l116-116 116 116a24 24 0 0 0 34-34L226 266z"/></svg></button></div>
+          </div>
+          <div class="task">
+            <span class="pill open">Open</span>
+            <div class="msg"><p>No site scan has been completed yet.</p></div>
+            <div class="task-actions"><a class="btn-tertiary" href="#scan">Re-check</a></div>
+          </div>
+          <div class="task">
+            <span class="pill premium">Premium</span>
+            <div class="msg"><p>Harden your website and detect vulnerabilities with Really Simple Security.</p></div>
+            <div class="task-actions"><a class="btn-tertiary" href="#more">More info</a></div>
+          </div>
+          <div class="task">
+            <span class="pill completed">Done</span>
+            <div class="msg"><p class="muted">Consent management is activated on your site.</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="legend">
+          <span><svg class="ico svgchk" viewBox="0 0 448 512" aria-hidden="true"><path fill="currentColor" d="M438 105a24 24 0 0 1 0 34L183 394a24 24 0 0 1-34 0L9 254a24 24 0 1 1 34-34l123 123L404 105a24 24 0 0 1 34 0z"/></svg>Cookie Blocker</span>
+          <span><svg class="ico svgchk" viewBox="0 0 448 512" aria-hidden="true"><path fill="currentColor" d="M438 105a24 24 0 0 1 0 34L183 394a24 24 0 0 1-34 0L9 254a24 24 0 1 1 34-34l123 123L404 105a24 24 0 0 1 34 0z"/></svg>Placeholders</span>
+          <span><svg class="ico svgchk" viewBox="0 0 448 512" aria-hidden="true"><path fill="currentColor" d="M438 105a24 24 0 0 1 0 34L183 394a24 24 0 0 1-34 0L9 254a24 24 0 1 1 34-34l123 123L404 105a24 24 0 0 1 34 0z"/></svg>Consent Banner</span>
+        </span>
+        <a class="btn-primary" href="#wizard">Continue Wizard</a>
+      </div>
+    </section>
+
+    <!-- DOCUMENTS (edge-to-edge) -->
+    <section class="card edge">
+      <div class="card-header">
+        <h2>Documents</h2>
+        <span class="region-select">General
+          <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path fill="var(--cmplz-text-muted)" d="M4 6l4 4 4-4"/></svg>
+        </span>
+      </div>
+      <div class="card-content" style="padding-block:0">
+        <div class="row">
+          <span class="name"><svg class="ico svgchk" viewBox="0 0 448 512" aria-hidden="true"><path fill="currentColor" d="M438 105a24 24 0 0 1 0 34L183 394a24 24 0 0 1-34 0L9 254a24 24 0 1 1 34-34l123 123L404 105a24 24 0 0 1 34 0z"/></svg> Privacy Statement</span>
+          <a href="#copy">Copy shortcode</a>
+        </div>
+        <div class="row">
+          <span class="name"><svg class="ico svgsync" viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="M463 200a24 24 0 0 1-24-24 183 183 0 1 0-28 139l-39-11a24 24 0 1 1 13-46l96 26a24 24 0 0 1 17 29l-26 96a24 24 0 1 1-46-13l9-33A231 231 0 1 1 487 176a24 24 0 0 1-24 24z"/></svg> Cookie Policy</span>
+          <a href="#copy">Copy shortcode</a>
+        </div>
+        <div class="row">
+          <span class="name"><svg class="ico svgsync" viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="M463 200a24 24 0 0 1-24-24 183 183 0 1 0-28 139l-39-11a24 24 0 1 1 13-46l96 26a24 24 0 0 1 17 29l-26 96a24 24 0 1 1-46-13l9-33A231 231 0 1 1 487 176a24 24 0 0 1-24 24z"/></svg> Terms &amp; Conditions</span>
+          <a href="#copy">Copy shortcode</a>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="legend"><span><svg class="ico svgchk" viewBox="0 0 448 512" aria-hidden="true"><path fill="currentColor" d="M438 105a24 24 0 0 1 0 34L183 394a24 24 0 0 1-34 0L9 254a24 24 0 1 1 34-34l123 123L404 105a24 24 0 0 1 34 0z"/></svg>Validated</span>
+        <span><svg class="ico svgsync" viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="M463 200a24 24 0 0 1-24-24 183 183 0 1 0-28 139l-39-11a24 24 0 1 1 13-46l96 26a24 24 0 0 1 17 29l-26 96a24 24 0 1 1-46-13l9-33A231 231 0 1 1 487 176a24 24 0 0 1-24 24z"/></svg>Synchronized</span></span>
+      </div>
+    </section>
+
+    <!-- TOOLS (edge-to-edge) -->
+    <section class="card edge">
+      <div class="card-header"><h2>Tools</h2></div>
+      <div class="card-content" style="padding-block:0">
+        <div class="row"><span class="name muted">Data Requests</span><a href="#">Open →</a></div>
+        <div class="row"><span class="name muted">Records of Consent</span><a href="#">Open →</a></div>
+        <div class="row"><span class="name muted">Consent Statistics</span><a href="#">Open →</a></div>
+        <div class="row"><span class="name muted">A/B Testing</span><a href="#">Open →</a></div>
+        <div class="row"><span class="name muted">Security</span><a href="#">Open →</a></div>
+      </div>
+    </section>
+
+    <!-- TIPS & TRICKS (width 2) -->
+    <section class="card col-2">
+      <div class="card-header"><h2>Tips &amp; Tricks</h2></div>
+      <div class="card-content">
+        <ul class="tips">
+          <li><span class="dot"></span><div><a href="#">A simplified Guide to Google Consent Mode v2</a><p class="muted" style="margin:2px 0 0">How to stay compliant with the latest Google requirements.</p></div></li>
+          <li><span class="dot"></span><div><a href="#">Customize your banner — CSS lessons</a><p class="muted" style="margin:2px 0 0">Make the consent banner match your brand.</p></div></li>
+          <li><span class="dot"></span><div><a href="#">Debugging issues with Complianz</a><p class="muted" style="margin:2px 0 0">Common fixes for caching and script blocking.</p></div></li>
+        </ul>
+      </div>
+      <div class="card-footer"><a class="btn-tertiary" style="margin-inline-start:auto" href="#all">View all</a></div>
+    </section>
+
+    <!-- OTHER PLUGINS (borderless, width 2) -->
+    <section class="card borderless col-2">
+      <div class="card-header"><h2>Other Plugins</h2></div>
+      <div class="card-content">
+        <div class="plugin">
+          <span class="thumb"></span>
+          <div class="meta"><strong>Really Simple Security</strong><p>Lightweight security hardening and vulnerability detection for WordPress.</p></div>
+          <button class="btn-tertiary">Install</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>
