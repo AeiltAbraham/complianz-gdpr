@@ -186,7 +186,8 @@ a.button, button.button, input.button {
 // the still-legacy consumers that keep needing them:
 //   - `.cmplz-grid` (container): rendered unchanged by the error/lock page shell in
 //     Placeholder/PagePlaceholder.js (`cmplz-content-area cmplz-grid cmplz-dashboard …`, migrated at
-//     T-041), and relied on as the base grid by CookieBannerPreview.scss's `#complianz .cmplz-grid.cmplz-banner`.
+//     T-041), and carried as a class hook by Page.js's banner grid (`.cmplz-grid.cmplz-banner`; its
+//     200px save-clearance is now a `tw-` utility, T-050/ADR-008 — CookieBannerPreview.scss is deleted).
 //   - `.cmplz-grid.cmplz-dashboard` (auto-fit variant): the same PagePlaceholder dashboard grid.
 //   - the whole `.cmplz-grid-item*` family: the Phase-4 SCREEN content. The settings-screen frame
 //     (SettingsGroup.js card + Settings.js footer, section 1b / T-046) is now migrated to tw- utilities
@@ -554,50 +555,9 @@ a.button, button.button, input.button {
 	}
 }
 
-// Relocated from the retired assets/css/admin/modules/wizard.scss (ADR-005, T-046). The cookie-banner
-// preview controls are a consent-banner concern (CookieBannerControls.js), still legacy — this block
-// moves here unchanged and migrates with the consent-banner section's slice. Verbatim on the legacy tokens.
-.cmplz-cookiebanner-preview-controls {
-	display: flex;
-	justify-content: stretch;
-	flex-wrap: wrap;
-	margin-top: var(--cmplz-legacy-spacing-l);
-	h6 {
-		margin-top: var(--cmplz-legacy-spacing-s);
-		margin-bottom: var(--cmplz-legacy-spacing-xxs);
-		width: 100%;
-	}
-	button {
-
-		background: var(--cmplz-legacy-grey-200);
-		padding: var(--cmplz-legacy-spacing-xxs) var(--cmplz-legacy-spacing-xs);
-		border-radius: var(--cmplz-legacy-border-radius-input);
-		border: 1px solid var(--cmplz-legacy-grey-300);
-		&:hover {
-			background: var(--cmplz-legacy-grey-300);
-		}
-		&.active {
-			background: var(--cmplz-legacy-blue);
-			color: var(--cmplz-legacy-white);
-			border: 1px solid var(--cmplz-legacy-blue);
-			&:hover {
-				background: var(--cmplz-legacy-blue);
-			}
-		}
-		&.inactive {
-			cursor: pointer;
-		}
-
-	}
-	&-buttons {
-		width: 100%;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: flex-start;
-		align-items: center;
-		gap: var(--cmplz-legacy-spacing-xxs);
-	}
-}
+// The `.cmplz-cookiebanner-preview-controls` block (relocated here from wizard.scss at T-046) is DELETED
+// (ADR-005, T-050): its last consumer, CookieBannerControls.js, is now migrated to tw- utilities (the
+// approved segmented switcher), and the Menu.js `data-cmplz-isolate="banner-controls"` shield is removed.
 
 // Relocated from the (now deleted) assets/css/admin/modules/progress.scss (ADR-005, T-048 — the Dashboard
 // section). `.cmplz-task-status` is CROSS-SECTION: besides Dashboard/TaskElement.js it styles the status

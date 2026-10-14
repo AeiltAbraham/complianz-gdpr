@@ -1,4 +1,8 @@
 @import './tokens.css';
 @import './base.css';
+/* ADR-008 banner-preview fidelity (T-050): pinned legacy typography + relocated positioning for the
+ * data-cmplz-isolate="preview" zone. Imported AFTER base.css (postcss-import inlines it) so the zone-root
+ * pin sits after the base reset; its (1,1,0) scope keeps it robust regardless of order. */
+@import './vendors/preview.css';
 @tailwind components;
 @tailwind utilities;

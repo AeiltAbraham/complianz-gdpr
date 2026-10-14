@@ -170,7 +170,12 @@ const Page = () => {
 						CONTENT_AREA_FRAME,
 						selectedMainMenuItem === 'dashboard'
 							? "tw-grid-cols-[repeat(auto-fit,minmax(18rem,1fr))]"
-							: "tw-grid-cols-[28ch_1fr_1fr_1fr]"
+							: "tw-grid-cols-[28ch_1fr_1fr_1fr]",
+						// Banner save-clearance (T-050, ADR-008): replaces the legacy
+						// `.cmplz-grid.cmplz-banner { margin-bottom: 200px }` (CookieBannerPreview.scss, now
+						// deleted) so the Save button clears a bottom-positioned preview banner. Block-axis
+						// margin, RTL-safe.
+						selectedMainMenuItem === 'banner' && "tw-mb-[200px]"
 					)}
 				>
 					{ selectedMainMenuItem !== 'dashboard' &&

@@ -4,6 +4,13 @@ import UseBannerData from "./CookieBannerData";
 import Icon from "../../utils/Icon";
 import {useState, useEffect, memo} from "@wordpress/element";
 import AreYouSureModal from "../AreYouSureModal";
+import { Button } from "../../components/ui/Button";
+
+// Banner preview CHROME (T-050, ADR-005/ADR-008/FR-020): the reset action migrated off the legacy
+// `.cmplz-banner-reset-button button.button.button-default` rule (CookieBannerPreview.scss, now deleted)
+// onto the shared tertiary Button primitive — dropping the wp-admin `.button`/`.button-default` classes
+// (FR-020). The AreYouSureModal confirm flow and the loading Icon are unchanged; `tw-gap-[10px]`
+// reproduces the legacy 10px gap between the label and the spinner.
 
 const ResetBannerButton = () => {
 	const { cssLoading, selectedBanner } = UseBannerData();
@@ -57,13 +64,14 @@ const ResetBannerButton = () => {
 				>
 					{__('Are you sure you want to reset this banner to the default settings?', 'complianz-gdpr')}
 				</AreYouSureModal>
-			<button disabled={disabled || active}
+			<Button variant="tertiary"
+					disabled={disabled || active}
 					onClick={() => handleClick(  )}
-					className="button button-default"
+					className="tw-gap-[10px]"
 			>
 				{__('Reset', 'complianz-gdpr')}
 					{active && <Icon name = "loading" color = 'grey' />}
-			</button>
+			</Button>
 		</>
 	);
 }

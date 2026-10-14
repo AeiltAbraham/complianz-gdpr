@@ -1,0 +1,97 @@
+/* vendors/preview.css — ADR-008 banner-preview fidelity (T-050, Stage H / Phase 4).
+ *
+ * The banner preview injects the REAL frontend banner markup + the server-generated banner CSS straight
+ * into the admin DOM (settings/src/Settings/CookieBannerPreview/CookieBannerPreview.js), with no iframe or
+ * shadow root. It lives in a `data-cmplz-isolate="preview"` zone, so the scoped base reset (base.css
+ * B1-B5) skips the zone and its descendants (ADR-001) and the injected banner keeps its own frontend
+ * styling. This file holds the two things that zone still needs:
+ *   1. the inherited typography PINNED to the legacy `.cmplz` values so the preview stays identical across
+ *      the redesign (DB-06 — typography is the one permitted preview-vs-frontend difference), and
+ *   2. the admin-only POSITIONING that repositions the fixed banner for the preview, relocated from the
+ *      now-deleted assets/css/admin/modules/CookieBannerPreview.scss (ADR-005), rewritten with LOGICAL
+ *      properties (ADR-007) — except the one documented `[dir="rtl"]` translateX exception below.
+ *
+ * Scope: `:is(#complianz, #complianz-portal) [data-cmplz-isolate="preview"]` — specificity (1,1,0), so it
+ * beats base.css B2 (1,0,0), whose 14px would otherwise inherit the redesign type size into the zone.
+ *
+ * Token-hygiene gate (checks.yml greps settings/src/styles for the renamed legacy token prefixes, ADR-004):
+ * the pinned typography is written as CONCRETE LITERALS of the legacy `.cmplz` values, so NO legacy
+ * custom-property name appears here (not even in a comment — the gate greps the whole file). The legacy
+ * source is cited by file + line instead. `--cmplz_banner_width` (underscore) is the FRONTEND banner variable
+ * (cookiebanner/css/cookiebanner.css), not a redesign token and not a reserved `--cmplz-manage-consent-*`
+ * name, so it is kept verbatim.
+ *
+ * Forward note (ADR-009): when the vendor PostCSS pipeline (postcss-prefix-selector + postcss-rtlcss)
+ * lands with the data-tables/date-range section, it MUST EXCLUDE this file — it is already hand-scoped,
+ * hand-logical and hand-RTL'd, so re-prefixing or re-rtl'ing it would double it.
+ */
+
+/* Pinned inherited typography on the zone root — concrete literals of the legacy `.cmplz`
+ * (assets/css/admin/base.scss:2-10). The two that were legacy custom properties, resolved to their literal
+ * values (assets/css/variables.scss), so no legacy token name is written here (token-hygiene gate):
+ *   font-size (base.scss:6, legacy fs-300 variable) = 0.8125rem (13px)
+ *   color     (base.scss:8, legacy text-colour variable) = rgba(15, 23, 42, 0.95)
+ * font-family and letter-spacing are NOT set on `.cmplz`, so they are intentionally not pinned. */
+:is(#complianz, #complianz-portal) [data-cmplz-isolate="preview"] {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  color: rgba(15, 23, 42, 0.95);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* Admin-only positioning of the fixed preview banner (relocated from CookieBannerPreview.scss
+ * `#cmplz-cookiebanner-container`, ADR-005), rewritten with logical properties (ADR-007). `width` stays
+ * physical per the stylelint `csstools/use-logical` config exception. */
+:is(#complianz, #complianz-portal) [data-cmplz-isolate="preview"] #cmplz-cookiebanner-container .cmplz-cookiebanner.cmplz-bottom {
+  margin-inline-end: 20px;
+  width: calc(100% - 50px);
+  inset-inline-start: 20px;
+}
+
+:is(#complianz, #complianz-portal) [data-cmplz-isolate="preview"] #cmplz-cookiebanner-container .cmplz-cookiebanner.cmplz-bottom-left,
+:is(#complianz, #complianz-portal) [data-cmplz-isolate="preview"] #cmplz-cookiebanner-container .cmplz-cookiebanner.cmplz-bottom-right {
+  inset-inline-start: initial;
+  inset-inline-end: 0;
+}
+
+:is(#complianz, #complianz-portal) [data-cmplz-isolate="preview"] #cmplz-cookiebanner-container .cmplz-cookiebanner.cmplz-center {
+  inset-inline-end: 0;
+  inset-inline-start: initial;
+  transform: initial;
+  inset-block-start: initial;
+  inset-block-end: 50px;
+}
+
+/* Below 1800px the preview parks the side/center banners mostly off-canvas and slides them in on hover
+ * (admin preview only). */
+@media (max-width: 1800px) {
+  :is(#complianz, #complianz-portal) [data-cmplz-isolate="preview"] #cmplz-cookiebanner-container .cmplz-cookiebanner.cmplz-bottom-left,
+  :is(#complianz, #complianz-portal) [data-cmplz-isolate="preview"] #cmplz-cookiebanner-container .cmplz-cookiebanner.cmplz-bottom-right,
+  :is(#complianz, #complianz-portal) [data-cmplz-isolate="preview"] #cmplz-cookiebanner-container .cmplz-cookiebanner.cmplz-center {
+    transform: translateX(calc(0.3 * var(--cmplz_banner_width)));
+  }
+
+  :is(#complianz, #complianz-portal) [data-cmplz-isolate="preview"] #cmplz-cookiebanner-container .cmplz-cookiebanner.cmplz-bottom-left:hover,
+  :is(#complianz, #complianz-portal) [data-cmplz-isolate="preview"] #cmplz-cookiebanner-container .cmplz-cookiebanner.cmplz-bottom-right:hover,
+  :is(#complianz, #complianz-portal) [data-cmplz-isolate="preview"] #cmplz-cookiebanner-container .cmplz-cookiebanner.cmplz-center:hover {
+    animation: slideBannerIn 1s forwards;
+    animation-delay: 0s;
+  }
+
+  /* The ONE sanctioned physical exception (ADR-007 §27 / ADR-008): translateX is physical (positive X is
+   * always rightward), so the off-canvas slide must flip sign on RTL — a logical property cannot express a
+   * mirrored translate. This `[dir="rtl"]` rule is that documented carve-out. */
+  [dir="rtl"] :is(#complianz, #complianz-portal) [data-cmplz-isolate="preview"] #cmplz-cookiebanner-container .cmplz-cookiebanner.cmplz-bottom-left,
+  [dir="rtl"] :is(#complianz, #complianz-portal) [data-cmplz-isolate="preview"] #cmplz-cookiebanner-container .cmplz-cookiebanner.cmplz-bottom-right,
+  [dir="rtl"] :is(#complianz, #complianz-portal) [data-cmplz-isolate="preview"] #cmplz-cookiebanner-container .cmplz-cookiebanner.cmplz-center {
+    /* stylelint-disable-next-line csstools/use-logical -- documented physical exception (ADR-007 §27 / ADR-008); see the reason above. */
+    transform: translateX(calc(-0.3 * var(--cmplz_banner_width)));
+  }
+}
+
+@keyframes slideBannerIn {
+  100% {
+    transform: inherit;
+  }
+}

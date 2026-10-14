@@ -457,7 +457,7 @@ const CookieBannerPreview = () => {
 	setUpBanner();
 	return (
 		<>
-			<div id="cmplz-preview-banner-container" ref={rootRef}>
+			<div id="cmplz-preview-banner-container" data-cmplz-isolate="preview" ref={rootRef}>
 				<div id="cmplz-cookiebanner-container"
 					 className={bannerContainerClass} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(resultHtml) }}>
 				</div> {/* nosemgrep: react-dangerouslysetinnerhtml */}

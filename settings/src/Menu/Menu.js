@@ -12,12 +12,12 @@ import { clsx } from "../components/ui/cx";
 //
 // `data-cmplz-ui` sits on this Menu ROOT so the tokens (tokens.css, declared on
 // `:is(#complianz,#complianz-portal) :where([data-cmplz-ui])`) resolve directly and the base reset reaches
-// the migrated menu items — all of which the `tw-` utilities restore (Header/T-039 pattern). The ONE
-// unmigrated descendant is `<CookieBannerControls>` (legacy `<button>`s/`<h6>`/loading `<Icon>` styled by
-// the retained wizard.scss, shown only on the banner section): it is wrapped in a `data-cmplz-isolate`
-// zone (ADR-008 mechanism; base.css excludes `[data-cmplz-isolate]` + descendants from B1-B5) so the reset
-// cannot strip its legacy styling (learnings 2026-10-11: the marker must not reach unmigrated bodies). Its
-// own migration lands in Phase 4. The marker moves to the app root in Phase 5 (ADR-001).
+// the migrated menu items — all of which the `tw-` utilities restore (Header/T-039 pattern).
+// `<CookieBannerControls>` (shown only on the banner section) is now migrated to `tw-` utilities too
+// (T-050), so its former `data-cmplz-isolate="banner-controls"` shield is REMOVED: the segmented switcher
+// buttons get their look from `tw-` utilities (specificity 1,1,0 via the `important:` config), which beat
+// the base reset, so they render correctly inside this island. The marker moves to the app root in Phase 5
+// (ADR-001).
 //
 // C-3: the navigation MODEL is unchanged — same structure, same per-section sub-menu, same hash routing;
 // only the look changes. The legacy class hooks (`cmplz-wizard-menu`, `-header`, `-items`,
@@ -69,7 +69,7 @@ const PREMIUM_BUTTON = clsx(
 						<div className={PREMIUM_ITEM}><a target="_blank" rel="noopener noreferrer" href={cmplz_settings.upgrade_link} className={PREMIUM_BUTTON}>{__('Go Pro', 'complianz-gdpr')}</a></div>
 					}
 					{selectedMainMenuItem==='banner' &&
-						<div data-cmplz-isolate="banner-controls"><CookieBannerControls /></div>
+						<CookieBannerControls />
 					}
 				</div>
 		</div>

@@ -4,6 +4,24 @@ import useFields from "../Fields/FieldsData";
 import { __ } from '@wordpress/i18n';
 import {memo} from "@wordpress/element";
 import DOMPurify from 'dompurify';
+import { clsx } from "../../components/ui/cx";
+
+// Banner preview CHROME (T-050, DB-07, C-2, ADR-005/ADR-008): the `.cmplz-logo-preview` dashed box migrated
+// off the legacy CookieBannerPreview.scss rule (now deleted) onto `tw-` utilities + the semantic tokens with
+// LITERAL FALLBACKS: the redesign look (a dashed `--cmplz-field-border` box on a field radius, per
+// design/consent-banner-preview.html) applied over the box's EXISTING sizing — it sizes to the real logo
+// (the complianz svg at 90px / the uploaded custom image), NOT the mock's generic 160x72 placeholder, so
+// actual logos render undistorted; the clickable custom box gets an accent hover border to signal upload.
+// The legacy physical `float:right` is dropped for a
+// logical stacked layout (ADR-007). The e2e class hooks `.cmplz-logo-preview`/`.cmplz-clickable` and the
+// `.cmplz-logo-container`/`.cmplz-complianz-logo`/`.cmplz-theme-image`/`.cmplz-custom-image` hooks are KEPT
+// (isolation.spec:286,291; the logo-upload wp.media flow + the DOMPurify-sanitized logo HTML are unchanged).
+const LOGO_PREVIEW_BASE = clsx(
+	"cmplz-logo-preview",
+	"tw-mt-[var(--cmplz-space-xs,_8px)] tw-flex tw-items-center tw-justify-center",
+	"tw-border tw-border-dashed tw-border-[color:var(--cmplz-field-border,_#94a3b8)]",
+	"tw-rounded-[var(--cmplz-radius-field,_6px)]"
+);
 
 const BannerLogoControl = (props) => {
 	const { customizeUrl, selectedBanner, bannerDataLoaded} = UseBannerData();
@@ -16,11 +34,11 @@ const BannerLogoControl = (props) => {
 	}
 
 	//document.querySelector('.cmplz-logo-preview.cmplz-theme-image a').attr('href', customizeUrl);
-	let previewClass = "cmplz-logo-preview";
+	let previewClass = LOGO_PREVIEW_BASE;
 	if (props.value==='complianz') {
-		previewClass+= ' cmplz-complianz-logo';
+		previewClass = clsx(LOGO_PREVIEW_BASE, 'cmplz-complianz-logo', 'tw-p-[5px] [&_svg]:tw-h-[90px] [&_svg]:tw-w-[90px]');
 	} else if (props.value==='site') {
-		previewClass+= ' cmplz-theme-image';
+		previewClass = clsx(LOGO_PREVIEW_BASE, 'cmplz-theme-image');
 	}
 	let frame;
 	const runUploader = (event) => {
@@ -101,7 +119,7 @@ const BannerLogoControl = (props) => {
 			}
 			{
 				props.value === 'custom' &&
-				<div className="cmplz-logo-preview cmplz-clickable" onClick={() => runUploader()}>
+				<div className={clsx(LOGO_PREVIEW_BASE, 'cmplz-clickable', 'tw-cursor-pointer tw-max-w-[90px]', 'hover:tw-border-[color:var(--cmplz-accent-strong,_#1e73be)]')} onClick={() => runUploader()}>
 					<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selectedBanner.logo_options[props.value]) }} alt="Banner Logo" className="cmplz-custom-image" />
 				</div>
 			}

@@ -106,10 +106,12 @@ Adversarial review + CI-green under the implement → review → commit → push
 
 Consent-banner migration (T-050) starts only when this is approved.
 
-- **Controls-chrome look (segmented control) + zero new tokens approved:** [ ] — maintainer, ____________
+- **Controls-chrome look (segmented control) + zero new tokens approved:** [x] — maintainer, 2026-10-14, AS PROPOSED (segmented switcher with the accent-subtle active tint; zero new tokens).
+
+Consent-banner migration (T-050) authorized to run autonomously under the implement → adversarial-review → commit → push → CI-green gate.
 
 Maintainer notes / requested changes:
 
 ```
-(awaiting review)
+Approved as-is; no requested changes. Proceed autonomously through T-050.
 ```

@@ -61,7 +61,8 @@
   // Settings.js two-column body / sticky footer / scroll-progress / upsell / confetti + SettingsPlaceholder)
   // migrated to tw- utilities on the semantic tokens. Its still-consumed rules relocated to legacy-globals.scss:
   // the MULTI-CONSUMER `.cmplz-locked` overlay (SecurityMeasures/CreateProcessingAgreements/CreateDataBreachReport
-  // render their own) and the `.cmplz-cookiebanner-preview-controls` block (consent-banner, CookieBannerControls.js).
+  // render their own). (The `.cmplz-cookiebanner-preview-controls` block was also relocated here at T-046 and is
+  // now DELETED at T-050, its consumer CookieBannerControls.js having migrated to tw-.)
   // The last-consumed footer-container/scroll-progress/buttons/upsell-bar/confetti rules were deleted.
   @import 'admin/modules/errorboundary.scss';
     // modules/wizard/notice.scss removed (ADR-005, T-046): the help sidebar + help-notice accordion migrated
@@ -84,8 +85,11 @@
 	// inputs: the modules/inputs/ module is fully retired (ADR-005 Phase-2 exit, T-030). The three
 	// former files (Input, BorderInput, Buttons) are gone: BorderInput/Button-icon looks moved onto
 	// the migrated components; the global input/button rules live on in legacy-globals.scss.
-
-	  @import 'admin/modules/CookieBannerPreview.scss';
+	//
+	// modules/CookieBannerPreview.scss removed (ADR-005, T-050): the banner-preview positioning moved to
+	// settings/src/styles/vendors/preview.css (ADR-008 isolate zone), the preview CHROME migrated to tw-
+	// (CookieBannerControls/ResetBannerButton/BannerLogoControl + the banner save-clearance in Page.js), and
+	// the stale `.cmplz-cookiebanner-preview-controls` sub-block was dead (its selectors no longer matched the DOM).
 
   @import 'admin/modules/cookiescan.scss';
   // modules/notices.scss removed (ADR-005, T-042): the file was empty (only a `/** Admin notice */`
