@@ -896,6 +896,31 @@ acceptance:
 - the injected banner preview renders PIXEL-IDENTICAL in the isolate zone — the blocking isolation.spec preview shots do NOT drift and are NOT re-baselined (Phase 5 owns them); only the (non-blocking) controls-chrome screens re-baseline
 - build green; physical-utilities exit 0; stylelint OK (incl. preview.css); token hygiene clean; functional specs green; axe gating evaluated (likely deferred — the injected preview markup is unaudited); compiled output restored (ADR-006)
 
+## T-051 Integrations design note + bodies preview + the ADR-009 boundary (sign-off gate)
+status: done
+outcome: Produced design/integrations.md (scope IN/DEFER, the bodies design, zero-new-tokens, marker discipline, the ADR-009 boundary resolution, migration plan, two sign-off boxes) + design/integrations-preview.html (the Script Center + the .cmplz-details-row detail bodies — Name→TextField, Save=secondary/Delete=error/Add-new=secondary Buttons, URL ± icon Buttons, the dependency select + "waits for" caption, the radio-card Category, the safe-mode overlay; the shared Panel accordion and the react-data-table internals shown greyed/dashed as baseline-identical DEFERRED context; verified in-browser). Scope settled by a 4-dimension investigation (wemch7rdr): the Integrations outer chrome is already migrated (Settings.js frame T-046 + Field.js row T-045); THIS section migrates only the integrations-SPECIFIC non-table bodies (ScriptCenterControl, ThirdPartyScript, Dependency, Placeholder, Category, Urls) + retires the co-located settings/src/Settings/Integrations/integrations.scss (integrations-exclusive). DEFERRED (ADR-005/plan §5, three independent facts): (1) the shared Panel.js/wizard/panel.scss accordion (8 cross-section consumers — migrate the detail-row bodies inside it with NO data-cmplz-ui marker on the Panel-hosting wrapper, accordion chrome stays legacy); (2) the Services/Plugins react-data-table internals + datatables.scss + the ADR-009 vendor pipeline + readToken() → the Tools/Settings data-tables section (tables keep today's look via still-enqueued admin.css; re-baseline carve-out: table internals expected UNCHANGED); (3) the legacy modules/integrations/integrations.scss table-chrome (cross-section w/ Tools/RecordsOfConsent/DataRequests) stays. ZERO new tokens (C-2 set covers it; tokens.css byte-unchanged). ADR-009 boundary resolved as DEFER — changes no ADR (forced by plan §5 ordering + the 7-consumer ADR-005 gate + the unbuilt pipeline). No settings/src / assets/css / PHP touched (proposals only). PAUSE: T-052 blocked until BOTH boxes in design/integrations.md §8 are ticked.
+depends: T-050
+files: docs/specs/001-settings-ui-redesign/design/integrations.md (NEW), docs/specs/001-settings-ui-redesign/design/integrations-preview.html (NEW)
+proof: design note + preview produced; investigation (wemch7rdr) grounds the scope; preview verified in-browser
+serves: C-2, DB-07; Stage-H Integrations gate
+acceptance:
+- design note covers scope (IN/DEFER), the bodies look, zero new tokens, marker discipline, the ADR-009 boundary, migration plan, sign-off boxes
+- the ADR-009 data-table pipeline + readToken() is DEFERRED to the Tools/tables section (three independent facts recorded); no ADR changed
+- both maintainer sign-offs (bodies look + scope cut) recorded in design/integrations.md §8 before T-052 runs
+
+## T-052 Migrate the Integrations non-table bodies (Script Center + detail rows); retire the co-located integrations.scss
+status: blocked — awaiting the T-051 sign-off (design/integrations.md §8)
+outcome: (pending sign-off) Migrate ScriptCenterControl/ThirdPartyScript/Dependency/Placeholder/Category/Urls to tw- + token-literal fallbacks (Name raw <input> → TextField; wp-core buttons → Button primitive secondary/error/icon); NO data-cmplz-ui on the Panel-/table-hosting wrappers (marker discipline — the accordion + table stay legacy). ADR-005: delete the co-located settings/src/Settings/Integrations/integrations.scss + drop its @import (grep ALL consumers — JS + PHP + e2e — first, per the T-046 .no-background lesson); leave panel.scss, datatables.scss, and modules/integrations/integrations.scss untouched (shared). Re-baseline the #integrations/* screens (services/plugins/script-center) on a reset wp-env DB + fresh build (--update-snapshots; non-blocking), table internals expected IDENTICAL. Evaluate axe MIGRATED_SCREENS (likely still deferred — react-data-table + legacy Panel + Ace zone). Adversarial pre-push review → CI-green. Compiled output restored (ADR-006).
+depends: T-051
+files: settings/src/Settings/Integrations/{ScriptCenterControl,ThirdPartyScript,Dependency,Placeholder,Category,Urls}.js (tw-), settings/src/Settings/Integrations/integrations.scss (DELETE), tests/e2e/admin/**/__screenshots__ (re-baseline #integrations/*), tests/e2e/admin/helpers/axe.js (MIGRATED_SCREENS eval)
+proof: npm run build:all && node settings/scripts/check-physical-utilities.js && (cd settings && npx stylelint src/styles/**/*.css) && npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/smoke.spec.js
+serves: C-2, DB-07, ADR-001, ADR-005, ADR-007, ADR-013; Stage-H Integrations
+acceptance:
+- the non-table integrations bodies migrated to tw- + token-literal fallbacks (Name→TextField; Save=secondary/Delete=error/Add-new=secondary/URL± icon Buttons); behavior preserved (add/save/delete script, dependency, placeholder, URLs, safe-mode overlay); ZERO new tokens
+- co-located integrations.scss DELETED + @import dropped (grep ALL consumers incl. PHP + e2e first); panel.scss / datatables.scss / modules/integrations/integrations.scss untouched (shared, ADR-005)
+- NO data-cmplz-ui on wrappers hosting the still-legacy Panel accordion or the react-data-table (marker discipline, ADR-001); Services/Plugins table internals render IDENTICAL (legacy-styled)
+- build green; physical-utilities exit 0; stylelint OK; token hygiene clean; functional specs green; axe gating evaluated (likely deferred); #integrations/* re-baselined (non-blocking); compiled output restored (ADR-006)
+
 ---
 
 ## Not yet tasked — per-section sign-off (Phase 4), CP4 (Phase 5)
