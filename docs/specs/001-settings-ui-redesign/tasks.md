@@ -866,6 +866,35 @@ acceptance:
 - ADR-005: relocate .cmplz-task-status + .cmplz-hidden to legacy-globals; delete dashboard-exclusive SCSS + the .cmplz-grid-item.no-background sub-rule; KEEP the grid-item base + the likely-dead premium modules; drop retired imports (no dangling)
 - build green; phpunit green; physical-utilities exit 0; token hygiene clean; functional specs green; reset-DB re-baseline; axe gating evaluated; compiled output restored (ADR-006); ADR-015 flipped to Accepted
 
+## Stage H (Phase 4 — screens) · section 3 of 7: Consent banner
+
+## T-049 Consent-banner design note + controls preview + the preview.css plan (sign-off gate)
+mode: agentic
+status: done (2026-10-14) — PROPOSAL produced; awaiting ONE maintainer sign-off in design/consent-banner.md §7 (the controls-chrome look + zero new tokens)
+outcome: Produced design/consent-banner.md (scope, the ADR-008 preview.css plan, the controls-chrome design, zero-new-tokens, marker discipline, migration plan, sign-off) + design/consent-banner-preview.html (the preview CHROME — the A/B + consent-type segmented switcher groups incl. loading state, the logo-preview box, the Reset button — on the approved tokens; the banner mockup shown greyed as baseline-identical context; verified in-browser). Scope settled by investigation: the banner SETTINGS screens are already migrated (sections 1/1b); THIS section migrates the preview CHROME (CookieBannerControls/ResetBannerButton/BannerLogoControl + the .cmplz-grid.cmplz-banner save-clearance) + CREATES settings/src/styles/vendors/preview.css (ADR-008: zone scope + pinned typography literals + relocated positioning + the one [dir=rtl] translateX exception) + wires it (tailwind.css @import + checks.yml stylelint list) + adds data-cmplz-isolate="preview" to #cmplz-preview-banner-container. The injected banner mockup stays byte-identical (ADR-008); its isolation.spec shots are NOT re-baselined here (Phase 5). ZERO new tokens; no reserved-name collision (frontend banner reads only --cmplz-manage-consent-* + underscore vars). ADR-008 is Accepted so preview.css implements it (no fresh ADR). No settings/src / assets/css / PHP touched (proposals only). PAUSE: T-050 blocked until design/consent-banner.md §7 is ticked.
+depends: T-048
+files: docs/specs/001-settings-ui-redesign/design/consent-banner.md, docs/specs/001-settings-ui-redesign/design/consent-banner-preview.html
+proof: visual review of consent-banner-preview.html in a browser (design artifact; no build/test)
+serves: C-2, DB-06, DB-07, DB-08; Stage-H Consent-banner gate
+acceptance:
+- a self-contained HTML preview renders the controls chrome (switcher groups incl. active/inactive/loading + logo-preview + reset) on the approved tokens (zero new tokens), with the banner mockup shown as baseline-identical context
+- the preview.css plan implements ADR-008 (zone scope, pinned typography literals, relocated logical positioning, the one [dir=rtl] translate exception) and the wiring (entry @import + CI stylelint list)
+- sign-off recorded in design/consent-banner.md §7 before T-050 runs
+
+## T-050 Migrate the consent-banner preview chrome + create vendors/preview.css (ADR-008); retire CookieBannerPreview.scss
+mode: agentic
+status: blocked (awaiting T-049 sign-off)
+depends: T-049
+files: settings/src/styles/vendors/preview.css (NEW), settings/src/styles/tailwind.css (@import), .github/workflows/checks.yml (stylelint file list), settings/src/Settings/CookieBannerPreview/CookieBannerPreview.js (data-cmplz-isolate="preview"), CookieBannerControls.js + ResetBannerButton.js + BannerLogoControl.js (tw-), settings/src/Menu/Menu.js (remove the banner-controls isolate wrapper), settings/src/Page.js (the .cmplz-grid.cmplz-banner save-clearance), assets/css/admin/modules/CookieBannerPreview.scss (DELETE), assets/css/admin/legacy-globals.scss (delete the relocated controls block), assets/css/admin.scss (drop import), tests/e2e/admin/**/__screenshots__ (re-baseline controls chrome ONLY), tests/e2e/admin/helpers/axe.js (MIGRATED_SCREENS eval)
+proof: npm run build:all && node settings/scripts/check-physical-utilities.js && (cd settings && npx stylelint src/styles/tokens.css src/styles/base.css src/styles/page.css src/styles/vendors/preview.css) && npx wp-env start && npm run e2e -- --project=admin tests/e2e/admin/isolation.spec.js tests/e2e/admin/smoke.spec.js
+serves: C-2, DB-06, DB-07, ADR-008, ADR-007, ADR-005; Stage-H Consent-banner
+acceptance:
+- vendors/preview.css created per ADR-008 (zone-scoped typography literals — no --cmplz-legacy- names; logical positioning; the one [dir=rtl] translateX exception with a stylelint-disable + reason), wired into the entry chain AND added to the CI stylelint invocation; data-cmplz-isolate="preview" on #cmplz-preview-banner-container
+- the controls chrome (switcher/reset/logo-preview + the banner save-clearance) migrated to tw- + token-literal fallbacks (segmented look per the preview), the Menu.js banner-controls isolate wrapper removed, the e2e class hooks (.cmplz-logo-preview/.cmplz-clickable) kept; behavior preserved (switch/reset/logo-upload/auto-width/live re-render); ZERO new tokens
+- CookieBannerPreview.scss DELETED (positioning→preview.css; chrome→tw-; stale controls block dead) + @import dropped; the relocated .cmplz-cookiebanner-preview-controls block deleted from legacy-globals (grep ALL consumers incl. PHP + e2e first); .cmplz-hidden kept (shared)
+- the injected banner preview renders PIXEL-IDENTICAL in the isolate zone — the blocking isolation.spec preview shots do NOT drift and are NOT re-baselined (Phase 5 owns them); only the (non-blocking) controls-chrome screens re-baseline
+- build green; physical-utilities exit 0; stylelint OK (incl. preview.css); token hygiene clean; functional specs green; axe gating evaluated (likely deferred — the injected preview markup is unaudited); compiled output restored (ADR-006)
+
 ---
 
 ## Not yet tasked — per-section sign-off (Phase 4), CP4 (Phase 5)

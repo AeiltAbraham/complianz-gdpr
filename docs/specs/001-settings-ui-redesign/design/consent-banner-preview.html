@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Complianz 001 — consent-banner controls preview</title>
+<!--
+  Design review reference for the consent-banner PREVIEW CHROME only (feature 001, Stage H section 3):
+  the CookieBannerControls switcher groups, the ResetBannerButton, and the BannerLogoControl logo box.
+  The injected banner MOCKUP itself is NOT redesigned (ADR-008: it stays byte-identical in the
+  data-cmplz-isolate="preview" zone; its typography is pinned by vendors/preview.css) — it is shown here
+  only greyed as context. ZERO new tokens. Logical properties only (ADR-007): set <html dir="rtl"> to mirror.
+  Demo declares tokens on :root; production keeps them on the scoped islands (ADR-001/004).
+-->
+<style>
+  :root {
+    --cmplz-surface: #ffffff; --cmplz-surface-sunken: #f1f5f9;
+    --cmplz-text: #0f172a; --cmplz-text-muted: #475569; --cmplz-text-on-accent: #ffffff;
+    --cmplz-border: #e2e8f0; --cmplz-field-border: #94a3b8;
+    --cmplz-accent: #009fff; --cmplz-accent-strong: #1e73be; --cmplz-accent-on-subtle: #17608f;
+    --cmplz-accent-subtle: #e3f2ff;
+    --cmplz-radius: 12px; --cmplz-radius-s: 8px; --cmplz-radius-field: 6px;
+    --cmplz-space-2xs: 4px; --cmplz-space-xs: 8px; --cmplz-space-s: 12px; --cmplz-space-m: 16px; --cmplz-space-l: 24px;
+    --cmplz-font-size: 0.875rem; --cmplz-font-size-xs: 0.6875rem; --cmplz-font-size-sm: 0.8125rem; --cmplz-font-size-lg: 1rem; --cmplz-line-height: 1.5;
+    --cmplz-shadow-sm: 0 1px 2px 0 rgba(15,23,42,0.06);
+    --cmplz-shadow: 0 1px 3px 0 rgba(15,23,42,0.10), 0 1px 2px -1px rgba(15,23,42,0.06);
+    --cmplz-duration: 200ms; --cmplz-ease: cubic-bezier(0.4,0,0.2,1);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--cmplz-surface-sunken); color: var(--cmplz-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: var(--cmplz-font-size); line-height: var(--cmplz-line-height); }
+
+  .hdr { background: var(--cmplz-surface); border-block-end: 1px solid var(--cmplz-border); }
+  .hdr-in { max-width: clamp(300px, calc(100% - var(--cmplz-space-l)*2), 1600px); margin-inline: auto; display:flex; align-items:center; gap: var(--cmplz-space-m); min-height:70px; padding-inline: var(--cmplz-space-l); }
+  .logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size: var(--cmplz-font-size-lg); }
+  .logo .mark { width:26px; height:26px; border-radius:7px; background: linear-gradient(135deg, var(--cmplz-accent), var(--cmplz-accent-strong)); }
+
+  .wrap { max-width: clamp(300px, calc(100% - var(--cmplz-space-l)*2), 1100px); margin-inline:auto; margin-block: var(--cmplz-space-l); padding-inline: var(--cmplz-space-l);
+    display:grid; grid-template-columns: 1fr 320px; gap: var(--cmplz-space-l); align-items:start; }
+  @media (max-width: 760px) { .wrap { grid-template-columns: 1fr; } }
+  .reviewbar { grid-column: 1 / -1; }
+  .badge { display:inline-block; padding:3px 10px; border-radius:999px; background:#fef9c3; color:#713f12; border:1px solid #fde68a; font-size: var(--cmplz-font-size-xs); font-weight:700; }
+  .dir-note { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); margin-block-start:6px; }
+
+  .card { background: var(--cmplz-surface); border:1px solid var(--cmplz-border); border-radius: var(--cmplz-radius); box-shadow: var(--cmplz-shadow); padding: var(--cmplz-space-l); }
+
+  /* The live banner mockup — CONTEXT ONLY (not redesigned; ADR-008 keeps it baseline-identical) */
+  .preview-stage { min-height: 320px; display:flex; align-items:flex-end; justify-content:center; background:
+    repeating-linear-gradient(45deg, #eef2f7, #eef2f7 10px, #e8edf3 10px, #e8edf3 20px); border-radius: var(--cmplz-radius-s); position:relative; overflow:hidden; }
+  .stage-note { position:absolute; inset-block-start: var(--cmplz-space-s); inset-inline-start: var(--cmplz-space-s); font-size: var(--cmplz-font-size-xs); color: var(--cmplz-text-muted); background: rgba(255,255,255,.8); padding: 2px 8px; border-radius: 999px; }
+  .banner-mock { width: 86%; margin-block-end: var(--cmplz-space-l); background:#fff; border:1px solid #d7dde6; border-radius:10px; box-shadow: 0 8px 24px rgba(15,23,42,.12); padding: 14px 16px; opacity:.82; }
+  .banner-mock h4 { margin:0 0 6px; font-size: 0.9rem; }
+  .banner-mock p { margin:0 0 10px; font-size: 0.8rem; color:#475569; }
+  .banner-mock .btns { display:flex; gap:8px; flex-wrap:wrap; }
+  .banner-mock .b { font-size:.78rem; padding:6px 12px; border-radius:6px; border:1px solid #cfd6e0; }
+  .banner-mock .b.accept { background:#1f7a34; color:#fff; border-color:#1f7a34; }
+
+  /* The CONTROLS chrome (the redesign target) */
+  .controls h6 { margin: var(--cmplz-space-m) 0 var(--cmplz-space-xs); font-size: var(--cmplz-font-size-sm); font-weight:700; color: var(--cmplz-text-muted); text-transform:uppercase; letter-spacing:.04em; }
+  .controls h6:first-child { margin-block-start:0; }
+  .seg { display:flex; flex-wrap:wrap; gap: var(--cmplz-space-2xs); }
+  .seg button { border:1px solid var(--cmplz-border); background: var(--cmplz-surface); color: var(--cmplz-text); font:inherit; font-size: var(--cmplz-font-size-sm); padding:7px 14px; border-radius: var(--cmplz-radius-field); cursor:pointer; transition: background var(--cmplz-duration) var(--cmplz-ease), color var(--cmplz-duration) var(--cmplz-ease), border-color var(--cmplz-duration) var(--cmplz-ease); }
+  .seg button:hover { background: var(--cmplz-surface-sunken); }
+  .seg button.active { background: var(--cmplz-accent-subtle); color: var(--cmplz-accent-on-subtle); border-color: var(--cmplz-accent-subtle); font-weight:600; }
+  .seg button.loading { color: var(--cmplz-text-muted); cursor: default; opacity:.7; }
+  .spin { width:16px; height:16px; border-radius:999px; border:2px solid var(--cmplz-border); border-block-start-color: var(--cmplz-accent-strong); display:inline-block; vertical-align:middle; margin-inline-start: var(--cmplz-space-xs); animation: cmplz-spin 0.7s linear infinite; }
+  @keyframes cmplz-spin { to { transform: rotate(360deg); } }
+
+  .btn-tertiary { background:transparent; border:1px solid var(--cmplz-field-border); color: var(--cmplz-text); font:inherit; padding:8px 16px; border-radius: var(--cmplz-radius-field); cursor:pointer; margin-block-start: var(--cmplz-space-m); }
+  .btn-tertiary:hover { border-color: var(--cmplz-accent-strong); color: var(--cmplz-accent-strong); }
+
+  .logo-row { margin-block-start: var(--cmplz-space-m); }
+  .logo-preview { margin-block-start: var(--cmplz-space-xs); border:1px dashed var(--cmplz-field-border); border-radius: var(--cmplz-radius-field); display:flex; align-items:center; justify-content:center; min-height:72px; max-width:160px; color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-xs); cursor:pointer; background: var(--cmplz-surface-sunken); }
+  .logo-preview:hover { border-color: var(--cmplz-accent-strong); }
+  label.fld { display:block; font-weight:600; margin-block-end: var(--cmplz-space-xs); font-size: var(--cmplz-font-size-sm); }
+  .select { display:inline-flex; align-items:center; justify-content:space-between; gap:8px; width:100%; max-width:220px; border:1px solid var(--cmplz-field-border); border-radius: var(--cmplz-radius-field); padding:8px 12px; background: var(--cmplz-surface); font-size: var(--cmplz-font-size-sm); }
+</style>
+</head>
+<body>
+  <div class="hdr"><div class="hdr-in"><div class="logo"><span class="mark"></span>Complianz</div></div></div>
+
+  <div class="wrap">
+    <div class="reviewbar">
+      <span class="badge">CONSENT-BANNER CONTROLS PREVIEW — design review reference (proposal, awaiting sign-off)</span>
+      <div class="dir-note">Only the CONTROLS chrome is redesigned (zero new tokens). The banner mockup (left) stays
+        byte-identical per ADR-008 — shown greyed as context. Set <code>&lt;html dir="rtl"&gt;</code> to mirror (ADR-007).</div>
+    </div>
+
+    <!-- The live banner preview (NOT redesigned; context only) -->
+    <section class="card" style="padding:0">
+      <div class="preview-stage">
+        <span class="stage-note">Live banner preview — baseline-identical (ADR-008 isolate zone)</span>
+        <div class="banner-mock">
+          <h4>We value your privacy</h4>
+          <p>We use cookies to enhance your browsing experience, serve personalized ads, and analyze traffic.</p>
+          <div class="btns"><span class="b accept">Accept</span><span class="b">Deny</span><span class="b">View preferences</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The controls chrome (redesign target) -->
+    <aside class="card controls">
+      <h6>Switch between banners</h6>
+      <div class="seg">
+        <button class="active">Banner A</button>
+        <button>Banner B</button>
+      </div>
+
+      <h6>Edit consent types</h6>
+      <div class="seg">
+        <button class="active">Opt-in</button>
+        <button>Opt-out</button>
+        <button>Opt-out (ePrivacy)</button>
+      </div>
+
+      <h6>Consent type (loading)</h6>
+      <div class="seg">
+        <button class="loading">Opt-in</button>
+        <button class="loading">Opt-out</button>
+        <span class="spin" aria-label="loading"></span>
+      </div>
+
+      <div class="logo-row">
+        <label class="fld">Banner logo</label>
+        <span class="select">Custom logo <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path fill="var(--cmplz-text-muted)" d="M4 6l4 4 4-4"/></svg></span>
+        <div class="logo-preview">Click to upload</div>
+      </div>
+
+      <button class="btn-tertiary">Reset banner to default</button>
+    </aside>
+
+  </div>
+</body>
+</html>
