@@ -4,7 +4,7 @@ import ThirdPartyScript from "./ThirdPartyScript";
 import readMore from "../../utils/readMore";
 import {useState, useEffect} from "@wordpress/element";
 import { __ } from '@wordpress/i18n';
-import './integrations.scss';
+import { Button } from "../../components/ui/Button";
 
 import {memo} from "@wordpress/element";
 const ScriptCenterControl = () => {
@@ -32,23 +32,23 @@ const ScriptCenterControl = () => {
 			</p>
 			{ (disabled ) &&
 				<div className="cmplz-settings-overlay">
-					<div className="cmplz-settings-overlay-message">{disabledText}</div>
+					<div className="cmplz-settings-overlay-message tw-rounded-[var(--cmplz-radius-field,_6px)]">{disabledText}</div>
 				</div>
 			}
 			<h5>{__("Add a third-party script", 'complianz-gdpr' ) }</h5>
 			{!integrationsLoaded &&  <> <ThirdPartyScript type='add_script' /></>}
 			{integrationsLoaded && scripts.add_script.length>0 && scripts.add_script.map((script, i) => <ThirdPartyScript type='add_script' script={script} key={i} />)}
-			<div><button onClick={()=>addScript('add_script') } className="button button-default">{__("Add new","complianz-gdpr")}</button></div>
+			<div data-cmplz-ui className="tw-mt-[var(--cmplz-space-s,_12px)]"><Button variant="secondary" onClick={()=>addScript('add_script')}>{__("Add new","complianz-gdpr")}</Button></div>
 
 			<h5>{__("Block a script, iframe or plugin", 'complianz-gdpr' ) }</h5>
 			{!integrationsLoaded &&<> <ThirdPartyScript type='block_script' /></>}
 			{integrationsLoaded && scripts.block_script.length>0 && scripts.block_script.map((script, i) => <ThirdPartyScript type='block_script' script={script} key={i} />)}
-			<div><button onClick={()=>addScript('block_script')} className="button button-default">{__("Add new","complianz-gdpr")}</button></div>
+			<div data-cmplz-ui className="tw-mt-[var(--cmplz-space-s,_12px)]"><Button variant="secondary" onClick={()=>addScript('block_script')}>{__("Add new","complianz-gdpr")}</Button></div>
 
 			<h5>{__("Whitelist a script, iframe or plugin\n", 'complianz-gdpr' ) }</h5>
 			{!integrationsLoaded &&<> <ThirdPartyScript type='whitelist_script' /></>}
 			{integrationsLoaded && scripts.whitelist_script.length>0 && scripts.whitelist_script.map((script, i) => <ThirdPartyScript type='whitelist_script' script={script} key={i} />)}
-			<div><button onClick={()=>addScript('whitelist_script')} className="button button-default">{__("Add new","complianz-gdpr")}</button></div>
+			<div data-cmplz-ui className="tw-mt-[var(--cmplz-space-s,_12px)]"><Button variant="secondary" onClick={()=>addScript('whitelist_script')}>{__("Add new","complianz-gdpr")}</Button></div>
 		</>
 	)
 }

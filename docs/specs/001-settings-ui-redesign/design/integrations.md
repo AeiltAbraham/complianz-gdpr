@@ -158,15 +158,15 @@ implement → review → commit → push gate. Compiled output restored (ADR-006
 Integrations migration (T-052) starts only when **both** are approved.
 
 - **Bodies look (Script Center + detail rows on tokens; Name→TextField; Save/Delete/Add-new→Button
-  primitive, Delete=`error`) + zero new tokens:** [ ] — maintainer, 2026-10-__,
+  primitive, Delete=`error`) + zero new tokens:** [x] — maintainer, 2026-10-14, AS PROPOSED.
 - **Scope cut (defer the data-table internals + the shared Panel accordion to their later sections;
-  migrate only the non-table bodies + retire the co-located `integrations.scss`):** [ ] — maintainer, 2026-10-__,
+  migrate only the non-table bodies + retire the co-located `integrations.scss`):** [x] — maintainer, 2026-10-14, AS PROPOSED.
 
 Integrations migration (T-052) authorized to run autonomously under the implement → adversarial-review →
-commit → push → CI-green gate once both boxes are ticked.
+commit → push → CI-green gate.
 
 Maintainer notes / requested changes:
 
 ```
-
+Approved as-is; no requested changes. Proceed autonomously through T-052.
 ```

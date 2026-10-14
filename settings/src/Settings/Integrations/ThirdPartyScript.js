@@ -9,6 +9,8 @@ import Placeholder from "./Placeholder"
 import Dependency from "./Dependency"
 import Urls from "./Urls"
 import CheckboxGroup from '../Inputs/CheckboxGroup';
+import TextInput from "../Inputs/TextInput";
+import { Button } from "../../components/ui/Button";
 
 const ThirdPartyScript = (props) => {
 	const { setScript, fetching, saveScript, deleteScript } = useIntegrations();
@@ -51,10 +53,14 @@ const ThirdPartyScript = (props) => {
 			<>
 				<div className="cmplz-details-row">
 					<label>{__("Name", "complianz-gdpr")}</label>
-					<input
+					<TextInput
 						disabled={fetching}
-						onChange={ ( e ) =>  onChangeHandler(e.target.value, 'name') }
-						type="text" placeholder={__("Name", "complianz-gdpr")} value={script.name} />
+						onChange={ ( value ) => onChangeHandler(value, 'name') }
+						placeholder={__("Name", "complianz-gdpr")}
+						value={script.name}
+						id={script.id + "_name"}
+						name="name"
+					/>
 				</div>
 
 				{type==='add_script' &&
@@ -96,11 +102,11 @@ const ThirdPartyScript = (props) => {
 					</div>
 				}
 
-				<div className="cmplz-details-row cmplz-details-row__buttons">
-					<button disabled={fetching} onClick={ ( e ) => onSaveHandler() } className="button button-default">{__("Save", "complianz-gdpr")}</button>
-					<button disabled={fetching} className="button button-default cmplz-reset-button" onClick={ ( e ) => onDeleteHandler() }>
+				<div data-cmplz-ui className="tw-flex tw-gap-[var(--cmplz-space-xs,_8px)] tw-mt-[var(--cmplz-space-s,_12px)] tw-pb-[5px]">
+					<Button variant="secondary" disabled={fetching} onClick={ () => onSaveHandler() }>{__("Save", "complianz-gdpr")}</Button>
+					<Button variant="error" disabled={fetching} className="cmplz-reset-button" onClick={ () => onDeleteHandler() }>
 						{__("Delete", "complianz-gdpr")}
-					</button>
+					</Button>
 				</div>
 			</>
 		)

@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import readMore from "../../utils/readMore";
 import TextInput from "../Inputs/TextInput";
 import Icon from "../../utils/Icon";
+import { Button } from "../../components/ui/Button";
 import useIntegrations from "./IntegrationsData";
 import {useEffect, useState} from "react";
 
@@ -63,7 +64,7 @@ const Urls = (props) => {
 				}
 			</label>
 			{ urls.map( ([index, url], i)=>
-				<div key={i} className="cmplz-scriptcenter-url">
+				<div key={i} data-cmplz-ui className="cmplz-scriptcenter-url tw-flex tw-items-center tw-pb-[10px] [&_.cmplz-input-group]:tw-grow [&_.cmplz-input-group]:tw-me-[10px]">
 					<TextInput
 						disabled={fetching}
 						value={url ? url : ''}
@@ -71,8 +72,8 @@ const Urls = (props) => {
 						id={i+"_url"}
 						name={"url"}
 					/>
-					{i===0 && !hasEmptyUrl && <button className="button button-default" onClick={() => addUrl() }> <Icon name="plus" size={14}/></button>}
-					{i!==0 && <button className="button button-default" onClick={() => deleteUrl(index) }> <Icon name="minus" size={14}/></button>}
+					{i===0 && !hasEmptyUrl && <Button variant="secondary" onClick={() => addUrl() }><Icon name="plus" size={14}/></Button>}
+					{i!==0 && <Button variant="secondary" onClick={() => deleteUrl(index) }><Icon name="minus" size={14}/></Button>}
 				</div>
 			)}
 		</div>

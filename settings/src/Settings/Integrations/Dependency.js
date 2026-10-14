@@ -62,7 +62,7 @@ const Dependency = (props) => {
 			{ !!script.enable_dependency &&
 				<div className="cmplz-details-row cmplz-details-row">
 					{ urls.length>1 && urls.map( ([index, waitFor], i)=>
-						<div key={i} className="cmplz-scriptcenter-dependencies" >
+						<div key={i} className="cmplz-scriptcenter-dependencies tw-flex tw-items-center [&_.cmplz-select-group]:tw-me-[10px] [&_.cmplz-select-group]:tw-mb-[10px] [&_.cmplz-select-group]:tw-min-w-[max(250px,50%)]" >
 							<SelectInput
 								disabled={fetching}
 								value={findSelectedDependency(waitFor)}
