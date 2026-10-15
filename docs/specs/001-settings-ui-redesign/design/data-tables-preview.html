@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Complianz 001 — data tables preview</title>
+<!--
+  Design review reference for the react-data-table LOOK (feature 001, Stage H section 5): the port of
+  assets/css/admin/modules/datatables.scss onto the C-2 tokens. One preview covers all 7 consumers (one
+  shared module styles them identically). The .rdt_* table markup is styled via a scoped, hand-authored,
+  logical, token-literal vendor file settings/src/styles/vendors/data-table.css (the preview.css pattern) —
+  NO isolate zone, NO readToken/createTheme/postcss step this section (deferred; see data-tables.md §3).
+  ZERO new tokens. Logical properties only (ADR-007): set <html dir="rtl"> to mirror.
+-->
+<style>
+  :root {
+    --cmplz-surface: #ffffff; --cmplz-surface-sunken: #f1f5f9;
+    --cmplz-text: #0f172a; --cmplz-text-muted: #475569; --cmplz-text-on-accent: #ffffff;
+    --cmplz-border: #e2e8f0; --cmplz-field-border: #94a3b8;
+    --cmplz-accent: #009fff; --cmplz-accent-strong: #1e73be; --cmplz-accent-subtle: #e3f2ff; --cmplz-accent-on-subtle: #17608f;
+    --cmplz-success: #1f7a34; --cmplz-success-surface: #e9f6ec; --cmplz-danger: #d7263d; --cmplz-danger-surface: #fdebed;
+    --cmplz-radius: 12px; --cmplz-radius-s: 8px; --cmplz-radius-field: 6px;
+    --cmplz-space-2xs: 4px; --cmplz-space-xs: 8px; --cmplz-space-s: 12px; --cmplz-space-m: 16px; --cmplz-space-l: 24px;
+    --cmplz-font-size: 0.875rem; --cmplz-font-size-xs: 0.6875rem; --cmplz-font-size-sm: 0.8125rem; --cmplz-font-size-lg: 1rem; --cmplz-line-height: 1.5;
+    --cmplz-shadow: 0 1px 3px 0 rgba(15,23,42,0.10), 0 1px 2px -1px rgba(15,23,42,0.06);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--cmplz-surface-sunken); color: var(--cmplz-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: var(--cmplz-font-size); line-height: var(--cmplz-line-height); }
+  .hdr { background: var(--cmplz-surface); border-block-end: 1px solid var(--cmplz-border); }
+  .hdr-in { max-width: 1400px; margin-inline: auto; display:flex; align-items:center; gap: var(--cmplz-space-m); min-height:64px; padding-inline: var(--cmplz-space-l); }
+  .logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size: var(--cmplz-font-size-lg); }
+  .logo .mark { width:24px; height:24px; border-radius:7px; background: linear-gradient(135deg, var(--cmplz-accent), var(--cmplz-accent-strong)); }
+  .wrap { max-width: 1100px; margin-inline:auto; margin-block: var(--cmplz-space-l); padding-inline: var(--cmplz-space-l); }
+  .badge { display:inline-block; padding:3px 10px; border-radius:999px; background:#fef9c3; color:#713f12; border:1px solid #fde68a; font-size: var(--cmplz-font-size-xs); font-weight:700; }
+  .dir-note { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); margin-block:6px var(--cmplz-space-l); }
+
+  /* the settings card + its full-bleed table (edge-to-edge within the card's 24px padding) */
+  .card { background: var(--cmplz-surface); border:1px solid var(--cmplz-border); border-radius: var(--cmplz-radius); box-shadow: var(--cmplz-shadow); padding: var(--cmplz-space-l); overflow:hidden; }
+  .card h3 { margin:0 0 var(--cmplz-space-xs); font-size: var(--cmplz-font-size-lg); }
+  .card .intro { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); margin-block:0 var(--cmplz-space-m); }
+
+  /* subheader: search + bulk-action bar */
+  .table-header { display:flex; align-items:center; gap: var(--cmplz-space-s); margin-block-end: var(--cmplz-space-s); flex-wrap:wrap; }
+  .search { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--cmplz-field-border); border-radius: var(--cmplz-radius-field); padding:7px 12px; background: var(--cmplz-surface); font-size: var(--cmplz-font-size-sm); min-width:220px; color: var(--cmplz-text-muted); }
+  .selectbox { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--cmplz-field-border); border-radius: var(--cmplz-radius-field); padding:7px 12px; background: var(--cmplz-surface); font-size: var(--cmplz-font-size-sm); }
+  .bulkbar { margin-inline-start:auto; display:flex; gap: var(--cmplz-space-xs); }
+  .btn { font:inherit; font-size: var(--cmplz-font-size-sm); font-weight:500; padding:6px 12px; border-radius: var(--cmplz-radius-field); cursor:pointer; border:1px solid transparent; }
+  .btn--secondary { background: var(--cmplz-surface); color: var(--cmplz-accent-strong); border-color: var(--cmplz-accent-strong); }
+  .btn--error { background: var(--cmplz-danger); color: var(--cmplz-text-on-accent); border-color: var(--cmplz-danger); }
+
+  /* full-bleed table: negative inline margins = the card padding (24px), closing the T-045 seam */
+  .rdt { margin-inline: calc(-1 * var(--cmplz-space-l)); }
+  table.rdt_Table { width:100%; border-collapse:collapse; font-size: var(--cmplz-font-size-sm); }
+  .rdt_TableHeadRow th { text-align:start; color: var(--cmplz-text-muted); font-weight:600; padding: var(--cmplz-space-xs) var(--cmplz-space-s); border-block-end:1px solid var(--cmplz-border); white-space:nowrap; }
+  .rdt_TableHeadRow th:first-child, .rdt_TableRow td:first-child { padding-inline-start: var(--cmplz-space-l); width:35px; }
+  .rdt_TableHeadRow th:last-child, .rdt_TableRow td:last-child { padding-inline-end: var(--cmplz-space-l); }
+  .rdt_TableRow td { padding: var(--cmplz-space-xs) var(--cmplz-space-s); border-block-end:1px solid var(--cmplz-border); color: var(--cmplz-text); vertical-align:middle; }
+  .rdt_TableRow:nth-child(odd) td { background: var(--cmplz-surface-sunken); }
+  .rdt_TableRow:hover td { background: var(--cmplz-accent-subtle); }
+  .th-sort::after { content:" ↕"; color: var(--cmplz-field-border); }
+
+  /* in-cell primitives (already migrated; shown on tokens) */
+  .cb { width:16px; height:16px; border:1px solid var(--cmplz-field-border); border-radius:4px; background: var(--cmplz-surface); display:inline-block; vertical-align:middle; }
+  .cb.on { background: var(--cmplz-accent); border-color: var(--cmplz-accent); position:relative; }
+  .cb.on::after { content:"✓"; color:#fff; font-size:11px; position:absolute; inset-block-start:-1px; inset-inline-start:2px; }
+  .switch { width:34px; height:18px; border-radius:999px; background: var(--cmplz-surface-sunken); border:1px solid var(--cmplz-field-border); position:relative; display:inline-block; vertical-align:middle; }
+  .switch.on { background: var(--cmplz-accent); border-color: var(--cmplz-accent); }
+  .switch::after { content:""; position:absolute; inset-block-start:2px; inset-inline-start:2px; width:12px; height:12px; border-radius:999px; background:#fff; }
+  .switch.on::after { inset-inline-start:18px; }
+  .pill { display:inline-block; font-size: var(--cmplz-font-size-xs); font-weight:600; padding:2px 10px; border-radius:999px; }
+  .pill.allowed { background: var(--cmplz-success-surface); color: var(--cmplz-success); }
+  .pill.revoked { background: var(--cmplz-danger-surface); color: var(--cmplz-danger); }
+  .flag { width:18px; height:13px; border-radius:2px; display:inline-block; background:linear-gradient(180deg,#3b5fc4,#30489a); vertical-align:middle; }
+
+  /* pagination */
+  .rdt_Pagination { display:flex; align-items:center; justify-content:flex-end; gap: var(--cmplz-space-s); padding: var(--cmplz-space-s) var(--cmplz-space-l) 0; color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); }
+  .rdt_Pagination .pg { width:28px; height:28px; border:1px solid var(--cmplz-border); border-radius: var(--cmplz-radius-field); background: var(--cmplz-surface); display:inline-flex; align-items:center; justify-content:center; }
+
+  /* empty state */
+  .no-documents { padding: var(--cmplz-space-l); text-align:center; color: var(--cmplz-text-muted); background: var(--cmplz-surface-sunken); border-radius: var(--cmplz-radius-s); margin-block-start: var(--cmplz-space-s); }
+  .sec-label { font-size: var(--cmplz-font-size-xs); text-transform:uppercase; letter-spacing:.04em; color: var(--cmplz-text-muted); font-weight:700; margin-block: var(--cmplz-space-l) var(--cmplz-space-xs); }
+</style>
+</head>
+<body>
+  <div class="hdr"><div class="hdr-in"><div class="logo"><span class="mark"></span>Complianz</div></div></div>
+  <div class="wrap">
+    <span class="badge">DATA TABLES PREVIEW — design review reference (proposal, awaiting sign-off)</span>
+    <div class="dir-note">The <code>react-data-table</code> look ported from <code>datatables.scss</code> onto the C-2 tokens (zero new tokens). One preview = all 7 consumers. Set <code>&lt;html dir="rtl"&gt;</code> to mirror (ADR-007).</div>
+
+    <!-- Tools table: a select column + bulk bar (the 5 Tools consumers) -->
+    <div class="card">
+      <h3>Records of consent</h3>
+      <p class="intro">Proof that consent was given, logged per visitor.</p>
+      <div class="table-header">
+        <span class="search">🔍 Search records…</span>
+        <span class="selectbox">All statuses ▾</span>
+        <span class="bulkbar"><button class="btn btn--secondary">Download</button><button class="btn btn--error">Delete</button></span>
+      </div>
+      <div class="rdt">
+        <table class="rdt_Table">
+          <thead><tr class="rdt_TableHeadRow"><th><span class="cb"></span></th><th class="th-sort">User ID</th><th class="th-sort">IP Address</th><th>Region</th><th>Consent</th><th>Categories</th><th class="th-sort">Date &amp; Time</th></tr></thead>
+          <tbody>
+            <tr class="rdt_TableRow"><td><span class="cb on"></span></td><td>usr_8841</td><td>192.0.2.14</td><td><span class="flag"></span></td><td><span class="pill allowed">Allowed</span></td><td>statistics, marketing</td><td>2026-10-14 09:21</td></tr>
+            <tr class="rdt_TableRow"><td><span class="cb"></span></td><td>usr_8840</td><td>192.0.2.9</td><td><span class="flag"></span></td><td><span class="pill revoked">Revoked</span></td><td>functional</td><td>2026-10-14 08:58</td></tr>
+            <tr class="rdt_TableRow"><td><span class="cb"></span></td><td>usr_8839</td><td>198.51.100.3</td><td><span class="flag"></span></td><td><span class="pill allowed">Allowed</span></td><td>statistics</td><td>2026-10-13 22:04</td></tr>
+          </tbody>
+        </table>
+        <div class="rdt_Pagination"><span>1–3 of 128</span><span class="pg">‹</span><span class="pg">›</span></div>
+      </div>
+    </div>
+
+    <!-- Integrations table: SwitchInput cells, no select column (Services/Plugins) -->
+    <div class="sec-label">Integrations — Services (SwitchInput cells, no select column)</div>
+    <div class="card">
+      <h3>Services</h3>
+      <p class="intro">Third-party services detected on your site.</p>
+      <div class="table-header"><span class="search">🔍 Search services…</span></div>
+      <div class="rdt">
+        <table class="rdt_Table">
+          <thead><tr class="rdt_TableHeadRow"><th class="th-sort">Service</th><th>Placeholder</th><th style="text-align:end">Status</th></tr></thead>
+          <tbody>
+            <tr class="rdt_TableRow"><td>Google Analytics</td><td><span class="switch on" title="placeholder"></span></td><td style="text-align:end"><span class="switch on" title="enabled"></span></td></tr>
+            <tr class="rdt_TableRow"><td>YouTube</td><td><span class="switch" title="placeholder"></span></td><td style="text-align:end"><span class="switch on" title="enabled"></span></td></tr>
+            <tr class="rdt_TableRow"><td>Google Maps</td><td><span class="switch on" title="placeholder"></span></td><td style="text-align:end"><span class="switch" title="enabled"></span></td></tr>
+          </tbody>
+        </table>
+        <div class="rdt_Pagination"><span>1–3 of 3</span></div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="sec-label">Empty state</div>
+    <div class="card">
+      <h3>Data requests</h3>
+      <div class="table-header"><span class="search">🔍 Search…</span></div>
+      <div class="no-documents">No data requests found.</div>
+    </div>
+  </div>
+</body>
+</html>
