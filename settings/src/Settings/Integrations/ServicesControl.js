@@ -225,12 +225,14 @@ const ServicesControl = () => {
 			value= { service.enabled }
 			onChange={ ( fieldValue ) => onChangeHandler(service, fieldValue) }
 			className={"cmplz-switch-input-tiny"}
+			label={ __('Enable', 'complianz-gdpr') + ' ' + (service.label || '') }
 		/>
 		service.placeholderControl = <> {service.placeholder!=='none' && service.enabled && <><SwitchInput
 			disabled = {updatingServices}
 			value = { service.placeholder==='enabled' }
 			onChange = { ( fieldValue ) => onChangePlaceholderHandler(service, fieldValue) }
 			className={"cmplz-switch-input-tiny"}
+			label={ __('Placeholder for', 'complianz-gdpr') + ' ' + (service.label || '') }
 		/></>}</>
 	});
 

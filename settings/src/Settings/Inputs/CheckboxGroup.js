@@ -1,9 +1,16 @@
 import * as Checkbox from '@radix-ui/react-checkbox';
 import { __ } from '@wordpress/i18n';
 import Icon from '../../utils/Icon';
-import {useEffect, useState, memo} from "@wordpress/element";
+import {useEffect, useState, useRef, memo} from "@wordpress/element";
 import Button from "../Inputs/Button";
 import { clsx } from '../../components/ui/cx';
+
+// Process-wide counter for a stable, UNIQUE fallback id per instance (T-054 a11y fix). Callers that
+// render the checkbox as a react-data-table select-all/row selector pass no `id` + `options={{true:''}}`,
+// which produced a duplicate `id="undefined_true"` on every select checkbox (axe button-name/duplicate-id,
+// T-015). A module counter + useRef (NOT React 18 useId — the min-WP e2e project runs React 17) gives each
+// instance a distinct base id with no API change for existing callers.
+let cmplzCheckboxGroupUid = 0;
 
 // Look-preserving restyle of the Radix checkbox group (ADR-002 behaviour kept; ADR-005 SCSS
 // deleted). Complete literal class strings on the semantic `--cmplz-*` tokens (ADR-013), logical
@@ -24,6 +31,14 @@ const labelBase = 'tw-m-0 tw-text-[0.8125rem] tw-text-[color:var(--cmplz-text-mu
 const CheckboxGroup = ({ indeterminate, label, value, id, onChange, required, disabled, options = {} }) => {
 	const [isBoolean, setIsBoolean] = useState(false);
 	const [loadMoreExpanded, setLoadMoreExpanded] = useState(false);
+
+	// Stable unique base id (T-054): use the caller's `id` when given, else a per-instance fallback so
+	// multiple checkbox groups (e.g. a data-table's select-all + every row selector) never collide.
+	const uidRef = useRef(null);
+	if (uidRef.current === null) {
+		uidRef.current = 'cmplz-cbg-' + (++cmplzCheckboxGroupUid);
+	}
+	const baseId = id || uidRef.current;
 
 	let valueValidated = value;
 	if ( !Array.isArray(valueValidated) ){
@@ -91,7 +106,7 @@ const CheckboxGroup = ({ indeterminate, label, value, id, onChange, required, di
 					>
 						<Checkbox.Root
 							className={checkboxCls}
-							id={id + '_' + key}
+							id={baseId + '_' + key}
 							checked={isEnabled(key)}
 							aria-label={label}
 							disabled={optionDisabled}
@@ -106,7 +121,7 @@ const CheckboxGroup = ({ indeterminate, label, value, id, onChange, required, di
 						</Checkbox.Root>
 						<label
 							className={clsx(labelBase, optionDisabled && 'tw-cursor-not-allowed')}
-							htmlFor={id + '_' + key}
+							htmlFor={baseId + '_' + key}
 						>
 							{optionLabel}
 						</label>

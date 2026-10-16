@@ -17,7 +17,18 @@
 
 // Screens whose axe gating is ACTIVE. Empty on the legacy UI. Add a page hash or a section id here
 // when its redesign lands (Phase 3+). Example once migrated: [ '#tools/support', 'banner' ].
-const MIGRATED_SCREENS = [];
+//
+// T-054 (data-tables section) — the first screens to gate. The react-data-table library itself is
+// axe-clean (0 serious/critical; no EXEMPTIONS row), so these gate on our own markup only, after the
+// section's two must-fixes landed: the in-cell SwitchInput accessible name (Services/Plugins) and the
+// select-all/row CheckboxGroup unique id + name (proof-of-consent). `#tools/data-requests` is NOT added
+// this section — it embeds the still-legacy react-date-range whose serious/critical remain EXEMPTED
+// (above) until the Statistics/DateRange section; it enters MIGRATED_SCREENS there.
+const MIGRATED_SCREENS = [
+	'#integrations/integrations-services',
+	'#integrations/integrations-plugins',
+	'#tools/proof-of-consent',
+];
 
 // §8.2 exemption table for retained third-party widgets (filled by the T-015 audit; see
 // docs/specs/001-settings-ui-redesign/a11y-exemptions.md). Each row:
@@ -36,25 +47,25 @@ const EXEMPTIONS = [
 		reason: 'react-color inline-styles the HEX/RGB field labels at 2.95:1; widget-internal DOM, overridable only via the ChromePicker styles prop (Phase 4).',
 	},
 	{
-		screen: '#tools/data-requests/datarequest-entries',
+		screen: '#tools/data-requests',
 		rule: 'button-name',
 		selector: '.rdrMonthAndYearWrapper',
 		reason: 'react-date-range prev/next month icon buttons render <button><i></i></button> with no name; fixable via the library ariaLabels prop (Phase 4).',
 	},
 	{
-		screen: '#tools/data-requests/datarequest-entries',
+		screen: '#tools/data-requests',
 		rule: 'select-name',
 		selector: '.rdrMonthAndYearPickers',
 		reason: 'react-date-range month/year selects render without a label; fixable via the library ariaLabels prop (Phase 4).',
 	},
 	{
-		screen: '#tools/data-requests/datarequest-entries',
+		screen: '#tools/data-requests',
 		rule: 'color-contrast',
 		selector: '.rdrDateDisplayWrapper',
 		reason: 'react-date-range start/end date inputs at ~1.3:1; fixable in the vendored date-range.scss (Phase 4).',
 	},
 	{
-		screen: '#tools/data-requests/datarequest-entries',
+		screen: '#tools/data-requests',
 		rule: 'color-contrast',
 		selector: '.rdrDefinedRangesWrapper',
 		reason: 'react-date-range preset-range labels at ~1.29:1; fixable in the vendored date-range.scss (Phase 4).',

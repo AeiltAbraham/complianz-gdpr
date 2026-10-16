@@ -4,5 +4,9 @@
  * data-cmplz-isolate="preview" zone. Imported AFTER base.css (postcss-import inlines it) so the zone-root
  * pin sits after the base reset; its (1,1,0) scope keeps it robust regardless of order. */
 @import './vendors/preview.css';
+/* ADR-009 / Option B (T-054): the react-data-table (.rdt_*) overrides, hand-authored + scoped +
+ * token-literal (the preview.css pattern). Replaces the deleted assets/css/admin/modules/datatables.scss.
+ * NOT run through a postcss auto-scope step (none this section); preview.css above is likewise untouched. */
+@import './vendors/data-table.css';
 @tailwind components;
 @tailwind utilities;

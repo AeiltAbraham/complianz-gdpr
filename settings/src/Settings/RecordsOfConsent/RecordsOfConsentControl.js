@@ -228,6 +228,7 @@ const RecordsOfConsentControl = () => {
 		{
 			name: (
 				<CheckboxGroup
+					label={ __( 'Select all records of consent', 'complianz-gdpr' ) }
 					options={ { true: '' } }
 					indeterminate={ indeterminate }
 					value={ entirePageSelected }
@@ -309,6 +310,7 @@ const RecordsOfConsentControl = () => {
 		const recordCopy = { ...record };
 		recordCopy.selectControl = (
 			<CheckboxGroup
+				label={ __( 'Select record of consent', 'complianz-gdpr' ) }
 				value={ selectedRecords.includes( recordCopy.id ) }
 				options={ { true: '' } }
 				onChange={ ( value ) => onSelectRecord( value, recordCopy.id ) }

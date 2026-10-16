@@ -12,7 +12,10 @@ import { clsx } from "../components/ui/cx";
 // uses the approved status-surface tint fills (frame.md §3 default): --cmplz-accent-subtle for the
 // default/info label, --cmplz-warning-surface for `warning`, with the default tint kept as the fallback for
 // unknown labels. The chevron rotates on open via --cmplz-duration/--cmplz-ease (rotate is direction-neutral,
-// ADR-007). The more-info link is --cmplz-accent-strong.
+// ADR-007). The more-info link uses --cmplz-accent-on-subtle (the T-045 AA-safe interactive-text-on-tint
+// token, ~5.9:1 on --cmplz-accent-subtle): --cmplz-accent-strong (#1e73be) on the accent-subtle tint is only
+// 4.33:1 (< WCAG AA 4.5), which the data-tables section's axe gate on #integrations/integrations-services
+// (which renders this callout) caught; accent-on-subtle clears AA on both the accent-subtle and warning tints.
 const NOTICE_SHADOW = "tw-shadow-[var(--cmplz-shadow,_0_1px_3px_0_rgba(15,23,42,0.10),_0_1px_2px_-1px_rgba(15,23,42,0.06))]";
 const noticeBox = clsx(
 	"tw-w-full tw-h-fit tw-rounded-[var(--cmplz-radius-s,_8px)]",
@@ -36,7 +39,7 @@ const bodyCls = "tw-px-[var(--cmplz-space-m,_16px)] tw-pb-[var(--cmplz-space-s,_
 const moreInfoCls = clsx(
 	"cmplz-help-more-info",
 	"tw-flex tw-mt-[var(--cmplz-space-s,_12px)] tw-px-[var(--cmplz-space-m,_16px)] tw-pb-[var(--cmplz-space-s,_12px)]",
-	"[&_a]:tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]"
+	"[&_a]:tw-text-[color:var(--cmplz-accent-on-subtle,_#17608f)]"
 );
 const titleOnlyCls = "tw-py-[var(--cmplz-space-s,_12px)] tw-px-[var(--cmplz-space-m,_16px)]";
 

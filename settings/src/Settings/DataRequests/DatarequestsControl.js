@@ -2,7 +2,6 @@ import {useState, useEffect} from "@wordpress/element";
 import { __ } from '@wordpress/i18n';
 import useDatarequestsData from "./useDatarequestsData";
 import {memo} from "@wordpress/element";
-import './requests.scss';
 
 import CheckboxGroup from "../Inputs/CheckboxGroup";
 const progressComponent = () => {
@@ -161,7 +160,7 @@ const DatarequestsControl = () => {
 
 	const columns = [
 		{
-			name: <CheckboxGroup options={{true: ''}} indeterminate={indeterminate} value={entirePageSelected} onChange={(value) => handleSelectEntirePage(value)} />,
+			name: <CheckboxGroup label={__('Select all data requests', 'complianz-gdpr')} options={{true: ''}} indeterminate={indeterminate} value={entirePageSelected} onChange={(value) => handleSelectEntirePage(value)} />,
 			selector: row => row.selectControl,
 			orderId:'select',
 			grow: 1,
@@ -221,7 +220,7 @@ const DatarequestsControl = () => {
 	let data = [];
 	filteredRecords.forEach(record => {
 		let recordCopy = {...record}
-		recordCopy.selectControl = <CheckboxGroup disabled={fetching} value={selectedRecords.includes(recordCopy.ID)} options={{true: ''}} onChange={(value) => onSelectRecord(value, recordCopy.ID)} />
+		recordCopy.selectControl = <CheckboxGroup label={__('Select data request', 'complianz-gdpr')} disabled={fetching} value={selectedRecords.includes(recordCopy.ID)} options={{true: ''}} onChange={(value) => onSelectRecord(value, recordCopy.ID)} />
 		data.push(recordCopy);
 	});
 	return (

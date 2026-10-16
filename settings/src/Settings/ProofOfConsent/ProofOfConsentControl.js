@@ -3,7 +3,6 @@ import CheckboxGroup from '../Inputs/CheckboxGroup';
 import { __ } from '@wordpress/i18n';
 import useProofOfConsentData from "./useProofOfConsentData";
 import {memo} from "@wordpress/element";
-import './ProofOfConsentControl.scss';
 
 const ProofOfConsentControl = () => {
 	const { documents, downloadUrl, deleteDocuments, documentsLoaded, fetchData} = useProofOfConsentData();
@@ -155,7 +154,7 @@ const ProofOfConsentControl = () => {
 	}
 	const columns = [
 		{
-			name: <CheckboxGroup  options={{true: ''}} indeterminate={indeterminate} value={entirePageSelected} onChange={(value) => handleSelectEntirePage(value)} />,
+			name: <CheckboxGroup label={__('Select all proof of consent', 'complianz-gdpr')} options={{true: ''}} indeterminate={indeterminate} value={entirePageSelected} onChange={(value) => handleSelectEntirePage(value)} />,
 			selector: row => row.selectControl,
 			grow: 1,
 			minWidth: '50px',
@@ -195,7 +194,7 @@ const ProofOfConsentControl = () => {
 	let data = [];
 	filteredDocuments.forEach(document => {
 		let documentCopy = {...document}
-		documentCopy.selectControl = <CheckboxGroup value={selectedDocuments.includes(documentCopy.id)} options={{true: ''}} onChange={(e) => onSelectDocument( !selectedDocuments.includes(documentCopy.id), documentCopy.id )} />;
+		documentCopy.selectControl = <CheckboxGroup label={__('Select proof of consent', 'complianz-gdpr')} value={selectedDocuments.includes(documentCopy.id)} options={{true: ''}} onChange={(e) => onSelectDocument( !selectedDocuments.includes(documentCopy.id), documentCopy.id )} />;
 		data.push(documentCopy);
 	});
 

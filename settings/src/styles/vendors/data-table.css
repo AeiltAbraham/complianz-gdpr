@@ -1,0 +1,173 @@
+/*
+ * data-table.css — the react-data-table-component (`.rdt_*`) look for feature 001 (Stage H section 5,
+ * T-054). Hand-authored, scoped, logical, token-literal OVERRIDES — the preview.css pattern (ADR-008),
+ * which ADR-009 blesses for a styled-components vendor that has NO importable upstream stylesheet. This
+ * is the "Option B" landing (design/data-tables.md §3): NO postcss auto-scope step, NO readToken(), NO
+ * createTheme, NO isolate zone — those land with their first real consumers in the Statistics/DateRange
+ * section. preview.css is a separate @import and is untouched.
+ *
+ * Replaces assets/css/admin/modules/datatables.scss + DataRequests/requests.scss (deleted this PR,
+ * ADR-005 last consumer). Ported onto the C-2 tokens (zero new tokens). The `.rdt_*` markup lives in the
+ * MARKERLESS field-wrap (Field.js), so `var(--cmplz-*)` does not resolve on it — every token ref carries
+ * a LITERAL FALLBACK (the literal applies now; auto-upgrades at the Phase-5 marker move). No legacy or
+ * responsive-prefixed token NAMES anywhere (the ADR-004 gate greps this file whole, comments included —
+ * learnings 2026-10-14); the legacy sources are cited by file:line + concrete literals instead.
+ * Scoped to the 7 react-data-table field-wrap classes under the app id.
+ *
+ * Legacy source: assets/css/admin/modules/datatables.scss (122 lines). Dead rule NOT ported: the
+ * `input[type="checkbox"]` sizing block (datatables.scss:14-24) — the migrated CheckboxGroup renders a
+ * Radix <button>, not a native checkbox, so it matched nothing.
+ */
+
+/* ---- the 7 table field-wraps: edge-to-edge full-bleed + the select column ------------------------ */
+/* datatables.scss:87-122. Full-bleed reconciled to the migrated Field.js field-wrap padding
+ * (tw-px-[var(--cmplz-space-l,24px)]) — -24px, closing the ~1px seam deferred by T-045 (was -25px). */
+:is(#complianz, #complianz-portal) :is(
+  .cmplz-field-wrap.cmplz-integrations-services,
+  .cmplz-field-wrap.cmplz-integrations-plugins,
+  .cmplz-field-wrap.cmplz-datarequests,
+  .cmplz-field-wrap.cmplz-processing-agreements,
+  .cmplz-field-wrap.cmplz-data-breach-reports,
+  .cmplz-field-wrap.cmplz-records-of-consent,
+  .cmplz-field-wrap.cmplz-proof-of-consent
+) {
+  gap: 0;
+  margin-inline: calc(-1 * var(--cmplz-space-l, 24px));
+}
+/* The full-bleed pull is CONSTANT -24px at every width: the migrated field-wrap padding is a constant
+ * tw-px-[var(--cmplz-space-l,24px)] (Field.js, no responsive variant), so flush = -24px always. The legacy
+ * datatables.scss stepped the negative margin at breakpoints only because the legacy container padding was
+ * itself responsive; porting those steps would reintroduce the ~1px seam below 1280px (adversarial review,
+ * T-054). The re-inset-children rule below is likewise constant. */
+
+/* Re-inset the non-table children (intro copy + the search/subheader) so only the table bleeds.
+ * datatables.scss:107-110. */
+:is(#complianz, #complianz-portal) :is(
+  .cmplz-integrations-services, .cmplz-integrations-plugins, .cmplz-datarequests,
+  .cmplz-processing-agreements, .cmplz-data-breach-reports, .cmplz-records-of-consent,
+  .cmplz-proof-of-consent
+) > p,
+:is(#complianz, #complianz-portal) :is(
+  .cmplz-integrations-services, .cmplz-integrations-plugins, .cmplz-datarequests,
+  .cmplz-processing-agreements, .cmplz-data-breach-reports, .cmplz-records-of-consent,
+  .cmplz-proof-of-consent
+) > div.cmplz-table-header {
+  margin-block: var(--cmplz-space-xs, 8px);
+  margin-inline: var(--cmplz-space-l, 24px);
+}
+
+/* ---- table header row ---------------------------------------------------------------------------- */
+:is(#complianz, #complianz-portal) :is(
+  .cmplz-integrations-services, .cmplz-integrations-plugins, .cmplz-datarequests,
+  .cmplz-processing-agreements, .cmplz-data-breach-reports, .cmplz-records-of-consent,
+  .cmplz-proof-of-consent
+) .rdt_TableHeadRow {
+  border-block-end: 1px solid var(--cmplz-border, #e2e8f0);
+}
+:is(#complianz, #complianz-portal) :is(
+  .cmplz-integrations-services, .cmplz-integrations-plugins, .cmplz-datarequests,
+  .cmplz-processing-agreements, .cmplz-data-breach-reports, .cmplz-records-of-consent,
+  .cmplz-proof-of-consent
+) .rdt_TableCol {
+  color: var(--cmplz-text-muted, #475569);
+  font-weight: 600;
+}
+
+/* ---- rows: zebra + hover + divider + padding ---------------------------------------------------- */
+/* datatables.scss:37-74 (zebra grey-200 -> surface-sunken; padding spacing-xs -> space-xs). */
+:is(#complianz, #complianz-portal) :is(
+  .cmplz-integrations-services, .cmplz-integrations-plugins, .cmplz-datarequests,
+  .cmplz-processing-agreements, .cmplz-data-breach-reports, .cmplz-records-of-consent,
+  .cmplz-proof-of-consent
+) .rdt_TableRow {
+  padding-block: var(--cmplz-space-xs, 8px);
+  border-block-end: 1px solid var(--cmplz-border, #e2e8f0);
+  color: var(--cmplz-text, #0f172a);
+}
+:is(#complianz, #complianz-portal) :is(
+  .cmplz-integrations-services, .cmplz-integrations-plugins, .cmplz-datarequests,
+  .cmplz-processing-agreements, .cmplz-data-breach-reports, .cmplz-records-of-consent,
+  .cmplz-proof-of-consent
+) .rdt_TableRow:nth-child(odd) {
+  background-color: var(--cmplz-surface-sunken, #f1f5f9);
+}
+:is(#complianz, #complianz-portal) :is(
+  .cmplz-integrations-services, .cmplz-integrations-plugins, .cmplz-datarequests,
+  .cmplz-processing-agreements, .cmplz-data-breach-reports, .cmplz-records-of-consent,
+  .cmplz-proof-of-consent
+) .rdt_TableRow:hover {
+  background-color: var(--cmplz-accent-subtle, #e3f2ff);
+}
+
+/* ---- cells: line-height, first/last inline padding, select-column width -------------------------- */
+/* datatables.scss:11-13,28-34,51-53,113-121. */
+:is(#complianz, #complianz-portal) :is(
+  .cmplz-integrations-services, .cmplz-integrations-plugins, .cmplz-datarequests,
+  .cmplz-processing-agreements, .cmplz-data-breach-reports, .cmplz-records-of-consent,
+  .cmplz-proof-of-consent
+) :is(.rdt_TableCell, .rdt_TableCol) {
+  line-height: unset;
+  min-width: 50px;
+}
+:is(#complianz, #complianz-portal) :is(
+  .cmplz-datarequests, .cmplz-processing-agreements, .cmplz-data-breach-reports,
+  .cmplz-records-of-consent, .cmplz-proof-of-consent
+) :is(.rdt_TableCell, .rdt_TableCol):first-child {
+  width: 35px;
+  min-width: 35px;
+}
+:is(#complianz, #complianz-portal) :is(
+  .cmplz-integrations-services, .cmplz-integrations-plugins, .cmplz-datarequests,
+  .cmplz-processing-agreements, .cmplz-data-breach-reports, .cmplz-records-of-consent,
+  .cmplz-proof-of-consent
+) :is(.rdt_TableCell, .rdt_TableCol):first-child {
+  padding-inline-start: var(--cmplz-space-l, 24px);
+}
+:is(#complianz, #complianz-portal) :is(
+  .cmplz-integrations-services, .cmplz-integrations-plugins, .cmplz-datarequests,
+  .cmplz-processing-agreements, .cmplz-data-breach-reports, .cmplz-records-of-consent,
+  .cmplz-proof-of-consent
+) :is(.rdt_TableCell, .rdt_TableCol):last-child {
+  padding-inline-end: var(--cmplz-space-l, 24px);
+}
+
+/* status pills keep a stable width (datatables.scss:70-73; margin-right -> logical). */
+:is(#complianz, #complianz-portal) :is(.cmplz-status-allowed, .cmplz-status-revoked) {
+  min-width: 110px;
+  margin-inline-end: var(--cmplz-space-m, 16px);
+}
+
+/* dimmed CSP-revoked columns (datatables.scss:45-47,76-78). */
+:is(#complianz, #complianz-portal) .cmplz-csp-revoked > div:nth-child(-n + 3) {
+  opacity: 0.3;
+}
+
+/* ---- search input, empty state, pagination ------------------------------------------------------ */
+/* the search <input> gets the migrated field look (datatables.scss:1-3 was margin-only). */
+:is(#complianz, #complianz-portal) .cmplz-datatable-search {
+  margin-block-start: var(--cmplz-space-s, 12px);
+  border: 1px solid var(--cmplz-field-border, #94a3b8);
+  border-radius: var(--cmplz-radius-field, 6px);
+  padding: 7px var(--cmplz-space-s, 12px);
+  background: var(--cmplz-surface, #ffffff);
+  font-size: 0.8125rem;
+  color: var(--cmplz-text, #0f172a);
+}
+/* empty state (datatables.scss:5-7). */
+:is(#complianz, #complianz-portal) .cmplz-no-documents {
+  padding: var(--cmplz-space-l, 24px);
+  text-align: center;
+  color: var(--cmplz-text-muted, #475569);
+  background: var(--cmplz-surface-sunken, #f1f5f9);
+  border-radius: var(--cmplz-radius-s, 8px);
+  margin-block-start: var(--cmplz-space-s, 12px);
+}
+/* wp-core adds a duplicate select arrow; hide the react-data-table one (datatables.scss:83-85). */
+:is(#complianz, #complianz-portal) nav.rdt_Pagination > div > svg {
+  display: none;
+}
+
+/* Email column wrap — relocated from the co-located DataRequests/requests.scss (deleted this PR). */
+:is(#complianz, #complianz-portal) .cmplz-datarequests div[data-column-id="2"] div {
+  white-space: inherit;
+}

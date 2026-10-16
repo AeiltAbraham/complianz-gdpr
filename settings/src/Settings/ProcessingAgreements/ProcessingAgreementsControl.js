@@ -170,7 +170,7 @@ const ProcessingAgreementsControl = () => {
 
 	const columns = [
 		{
-			name: <CheckboxGroup options={{true: ''}} indeterminate={indeterminate} value={entirePageSelected} onChange={(value) => handleSelectEntirePage(value)} />,
+			name: <CheckboxGroup label={__('Select all processing agreements', 'complianz-gdpr')} options={{true: ''}} indeterminate={indeterminate} value={entirePageSelected} onChange={(value) => handleSelectEntirePage(value)} />,
 			selector: row => row.selectControl,
 			grow: 1,
 			minWidth: '50px',
@@ -210,7 +210,7 @@ const ProcessingAgreementsControl = () => {
 	let data = [];
 	filteredDocuments.forEach(document => {
 		let documentCopy = {...document}
-		documentCopy.selectControl = <CheckboxGroup value={selectedDocuments.includes(documentCopy.id)} options={{true: ''}} onChange={(value) => onSelectDocument(value,documentCopy.id)} />
+		documentCopy.selectControl = <CheckboxGroup label={__('Select processing agreement', 'complianz-gdpr')} value={selectedDocuments.includes(documentCopy.id)} options={{true: ''}} onChange={(value) => onSelectDocument(value,documentCopy.id)} />
 		data.push(documentCopy);
 	});
 

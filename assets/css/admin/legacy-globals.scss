@@ -616,3 +616,59 @@ a.button, button.button, input.button {
 .cmplz-hidden {
 	display: none;
 }
+
+// Relocated from the (now deleted) assets/css/admin/modules/integrations/integrations.scss (ADR-005, T-054,
+// the data-tables section). The module FILE retired with the shared datatables.scss, but these table-chrome
+// rules have SURVIVING consumers OUTSIDE the 7 migrated data-table screens, so they relocate here (the T-045
+// pattern) rather than being deleted: `.cmplz-table-header`/`-controls` (CookieScanControl — Website Scan,
+// Wizard group, still legacy; + the Create/Export sibling forms on the Tools screens), `.cmplz-settings-overlay`
+// /`-message` (Integrations/ScriptCenterControl kept the class as a hook, T-052), and
+// `.cmplz-integrations-placeholder` (the loading skeleton on Services/DataRequests, not redesigned here).
+// Verbatim — top-level, the same specificity the module had (admin.scss does not wrap modules in #complianz).
+.cmplz-integrations-placeholder {
+  height:150px;
+  div {
+	background-color:var(--cmplz-legacy-grey-200);
+	margin:10px 0;
+	height:30px;
+  }
+}
+.cmplz-table-header {
+  display:flex;
+}
+//needs to be outside table header, so we can use the table-header controls class without the parent
+.cmplz-table-header-controls {
+  display:flex;
+  margin-left:auto;
+  gap:20px;
+  select {
+    height: 20px;
+    margin-top: 10px;
+  }
+}
+.cmplz-settings-overlay {
+  z-index:99;
+  display: grid;
+  grid-template-columns: 680px auto;
+  position: absolute;
+  top:0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.8);
+
+  .cmplz-settings-overlay-message{
+	position:absolute;
+	width: calc(100% - 70px);
+	bottom: 0;
+	background-color: #fff;
+	padding: 15px;
+	margin:20px;
+	box-shadow: var(--cmplz-legacy-box-shadow);
+  }
+}
+@media screen and (max-width: 960px) {
+  .cmplz-settings-overlay {
+	right: 0;
+  }
+}

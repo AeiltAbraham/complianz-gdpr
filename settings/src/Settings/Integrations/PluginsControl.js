@@ -160,6 +160,7 @@ const PluginsControl = () => {
 				onChange={ ( fieldValue ) =>
 					onChangeHandler( plugin, fieldValue )
 				}
+				label={ __( 'Enable', 'complianz-gdpr' ) + ' ' + ( plugin.label || plugin.title || '' ) }
 			/>
 		);
 		pluginCopy.placeholderControl = (
@@ -175,6 +176,7 @@ const PluginsControl = () => {
 							onChange={ ( fieldValue ) =>
 								onChangePlaceholderHandler( plugin, fieldValue )
 							}
+							label={ __( 'Placeholder for', 'complianz-gdpr' ) + ' ' + ( plugin.label || plugin.title || '' ) }
 						/>
 					</>
 				) }

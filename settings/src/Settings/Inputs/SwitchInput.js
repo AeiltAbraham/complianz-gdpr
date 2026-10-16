@@ -75,6 +75,7 @@ const SwitchInput = ({
 				onCheckedChange={onChangeHandler}
 				disabled={disabled}
 				required={required}
+				aria-label={label}
 			>
 				<Switch.Thumb className={clsx(thumbBase, thumbSize[size])}/>
 			</Switch.Root>

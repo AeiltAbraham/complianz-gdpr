@@ -97,9 +97,12 @@
   // a third-party widget) and the `.cmplz-wscscan-alert` screen callout (wizard/suggested-plugins.scss,
   // Phase-4); Complianz's own PHP admin notices live in wp-admin markup governed by page.css (T-037).
   // There is no `.cmplz-notice` React component, so nothing migrated here.
-  @import 'admin/modules/datatables.scss';
+  // modules/datatables.scss removed (ADR-005, T-054): its react-data-table (.rdt_*) styling migrated to
+  // settings/src/styles/vendors/data-table.css (tokens, logical, scoped — the preview.css pattern), the last
+  // consumer being this data-tables section. modules/integrations/integrations.scss also removed (T-054): its
+  // table-chrome rules (.cmplz-table-header/.cmplz-settings-overlay/.cmplz-integrations-placeholder) have
+  // surviving out-of-section consumers and relocated to legacy-globals.scss.
   @import 'admin/modules/new-features.scss';
-  @import 'admin/modules/integrations/integrations.scss';
   @import 'admin/modules/documents.scss';
   @import 'admin/modules/shepherd.scss';
   @import 'admin/modules/date-range.scss';

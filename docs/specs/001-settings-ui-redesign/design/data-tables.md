@@ -153,7 +153,7 @@ inlined by the existing postcss-import (no new build step under Option B):
 - **Re-baseline** (reset wp-env DB + fresh build + `--update-snapshots`, admin + admin-rtl, 1440 + 768;
   non-blocking Option B): the **4 free table screens** whose internals now change —
   `#integrations/integrations-services`, `#integrations/integrations-plugins`,
-  `#tools/data-requests/datarequest-entries`, `#tools/proof-of-consent/proof-of-consent`. The 2 Integrations
+  `#tools/data-requests`, `#tools/proof-of-consent` (the discoverable 2-segment hashes). The 2 Integrations
   tables **intentionally drift** now (their T-052 baseline kept the internals legacy-styled). Premium locked
   screens + the banner-preview isolation shots: unchanged (spot-verify).
 
@@ -186,14 +186,14 @@ Adversarial pre-push review (5-dimension workflow, each finding verified) → CI
 
 Data-tables migration (T-054) starts only when **both** are approved.
 
-- **G1 — pipeline depth (Option A / Option B):** [ ] — maintainer, 2026-10-__, choice: __________
-- **G2 — table LOOK + zero new tokens:** [ ] — maintainer, 2026-10-__,
+- **G1 — pipeline depth (Option A / Option B):** [x] — maintainer, 2026-10-16, choice: **Option B** (land the scoped `data-table.css` + a11y fixes + SCSS deletions now; defer the postcss autoscope step + readToken() + createTheme to Statistics/DateRange).
+- **G2 — table LOOK + zero new tokens:** [x] — maintainer, 2026-10-16, AS PROPOSED.
 
 Migration (T-054) authorized to run autonomously under the implement → adversarial-review → commit → push →
-CI-green gate once both are ticked.
+CI-green gate.
 
 Maintainer notes / requested changes:
 
 ```
-
+Approved as proposed (Option B). Proceed autonomously through T-054.
 ```
