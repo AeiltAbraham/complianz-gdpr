@@ -57,6 +57,16 @@ test( 'axe accessibility over every screen (recorded; gated only on migrated scr
 			// Make sure the screen's real content is in before analysing (not a loading placeholder).
 			await expectContentLoaded( page, info ).catch( () => {} );
 
+			// #tools/data-requests gates the react-date-range calendar, whose .rdr* nodes exist ONLY while the
+			// Radix popover is open — open it so the ariaLabels + AA-contrast fixes are actually analysed (T-056);
+			// without this the gate would be vacuous (closed calendar = no .rdr* nodes to check).
+			if ( info.hash === '#tools/data-requests' ) {
+				await page.locator( '#cmplz-date-range-picker-open-button' ).click();
+				await expect(
+					page.locator( '.rdrCalendarWrapper' ).first()
+				).toBeVisible( { timeout: 10_000 } );
+			}
+
 			const axeResults = await new AxeBuilder( { page } ).include( APP ).analyze();
 
 			// Record the full per-screen result as an artifact (git-ignored test-results/).

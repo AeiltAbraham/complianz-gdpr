@@ -148,8 +148,8 @@ const DateRange = () => {
 
 	const formatString = 'MMMM d, yyyy';
 	const display = {
-		startDate: startDate ? format(new Date(startDate), formatString) : format(defaultStart, formatString),
-		endDate: endDate ? format(new Date(endDate), formatString) : format(defaultEnd, formatString),
+		startDate: startDate ? format(new Date(startDate), formatString) : format(new Date(), formatString),
+		endDate: endDate ? format(new Date(endDate), formatString) : format(new Date(), formatString),
 	}
 	return (
 		<div className="cmplz-date-range-container">
@@ -165,7 +165,7 @@ const DateRange = () => {
 				</PopoverTrigger>
 				{/* align="end" + side="bottom" (default) reproduce the MUI bottom/right anchoring;
 				    padding="none" lets the calendar fill the panel like the old MUI paper. */}
-				<PopoverContent padding="none" align="end">
+				<PopoverContent padding="none" align="end" aria-label={__('Date range picker', 'complianz-gdpr')}>
 					{/* The react-date-range calendar is isolated from the scoped base (base.css): the
 					    popover now portals into #complianz-portal-root[data-cmplz-ui], so without this zone
 					    the scoped reset would reach the calendar. Its legacy date-range SCSS keeps
@@ -173,6 +173,13 @@ const DateRange = () => {
 					<div id="cmplz-date-range-picker-container" data-cmplz-isolate="date-range">
 						<DateRangePicker
 							ranges={[selectionRange]}
+							ariaLabels={{
+								dateInput: { selection: { startDate: __('Start date', 'complianz-gdpr'), endDate: __('End date', 'complianz-gdpr') } },
+								monthPicker: __('Month', 'complianz-gdpr'),
+								yearPicker: __('Year', 'complianz-gdpr'),
+								prevButton: __('Previous month', 'complianz-gdpr'),
+								nextButton: __('Next month', 'complianz-gdpr'),
+							}}
 							rangeColors={['var(--cmplz-accent-strong)']}
 							dateDisplayFormat={formatString}
 							monthDisplayFormat="MMMM"

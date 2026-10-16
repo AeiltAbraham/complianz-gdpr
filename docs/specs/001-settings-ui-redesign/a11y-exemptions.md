@@ -105,6 +105,26 @@ exposing a labelled text input for the chosen colour value as the documented key
 
 ## react-date-range — `settings/src/DateRange/DateRange.js`
 
+> **RESOLVED / UPDATED in T-056 (Statistics/DateRange section).** `#tools/data-requests` is now gated
+> (`MIGRATED_SCREENS`), and axe.spec.js OPENS the picker before analyzing (the `.rdr*` nodes exist only while
+> the Radix popover is open). Opening the calendar surfaced more than the T-015 audit's 4 rows; the outcome:
+> **FIXED** — `button-name` + `select-name` (month/year) via the `ariaLabels` prop on `<DateRangePicker>`; the
+> `color-contrast` on the date inputs, preset labels, **month name and weekday labels** → AA in the vendored
+> CSS (`--cmplz-text` / `--cmplz-text-muted`), and the **selected / in-range day numbers** (upstream paints them
+> `rgba(255,255,255,0.85)` = #ddeaf5 on `--cmplz-accent-strong`, only 4.03:1 — surfaced by the e2e gate, not the
+> T-015 audit; fixed to full white #fff ≈ 4.94:1 since these are *interactive* days, so must-fix not exempt);
+> plus two our-code finds the open calendar exposed — the Radix Popover `aria-dialog-name` (an `aria-label` on
+> `<PopoverContent>`) and the DataRequests status `<select>` `select-name` (an `aria-label`). **STILL EXEMPTED**
+> (2 narrow rows in `axe.js`) — only the library's intentionally-faded **non-interactive** day numbers:
+> `.rdrDayPassive` (other-month) and `.rdrDayDisabled` (out-of-range; WCAG exempts disabled); darkening them
+> would remove the calendar's affordance. Corrections to the notes below: the picker is a **Radix** Popover
+> portaled into `#complianz-portal-root` (not MUI), is used by `ExportDatarequests.js` + `ExportRecordsOfConsent.js`
+> (NOT the Statistics screen); the `.rdr*` theme is the **auto-scoped ADR-009 vendor file**
+> `settings/src/styles/vendors/date-range.src.css → date-range.built.css`, while the Complianz trigger/container
+> chrome is **hand-scoped** in `settings/src/styles/vendors/date-range-chrome.css` (those `#cmplz-*` selectors sit
+> at/above the isolate boundary, so auto-scoping them as a zone descendant would leave them dead). The legacy
+> `assets/css/admin/modules/date-range.scss` was deleted. The manual NVDA/VoiceOver day-grid pass remains owed.
+
 Opened from `#cmplz-date-range-picker-open-button` into a MUI `Popover`; used by
 `ExportDatarequests.js`, `ExportRecordsOfConsent.js` and the Statistics screen. Root:
 `.rdrDateRangePickerWrapper`. The theme is our vendored copy at

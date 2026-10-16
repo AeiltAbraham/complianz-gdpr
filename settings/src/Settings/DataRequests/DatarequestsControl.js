@@ -227,7 +227,7 @@ const DatarequestsControl = () => {
 		<>
 			<div className="cmplz-table-header">
 				<div className="cmplz-table-header-controls">
-					<select value={status} onChange={(e) => handleStatusFilter(e.target.value)}>
+					<select value={status} onChange={(e) => handleStatusFilter(e.target.value)} aria-label={__('Filter by status',"complianz-gdpr")}>
 						<option value='all'>{__('All',"complianz-gdpr")}</option>
 						<option value='open'>{__('Open',"complianz-gdpr")}</option>
 						<option value='resolved'>{__('Resolved',"complianz-gdpr")}</option>

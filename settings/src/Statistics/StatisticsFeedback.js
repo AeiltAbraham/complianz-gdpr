@@ -27,7 +27,7 @@ const StatisticsFeedback = () => {
 
 	const Notice = (icon, color, text) => {
 		return (
-			<div className="cmplz-statistics-status">
+			<div className="cmplz-statistics-status tw-flex tw-items-center [&_.cmplz-icon]:tw-me-[10px]">
 				<Icon name={icon} color={color}/>
 				{text}
 			</div>

@@ -9,8 +9,9 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "wp-scripts build",
-    "start": "wp-scripts start",
+    "build:vendors": "node scripts/build-vendor-css.js",
+    "build": "npm run build:vendors && wp-scripts build",
+    "start": "npm run build:vendors && wp-scripts start",
     "lint:js": "wp-scripts lint-js"
   },
   "dependencies": {
@@ -52,6 +53,10 @@
     "cssnano": "6.1.2",
     "lodash": "^4.17.21",
     "node-loader": "^2.0.0",
+    "postcss": "^8.5.29",
+    "postcss-import": "^16.2.0",
+    "postcss-prefix-selector": "^1.16.1",
+    "postcss-rtlcss": "^5.7.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "stylelint": "17.16.0",

@@ -1,0 +1,92 @@
+/*
+ * ADR-009 vendor SOURCE for react-date-range (T-056, Statistics/DateRange section). This file @imports the
+ * library's upstream stylesheets and adds Complianz token overrides; scripts/build-vendor-css.js inlines the
+ * imports, scopes every selector to :is(#complianz,#complianz-portal) [data-cmplz-isolate="date-range"], and
+ * emits [dir=rtl] variants (postcss-rtlcss, override mode) into the GENERATED (gitignored) date-range.built.css
+ * that tailwind.css @imports. Replaces the legacy hand-merged assets/css/admin/modules/date-range.scss (deleted
+ * this PR, ADR-005).
+ *
+ * SCOPE: ONLY the react-date-range .rdr* upstream widget belongs here (it is what the pipeline auto-scopes as
+ * a descendant of the isolate zone). The Complianz-owned trigger-button + container chrome
+ * (#cmplz-date-range-picker-*) is NOT here — those selectors sit at/above the zone boundary and would become
+ * dead descendant selectors; they live hand-scoped in date-range-chrome.css (T-056 review finding).
+ *
+ * The .rdr* markup renders in the markerless isolate zone, so --cmplz-* refs here carry LITERAL fallbacks
+ * (the literal applies now; auto-upgrades at the Phase-5 marker move). No legacy or responsive-prefixed token
+ * NAMES anywhere (the ADR-004 gate greps this file whole, comments included — learnings 2026-10-14; the
+ * upstream imports contain none, our overrides use the C-2 tokens). Legacy source refs:
+ * assets/css/admin/modules/date-range.scss :41 (date-display fill), :60/:450 (date-input/preset text — now
+ * fixed to AA, not exempted), :191-203 (today marker), :292-306 (selected-range edge radius). The dead
+ * pre-Radix `#wpwrap .MuiPopover-root` z-index rule (date-range.scss:1-4) is NOT ported (the popover is Radix,
+ * portaled). The selected/in-range fill colors come from DateRange.js rangeColors={['var(--cmplz-accent-strong)']}
+ * (inline), not from here.
+ */
+@import "react-date-range/dist/styles.css";
+@import "react-date-range/dist/theme/default.css";
+
+/* --- a11y color-contrast, fixed to AA (text #0f172a is >15:1 on light tints) --- */
+.rdrDateDisplayItem input {
+  color: var(--cmplz-text, #0f172a);               /* date-range.scss:60 ~#849095 (~1.3:1) -> AA */
+}
+.rdrStaticRangeLabel {
+  color: var(--cmplz-text, #0f172a);               /* date-range.scss:450 (~1.29:1) -> AA */
+}
+.rdrMonthName,
+.rdrWeekDay {
+  color: var(--cmplz-text-muted, #475569);          /* upstream #849095 (3.27:1) -> AA (~7:1) */
+}
+/* Selected/in-range day numbers: upstream paints them rgba(255,255,255,0.85), which composites to #ddeaf5
+ * on --cmplz-accent-strong (#1e73be) = 4.03:1 — just under AA, and these are INTERACTIVE (selectable) days,
+ * so they must be fixed (not exempted). Full-opacity white is #fff on #1e73be = ~4.94:1 (AA). Same selector
+ * as upstream default.css:187, so later source order wins at equal specificity. */
+.rdrDay:not(.rdrDayPassive) .rdrInRange ~ .rdrDayNumber span,
+.rdrDay:not(.rdrDayPassive) .rdrStartEdge ~ .rdrDayNumber span,
+.rdrDay:not(.rdrDayPassive) .rdrEndEdge ~ .rdrDayNumber span,
+.rdrDay:not(.rdrDayPassive) .rdrSelected ~ .rdrDayNumber span {
+  color: #ffffff;
+}
+/* NOTE: the faded .rdrDayPassive (other-month) + .rdrDayDisabled (out-of-range, non-selectable) day numbers
+ * keep the library's de-emphasized gray — intentional affordance, non-interactive (WCAG exempts disabled);
+ * they carry an axe color-contrast exemption (tests/e2e/admin/helpers/axe.js) rather than being darkened. */
+
+/* --- token touches matching the approved G3 preview --- */
+.rdrDateDisplayWrapper {
+  background-color: var(--cmplz-success-surface, #e9f6ec);  /* date-range.scss:41 green-faded */
+}
+.rdrDateDisplayItemActive {
+  border-color: var(--cmplz-accent-strong, #1e73be);
+}
+/* Today marker: port BOTH the legacy deltas (date-range.scss:191-203) — a small round dot, not the
+ * upstream 18px underline bar. Only width/height/border-radius/background are overridden; upstream keeps
+ * the bottom:4px + left:50% + translate(-50%,0) centering. */
+.rdrDayToday .rdrDayNumber span:after {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--cmplz-success, #1f7a34);        /* today dot */
+}
+/* Selected-range edges: restore the signed-off 6px field radius (legacy date-range.scss:292-306); upstream
+ * default.css:207-220 is a 1.042em pill. */
+/* stylelint-disable csstools/use-logical -- physical radius longhands are intentional: this file is routed
+ * through postcss-rtlcss (ADR-009), which emits the [dir=rtl] mirror exactly as it does for the upstream
+ * .rdr* rules (and zeroes the flipped-away corner in override mode). */
+.rdrStartEdge {
+  border-top-left-radius: var(--cmplz-radius-field, 6px);
+  border-bottom-left-radius: var(--cmplz-radius-field, 6px);
+}
+.rdrEndEdge {
+  border-top-right-radius: var(--cmplz-radius-field, 6px);
+  border-bottom-right-radius: var(--cmplz-radius-field, 6px);
+}
+/* stylelint-enable csstools/use-logical */
+.rdrSelected {
+  border-radius: var(--cmplz-radius-field, 6px);
+}
+/* Selected preset (static range): the signed-off G3 look is an accent-subtle chip (preview §, accent-on-subtle
+ * text on accent-subtle fill). More specific than the generic .rdrStaticRangeLabel AA fix above, so it wins for
+ * the selected label while the generic rule keeps the unselected labels at AA. accent-on-subtle on accent-subtle
+ * is ~5.9:1 (AA). */
+.rdrStaticRangeSelected .rdrStaticRangeLabel {
+  color: var(--cmplz-accent-on-subtle, #17608f);
+  background: var(--cmplz-accent-subtle, #e3f2ff);
+}

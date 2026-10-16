@@ -8,5 +8,14 @@
  * token-literal (the preview.css pattern). Replaces the deleted assets/css/admin/modules/datatables.scss.
  * NOT run through a postcss auto-scope step (none this section); preview.css above is likewise untouched. */
 @import './vendors/data-table.css';
+/* ADR-009 (T-056): the react-date-range vendored upstream CSS, auto-scoped to the date-range isolate zone +
+ * in-file RTL by scripts/build-vendor-css.js. date-range.built.css is GENERATED (gitignored, ADR-006) by the
+ * build:vendors prebuild step; the entry postcss-import inlines it here. Unlike preview.css/data-table.css
+ * (hand-scoped, overrides-only), this one IS postcss-processed — it imports the library's upstream stylesheet. */
+@import './vendors/date-range.built.css';
+/* Complianz-owned date-range trigger/container chrome. Hand-scoped + overrides-only (the preview.css /
+ * data-table.css pattern), NOT run through build-vendor-css.js: these selectors sit at/above the isolate
+ * boundary, so auto-scoping as a zone descendant would leave them dead (T-056 review finding). */
+@import './vendors/date-range-chrome.css';
 @tailwind components;
 @tailwind utilities;

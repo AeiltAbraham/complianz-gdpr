@@ -78,7 +78,7 @@ jobs:
         # stylelint-disable (ADR-007 §27). The config is settings/.stylelintrc.json; run from settings/ so the
         # config, the binary and the plugin all resolve there. Gating now (T-020 removed the continue-on-error).
         working-directory: settings
-        run: npx --no-install stylelint src/styles/tokens.css src/styles/base.css src/styles/page.css src/styles/vendors/preview.css src/styles/vendors/data-table.css
+        run: npx --no-install stylelint src/styles/tokens.css src/styles/base.css src/styles/page.css src/styles/vendors/preview.css src/styles/vendors/data-table.css src/styles/vendors/date-range.src.css src/styles/vendors/date-range-chrome.css
 
   e2e:
     name: Admin e2e suite (fresh WordPress)

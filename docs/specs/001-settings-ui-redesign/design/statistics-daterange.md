@@ -139,16 +139,15 @@ state; the trigger button on tokens. Plus the premium-locked statistics/chart st
 
 Migration (T-056) starts only when **G1 + G2 + G3** are approved.
 
-- **G1 — ADR-009 pipeline approach (Path A / Path B):** [ ] — maintainer, 2026-10-__, choice: __________
-- **G2 — readToken()/chart (defer / build code-review-only):** [ ] — maintainer, 2026-10-__, choice: __________
-- **G3 — DateRange picker look + zero new tokens:** [ ] — maintainer, 2026-10-__,
-- **Open scope note — react-toastify vendor file:** this section / Onboarding-Tour / Phase 5? __________
+- **G1 — ADR-009 pipeline approach (Path A / Path B):** [x] — maintainer, 2026-10-16, choice: **Path A** (build the real postcss auto-scope pipeline).
+- **G2 — readToken()/chart (defer / build code-review-only):** [x] — maintainer, 2026-10-16, choice: **DEFER** readToken() + the chart migration (keep the chart legacy).
+- **G3 — DateRange picker look + zero new tokens:** [x] — maintainer, 2026-10-16, AS PROPOSED.
+- **Open scope note — react-toastify vendor file:** **Onboarding/Tour** (bundled with shepherd) — maintainer, 2026-10-16.
 
-Migration authorized to run autonomously (implement → adversarial-review → commit → push → CI-green) once G1–G3
-are ticked.
+Migration authorized to run autonomously (implement → adversarial-review → commit → push → CI-green).
 
 Maintainer notes / requested changes:
 
 ```
-
+Approved: G1 Path A, G2 defer readToken/chart, G3 as proposed; toast deferred to Onboarding/Tour. Proceed autonomously through T-056.
 ```

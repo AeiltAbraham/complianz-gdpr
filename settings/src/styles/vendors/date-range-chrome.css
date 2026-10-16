@@ -1,0 +1,44 @@
+/* Complianz-owned chrome for the date-range trigger button + container (T-056). HAND-SCOPED — NOT
+ * in the build-vendor-css.js manifest (the preview.css / data-table.css pattern), imported directly
+ * by tailwind.css.
+ *
+ * Why it cannot live in the auto-scoped date-range.src.css: these selectors (#cmplz-date-range-picker-*)
+ * are OURS, not react-date-range upstream, and they sit AT or ABOVE the data-cmplz-isolate="date-range"
+ * boundary — the trigger renders in #complianz-app (OUTSIDE the zone) and the container element IS the
+ * zone host itself. The pipeline prepends the zone as a DESCENDANT combinator, so there it would become
+ * `… [data-cmplz-isolate="date-range"] #cmplz-date-range-picker-open-button`, which matches nothing: the
+ * trigger has no isolate-zone ancestor and the container is not its own descendant. The result was dead
+ * CSS and a bare, unstyled trigger button on the FREE #tools/data-requests + #tools/records-of-consent
+ * screens (T-056 review finding). Hand-scoping here with the same :is(#complianz,#complianz-portal)
+ * page scope as tokens.css restores the chrome.
+ *
+ * Markerless chrome (ADR-001): var(--cmplz-*, literal) carries the literal fallback now and auto-upgrades
+ * at the Phase-5 marker move. All declarations are direction-symmetric (no physical start/end props), so
+ * this file needs no RTL pass. Ported from the deleted assets/css/admin/modules/date-range.scss:5-33. */
+
+:is(#complianz, #complianz-portal) #cmplz-date-range-picker-container {
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: var(--cmplz-space-xs, 8px);
+  z-index: 1;
+  background-color: var(--cmplz-surface, #ffffff);
+  box-shadow: var(--cmplz-shadow, 0 1px 3px 0 rgba(15, 23, 42, 0.1), 0 1px 2px -1px rgba(15, 23, 42, 0.06));
+  border-radius: var(--cmplz-radius-field, 6px);
+}
+
+:is(#complianz, #complianz-portal) #cmplz-date-range-picker-open-button {
+  display: flex;
+  align-items: center;
+  gap: var(--cmplz-space-xs, 8px);
+  padding: 6px var(--cmplz-space-s, 12px);
+  cursor: pointer;
+  font-size: var(--cmplz-font-size-sm, 0.8125rem);
+  color: var(--cmplz-text, #0f172a);
+  background: var(--cmplz-surface, #ffffff);
+  border: 1px solid var(--cmplz-field-border, #94a3b8);
+  border-radius: var(--cmplz-radius-field, 6px);
+}
+
+:is(#complianz, #complianz-portal) #cmplz-date-range-picker-open-button .cmplz-icon {
+  height: max-content;
+}

@@ -105,8 +105,10 @@
   @import 'admin/modules/new-features.scss';
   @import 'admin/modules/documents.scss';
   @import 'admin/modules/shepherd.scss';
-  @import 'admin/modules/date-range.scss';
-  @import 'admin/modules/statistics.scss';
+  // modules/date-range.scss removed (ADR-005, T-056): react-date-range's styling moved to the auto-scoped
+  // ADR-009 vendor file settings/src/styles/vendors/date-range.src.css -> date-range.built.css (imports the
+  // library's upstream CSS + Complianz token overrides). modules/statistics.scss removed (T-056): its one
+  // .cmplz-statistics-status rule migrated to tw- in StatisticsFeedback.js. shepherd.scss stays (Onboarding/Tour).
 
   //@import 'admin/modules/dark-mode.scss';
 
