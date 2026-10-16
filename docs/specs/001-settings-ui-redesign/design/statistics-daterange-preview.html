@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Complianz 001 — statistics / date-range preview</title>
+<!--
+  Design review reference for the Statistics/DateRange section (Stage H §6): the react-date-range (.rdr*)
+  calendar restyled on the C-2 tokens (the ADR-009 vendored upstream CSS + our token overrides), plus the
+  premium-locked Statistics chart state (context; code-review-only). ZERO new tokens. Logical properties
+  only (ADR-007): set <html dir="rtl"> to mirror. In production the .rdr* sits in data-cmplz-isolate="date-range"
+  and tokens resolve by inheritance from the portal-host island; here tokens are on :root for the demo.
+-->
+<style>
+  :root {
+    --cmplz-surface: #ffffff; --cmplz-surface-sunken: #f1f5f9; --cmplz-field-surface: #ffffff;
+    --cmplz-text: #0f172a; --cmplz-text-muted: #475569; --cmplz-text-on-accent: #ffffff;
+    --cmplz-border: #e2e8f0; --cmplz-field-border: #94a3b8;
+    --cmplz-accent: #009fff; --cmplz-accent-strong: #1e73be; --cmplz-accent-subtle: #e3f2ff; --cmplz-accent-on-subtle: #17608f;
+    --cmplz-success: #1f7a34; --cmplz-success-surface: #e9f6ec; --cmplz-warning: #eab308;
+    --cmplz-radius: 12px; --cmplz-radius-s: 8px; --cmplz-radius-field: 6px;
+    --cmplz-space-2xs: 4px; --cmplz-space-xs: 8px; --cmplz-space-s: 12px; --cmplz-space-m: 16px; --cmplz-space-l: 24px;
+    --cmplz-font-size: 0.875rem; --cmplz-font-size-xs: 0.6875rem; --cmplz-font-size-sm: 0.8125rem; --cmplz-font-size-lg: 1rem;
+    --cmplz-shadow: 0 1px 3px 0 rgba(15,23,42,0.10), 0 1px 2px -1px rgba(15,23,42,0.06);
+    --cmplz-shadow-lg: 0 10px 25px -5px rgba(15,23,42,0.18), 0 8px 10px -6px rgba(15,23,42,0.10);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--cmplz-surface-sunken); color: var(--cmplz-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: var(--cmplz-font-size); }
+  .hdr { background: var(--cmplz-surface); border-block-end: 1px solid var(--cmplz-border); }
+  .hdr-in { max-width: 1200px; margin-inline: auto; display:flex; align-items:center; gap: var(--cmplz-space-m); min-height:60px; padding-inline: var(--cmplz-space-l); }
+  .logo { display:flex; align-items:center; gap:10px; font-weight:800; }
+  .logo .mark { width:24px; height:24px; border-radius:7px; background: linear-gradient(135deg, var(--cmplz-accent), var(--cmplz-accent-strong)); }
+  .wrap { max-width: 1040px; margin-inline:auto; margin-block: var(--cmplz-space-l); padding-inline: var(--cmplz-space-l); display:grid; gap: var(--cmplz-space-l); }
+  .badge { display:inline-block; padding:3px 10px; border-radius:999px; background:#fef9c3; color:#713f12; border:1px solid #fde68a; font-size: var(--cmplz-font-size-xs); font-weight:700; }
+  .dir-note { color: var(--cmplz-text-muted); font-size: var(--cmplz-font-size-sm); margin-block:6px 0; }
+  .sec-label { font-size: var(--cmplz-font-size-xs); text-transform:uppercase; letter-spacing:.04em; color: var(--cmplz-text-muted); font-weight:700; }
+  .card { background: var(--cmplz-surface); border:1px solid var(--cmplz-border); border-radius: var(--cmplz-radius); box-shadow: var(--cmplz-shadow); padding: var(--cmplz-space-l); position:relative; }
+
+  /* trigger button */
+  .trigger { display:inline-flex; align-items:center; gap: var(--cmplz-space-xs); border:1px solid var(--cmplz-field-border); border-radius: var(--cmplz-radius-field); padding:7px var(--cmplz-space-s); background: var(--cmplz-surface); font-size: var(--cmplz-font-size-sm); color: var(--cmplz-text); cursor:pointer; }
+
+  /* ===== the react-date-range (.rdr*) calendar, restyled on tokens ===== */
+  .rdr { display:flex; border:1px solid var(--cmplz-border); border-radius: var(--cmplz-radius-s); box-shadow: var(--cmplz-shadow-lg); overflow:hidden; width:max-content; margin-block-start: var(--cmplz-space-s); }
+  /* preset list (static ranges) */
+  .rdrDefinedRanges { border-inline-end:1px solid var(--cmplz-border); padding: var(--cmplz-space-xs) 0; min-width:150px; background: var(--cmplz-surface); }
+  .rdrStaticRange { display:block; width:100%; text-align:start; border:0; background:transparent; padding:8px var(--cmplz-space-m); font-size: var(--cmplz-font-size-sm); color: var(--cmplz-text); cursor:pointer; }
+  .rdrStaticRange:hover { background: var(--cmplz-surface-sunken); }
+  .rdrStaticRange.sel { background: var(--cmplz-accent-subtle); color: var(--cmplz-accent-on-subtle); font-weight:600; }
+  /* calendar body */
+  .rdrCalendar { padding: var(--cmplz-space-m); background: var(--cmplz-surface); }
+  .rdrDateDisplay { display:flex; gap: var(--cmplz-space-xs); margin-block-end: var(--cmplz-space-s); }
+  .rdrDateInput { flex:1; border:1px solid var(--cmplz-field-border); border-radius: var(--cmplz-radius-field); padding:6px var(--cmplz-space-xs); font-size: var(--cmplz-font-size-sm); color: var(--cmplz-text); background: var(--cmplz-field-surface); text-align:center; }
+  .rdrMonthNav { display:flex; align-items:center; justify-content:space-between; margin-block-end: var(--cmplz-space-xs); }
+  .rdrNavBtn { width:26px; height:26px; border:1px solid var(--cmplz-border); border-radius: var(--cmplz-radius-field); background: var(--cmplz-surface); color: var(--cmplz-text-muted); display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
+  .rdrMonthName { font-weight:600; font-size: var(--cmplz-font-size-sm); color: var(--cmplz-text); }
+  .rdrWeekDays, .rdrDays { display:grid; grid-template-columns: repeat(7, 32px); }
+  .rdrWeekDay { text-align:center; font-size: var(--cmplz-font-size-xs); color: var(--cmplz-text-muted); padding-block: var(--cmplz-space-2xs); }
+  .rdrDay { height:32px; display:flex; align-items:center; justify-content:center; font-size: var(--cmplz-font-size-sm); color: var(--cmplz-text); cursor:pointer; position:relative; }
+  .rdrDay.passive { color: var(--cmplz-field-border); }
+  .rdrDay.inrange { background: var(--cmplz-accent-subtle); color: var(--cmplz-accent-on-subtle); }
+  .rdrDay.start, .rdrDay.end { background: var(--cmplz-accent-strong); color: var(--cmplz-text-on-accent); border-radius: var(--cmplz-radius-field); font-weight:600; }
+  .rdrDay.today::after { content:""; position:absolute; inset-block-end:4px; inset-inline-start:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:999px; background: var(--cmplz-success); }
+
+  /* ===== premium-locked statistics/chart state (context, code-review-only) ===== */
+  .locked { position:relative; }
+  .locked .scrim { position:absolute; inset:0; background: rgba(255,255,255,0.8); display:grid; place-items:center; border-radius: var(--cmplz-radius-s); }
+  .locked .scrim .pill { background: var(--cmplz-surface); border:1px solid var(--cmplz-border); box-shadow: var(--cmplz-shadow); border-radius:999px; padding:6px 14px; font-size: var(--cmplz-font-size-sm); font-weight:600; }
+  .chart { display:flex; align-items:flex-end; gap: var(--cmplz-space-s); height:150px; padding: var(--cmplz-space-m); background: var(--cmplz-surface-sunken); border-radius: var(--cmplz-radius-s); }
+  .bar { width:36px; border-radius:4px 4px 0 0; }
+  .bar.a { background: var(--cmplz-success); }
+  .bar.b { background: var(--cmplz-warning); }
+  .chart-legend { display:flex; gap: var(--cmplz-space-m); font-size: var(--cmplz-font-size-xs); color: var(--cmplz-text-muted); margin-block-start: var(--cmplz-space-xs); }
+  .swatch { display:inline-block; width:10px; height:10px; border-radius:2px; vertical-align:middle; margin-inline-end:4px; }
+</style>
+</head>
+<body>
+  <div class="hdr"><div class="hdr-in"><div class="logo"><span class="mark"></span>Complianz</div></div></div>
+  <div class="wrap">
+    <div>
+      <span class="badge">STATISTICS / DATE-RANGE PREVIEW — design review reference (proposal, awaiting sign-off)</span>
+      <div class="dir-note">The <code>react-date-range</code> calendar restyled on tokens (the ADR-009 vendored upstream CSS + our overrides; zero new tokens). The chart is premium-locked (code-review-only). Set <code>&lt;html dir="rtl"&gt;</code> to mirror (ADR-007).</div>
+    </div>
+
+    <!-- DATE RANGE (the free-verifiable deliverable) -->
+    <div>
+      <div class="sec-label">Export date range — #tools/data-requests (free)</div>
+      <div class="card">
+        <button class="trigger">📅 Last 7 days <span style="color:var(--cmplz-text-muted)">▾</span></button>
+        <div class="rdr">
+          <div class="rdrDefinedRanges">
+            <button class="rdrStaticRange">Today</button>
+            <button class="rdrStaticRange">Yesterday</button>
+            <button class="rdrStaticRange sel">Last 7 days</button>
+            <button class="rdrStaticRange">Last 30 days</button>
+            <button class="rdrStaticRange">This month</button>
+            <button class="rdrStaticRange">Last month</button>
+          </div>
+          <div class="rdrCalendar">
+            <div class="rdrDateDisplay"><span class="rdrDateInput">2026-10-10</span><span class="rdrDateInput">2026-10-16</span></div>
+            <div class="rdrMonthNav"><button class="rdrNavBtn" aria-label="Previous month">‹</button><span class="rdrMonthName">October 2026</span><button class="rdrNavBtn" aria-label="Next month">›</button></div>
+            <div class="rdrWeekDays"><span class="rdrWeekDay">Su</span><span class="rdrWeekDay">Mo</span><span class="rdrWeekDay">Tu</span><span class="rdrWeekDay">We</span><span class="rdrWeekDay">Th</span><span class="rdrWeekDay">Fr</span><span class="rdrWeekDay">Sa</span></div>
+            <div class="rdrDays">
+              <span class="rdrDay passive">28</span><span class="rdrDay passive">29</span><span class="rdrDay passive">30</span><span class="rdrDay">1</span><span class="rdrDay">2</span><span class="rdrDay">3</span><span class="rdrDay">4</span>
+              <span class="rdrDay">5</span><span class="rdrDay">6</span><span class="rdrDay">7</span><span class="rdrDay">8</span><span class="rdrDay">9</span><span class="rdrDay start">10</span><span class="rdrDay inrange">11</span>
+              <span class="rdrDay inrange">12</span><span class="rdrDay inrange">13</span><span class="rdrDay inrange">14</span><span class="rdrDay inrange">15</span><span class="rdrDay end today">16</span><span class="rdrDay">17</span><span class="rdrDay">18</span>
+              <span class="rdrDay">19</span><span class="rdrDay">20</span><span class="rdrDay">21</span><span class="rdrDay">22</span><span class="rdrDay">23</span><span class="rdrDay">24</span><span class="rdrDay">25</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATISTICS CHART (premium-locked; code-review-only context) -->
+    <div>
+      <div class="sec-label">Statistics A/B chart — #tools/ab-testing (premium, renders locked in free)</div>
+      <div class="card locked">
+        <div class="chart">
+          <div class="bar a" style="height:70%"></div><div class="bar b" style="height:52%"></div>
+          <div class="bar a" style="height:90%"></div><div class="bar b" style="height:61%"></div>
+          <div class="bar a" style="height:45%"></div><div class="bar b" style="height:38%"></div>
+          <div class="bar a" style="height:80%"></div><div class="bar b" style="height:70%"></div>
+        </div>
+        <div class="chart-legend"><span><span class="swatch" style="background:var(--cmplz-success)"></span>Banner A</span><span><span class="swatch" style="background:var(--cmplz-warning)"></span>Banner B</span></div>
+        <div class="scrim"><span class="pill">🔒 Upgrade to unlock Statistics</span></div>
+      </div>
+      <div class="dir-note">The chart keeps its on-brand data-driven bar colors; readToken()/chart migration are recommended DEFERRED (G2) — no verifiable free consumer.</div>
+    </div>
+  </div>
+</body>
+</html>
