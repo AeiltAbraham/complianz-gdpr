@@ -12,13 +12,30 @@
  * Declared on every scoped UI island (any `[data-cmplz-ui]` root under `#complianz`/
  * `#complianz-portal`), never on :root (DB-08 / ADR-001). This matches the scoped BASE in base.css,
  * which targets `[data-cmplz-ui] *`: through Phases 2-4 each migrated component carries `data-cmplz-ui`
- * on its own root (there is no single `#complianz-app-root` until the Phase-5 marker move, ADR-001),
- * so the tokens must be available on those islands — keying them only to `#complianz-app-root` left
- * every main-app primitive consumer (inputs, textarea, the combobox control) with undefined vars and a
- * token-less render. CSS custom properties inherit, so declaring on the island root reaches all its
- * descendants; the portal host (`#complianz-portal-root[data-cmplz-ui]`) is one such island.
+ * on its own root, so the tokens must be available on those islands — keying them only to a single
+ * app-root left every main-app primitive consumer (inputs, textarea, the combobox control) with
+ * undefined vars and a token-less render (learnings 2026-10-10). CSS custom properties inherit, so
+ * declaring on the island root reaches all its descendants; the portal host
+ * (`#complianz-portal-root[data-cmplz-ui]`) is one such island.
+ *
+ * PHASE 5 (Bundle A — ADR-001 token broadening). We ALSO declare the tokens on `#complianz-app`, the
+ * React root wrapper (the "app inner wrapper" ADR-001 names). Because custom properties inherit, this
+ * makes `var(--cmplz-*, <literal>)` resolve to the TOKEN on the still-MARKERLESS redesigned frame
+ * (Page grid, SettingsGroup card, Settings body/footer, Field rows, Help, Premium, SettingsPlaceholder,
+ * Icon, GridBlock + the dashboard block bodies) — the deferred "fallbacks auto-upgrade at the marker
+ * move" payoff. It is pixel-identical: every such fallback literal equals its token value (verified), so
+ * resolving to the token changes nothing. This is a SELECTOR-only declaration — `#complianz-app` carries
+ * NO `data-cmplz-ui` attribute, so base.css B1-B5 + the B2 14px root typography stay keyed to the
+ * `[data-cmplz-ui]` islands and do NOT reach the markerless frame or the ~14 still-LEGACY composite
+ * bodies (Finish/Support/Editor/documents/… that no Phase-4 section migrated) — they keep their legacy
+ * 13px/`.cmplz` base, so there is no type-scale/reset drift. The FULL marker move (one marker on the app
+ * root, dropping per-component markers + moving the base reset) is deliberately DEFERRED until those
+ * legacy bodies migrate: moving the base reset now would strip their chrome (the T-038/T-052 landmine)
+ * and flip them 13px->14px. Per-component island markers are therefore RETAINED (base.css still needs
+ * them). The isolate zones (preview/date-range/toastify/color-picker) are untouched — custom properties
+ * inherit through them (the base-reset exclusion does not block inheritance), exactly as before.
  */
-:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) {
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]), #complianz-app {
   /* Surfaces & neutrals */
   --cmplz-surface: #ffffff;
   --cmplz-surface-sunken: #f1f5f9;
@@ -96,9 +113,11 @@
   --cmplz-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* DB-12 reduced-motion: zero the motion durations on the same scoped islands (not :root). */
+/* DB-12 reduced-motion: zero the motion durations on the same scoped islands + the app root (not
+ * :root), matching the broadened declaration above so `var(--cmplz-duration*)` on the markerless frame
+ * also honours reduced-motion. */
 @media (prefers-reduced-motion: reduce) {
-  :is(#complianz, #complianz-portal) :where([data-cmplz-ui]) {
+  :is(#complianz, #complianz-portal) :where([data-cmplz-ui]), #complianz-app {
     --cmplz-duration-fast: 0ms;
     --cmplz-duration: 0ms;
     --cmplz-duration-slow: 0ms;

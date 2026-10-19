@@ -33,7 +33,11 @@ const base = clsx(
 	'tw-text-[0.8125rem] tw-font-normal',
 	'tw-cursor-pointer tw-transition-all tw-duration-300 tw-ease-[ease]',
 	'focus:tw-outline-none',
-	'focus-visible:tw-outline focus-visible:tw-outline-2 focus-visible:tw-outline-offset-1 focus-visible:tw-outline-[color:var(--cmplz-accent-strong)]',
+	// Literal fallback (== token) on the keyboard-focus outline so a markerless Button (ResetBannerButton,
+	// ImportControl, the Settings footer, …) shows the same focus ring as a marked one — the Phase-5 token
+	// broadening then changes nothing here. The variant fills are literal colours (below), so only this
+	// focus-visible outline referenced a bare token.
+	'focus-visible:tw-outline focus-visible:tw-outline-2 focus-visible:tw-outline-offset-1 focus-visible:tw-outline-[color:var(--cmplz-accent-strong,_#1e73be)]',
 	'disabled:tw-cursor-not-allowed disabled:tw-opacity-50'
 );
 
