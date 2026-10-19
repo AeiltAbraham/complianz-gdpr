@@ -226,6 +226,13 @@ Complianz uses geo-based detection to show the correct consent banner for each v
 The free version works on a single site. Complianz Premium supports WordPress multisite networks and includes features for managing consent across multiple domains. 
 
 == Changelog ==
+= 7.6.0 =
+* October 2026
+* Feature: Redesigned the Complianz settings interface. Every section — Dashboard, Wizard, Consent banner, Integrations, Settings and Tools — now shares one consistent design system (cards, buttons, form rows, tables, dialogs, pop-overs, tooltips, selects and notifications), with improved keyboard and screen-reader support and right-to-left layouts throughout. Your settings, data and the consent behaviour on your website are unchanged.
+* Enhancement: The cookie banner preview in the admin now matches the banner shown on your website for every layout. Previously the preview inherited admin styling and could differ from the live banner; it is now rendered in isolation, so what you see in the admin is what your visitors see. The only intended difference is the typeface the banner inherits from its surroundings, which stays at today's admin value.
+* Important (custom admin CSS): The HTML markup and CSS class names of the Complianz settings screens have changed as part of this redesign. Complianz's admin markup is not a supported, stable interface, so if you or another plugin target it with custom CSS, that CSS may need updating. This affects the admin screens only — the cookie banner, script blocking and front-end markup are unchanged.
+* Accessibility: The redesigned settings UI targets WCAG 2.2 AA. A small, documented set of exemptions remains inside two retained third-party widgets, each scoped to that widget's own internal elements: the colour picker on the banner colour screens (the library renders its HEX/RGB input labels below the AA contrast ratio), and the date-range calendar on the Data Requests and Records of Consent export screens (the day numbers for other-month and out-of-range dates are intentionally dimmed to preserve the calendar's affordance — WCAG exempts such disabled, non-interactive elements). No other retained widget — the code editor, data tables, guided tour, rich-text editor or toast notifications — carries an accessibility exemption; issues found in those were fixed rather than exempted.
+
 = 7.5.5 =
 * September 8th, 2026
 * Security: Fixed a CSV/Formula Injection vulnerability in the Data Requests CSV export.
