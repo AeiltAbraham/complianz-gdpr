@@ -31,7 +31,8 @@
   @import 'admin/modules/bullets.scss';
   @import 'admin/modules/icons.scss';
 
-  @import 'admin/modules/onboarding.scss';
+  // modules/onboarding.scss removed (ADR-005, T-058): it was 100% orphaned — scoped entirely under
+  // `.cmplz-modal.cmplz-onboarding`, which nothing renders (the live modal is `.cmplz-websitescan`).
   // modules/progress.scss removed (ADR-005, T-048): the Dashboard progress block + task list/switcher +
   // plus-one badge migrated to tw- utilities (Dashboard/Progress/* + TaskElement.js + Tools.js). The ONE
   // cross-section rule, the `.cmplz-task-status` pill family (also used by SettingsGroup/SecurityMeasures/
@@ -81,7 +82,9 @@
     @import 'admin/modules/wizard/documents-menu.scss';
     @import 'admin/modules/wizard/editor.scss';
     @import 'admin/modules/wizard/processors-thirdparties.scss';
-	@import 'admin/modules/toast/main.scss';
+	// modules/toast/ removed (ADR-005, T-058): it was react-toastify's own SCSS vendored verbatim; the
+	// styling moved to the auto-scoped ADR-009 vendor file settings/src/styles/vendors/toast.src.css ->
+	// toast.built.css (imports the library's upstream CSS + Complianz token overrides).
 	// inputs: the modules/inputs/ module is fully retired (ADR-005 Phase-2 exit, T-030). The three
 	// former files (Input, BorderInput, Buttons) are gone: BorderInput/Button-icon looks moved onto
 	// the migrated components; the global input/button rules live on in legacy-globals.scss.
@@ -104,11 +107,13 @@
   // surviving out-of-section consumers and relocated to legacy-globals.scss.
   @import 'admin/modules/new-features.scss';
   @import 'admin/modules/documents.scss';
-  @import 'admin/modules/shepherd.scss';
+  // modules/shepherd.scss removed (ADR-005, T-058): the guided-tour theme moved to the hand-scoped,
+  // overrides-only settings/src/styles/vendors/shepherd.css (ADR-009 Option B — the widget mounts at
+  // document.body, so the auto-scope pipeline would emit dead CSS; scoped by its own .cmplz-shepherd class).
   // modules/date-range.scss removed (ADR-005, T-056): react-date-range's styling moved to the auto-scoped
   // ADR-009 vendor file settings/src/styles/vendors/date-range.src.css -> date-range.built.css (imports the
   // library's upstream CSS + Complianz token overrides). modules/statistics.scss removed (T-056): its one
-  // .cmplz-statistics-status rule migrated to tw- in StatisticsFeedback.js. shepherd.scss stays (Onboarding/Tour).
+  // .cmplz-statistics-status rule migrated to tw- in StatisticsFeedback.js.
 
   //@import 'admin/modules/dark-mode.scss';
 

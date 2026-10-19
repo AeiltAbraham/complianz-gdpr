@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onboarding / Tour — look preview</title>
+<style>
+  :root {
+    --cmplz-surface:#ffffff; --cmplz-surface-sunken:#f1f5f9;
+    --cmplz-text:#0f172a; --cmplz-text-muted:#475569; --cmplz-text-on-accent:#fff;
+    --cmplz-border:#e2e8f0; --cmplz-field-border:#94a3b8;
+    --cmplz-accent:#009fff; --cmplz-accent-strong:#1e73be; --cmplz-accent-on-subtle:#17608f; --cmplz-accent-subtle:#e3f2ff;
+    --cmplz-success:#1f7a34; --cmplz-success-surface:#e9f6ec;
+    --cmplz-warning:#eab308; --cmplz-warning-surface:#fbf4da;
+    --cmplz-danger:#d7263d; --cmplz-danger-surface:#fdebed;
+    --cmplz-radius:12px; --cmplz-radius-field:6px; --cmplz-radius-s:8px;
+    --cmplz-shadow:0 1px 3px 0 rgba(15,23,42,.1), 0 1px 2px -1px rgba(15,23,42,.06);
+    --cmplz-shadow-lg:0 10px 25px -5px rgba(15,23,42,.18), 0 8px 10px -6px rgba(15,23,42,.1);
+    --cmplz-space-xs:8px; --cmplz-space-s:12px; --cmplz-space-m:16px; --cmplz-space-l:24px;
+    --cmplz-fs-sm:.8125rem; --cmplz-fs:.875rem; --cmplz-fs-lg:1rem;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#eef1f5; color:var(--cmplz-text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; font-size:14px; line-height:1.5; }
+  .wrap { max-width:1040px; margin:0 auto; padding:24px 16px 80px; }
+  h1 { font-size:1.4rem; margin:0 0 4px; }
+  h2 { font-size:1.05rem; margin:36px 0 6px; padding-top:16px; border-top:1px solid #dde3ea; }
+  .sub { color:#5b6b7c; margin:0 0 8px; }
+  .note { background:#fff; border:1px solid #dde3ea; border-radius:8px; padding:10px 14px; font-size:13px; color:#44515f; margin:10px 0; }
+  .cols { display:flex; gap:28px; flex-wrap:wrap; align-items:flex-start; }
+  .col { flex:1 1 320px; }
+  .caption { font-size:12px; font-weight:600; letter-spacing:.02em; text-transform:uppercase; color:#7a8794; margin:0 0 10px; }
+  .stage { background:#f6f8fb; border:1px dashed #c6d0db; border-radius:10px; padding:28px; display:flex; justify-content:center; }
+  .stage.dash { background:#2f3237; }
+
+  /* ---------- Shepherd tour popover ---------- */
+  .tour { position:relative; width:min(45ch,100%); border-radius:var(--cmplz-radius-field);
+    box-shadow:var(--cmplz-shadow-lg); }
+  .tour .arrow { position:absolute; width:16px; height:16px; left:50%; transform:translateX(-50%) rotate(45deg); bottom:-8px; }
+  /* NEW (light) */
+  .tour.light { background:var(--cmplz-surface); color:var(--cmplz-text); border:1px solid var(--cmplz-border); }
+  .tour.light .arrow { background:var(--cmplz-surface); border-right:1px solid var(--cmplz-border); border-bottom:1px solid var(--cmplz-border); }
+  /* OLD (dark) */
+  .tour.dark { background:#333; color:#fff; }
+  .tour.dark .arrow { background:#333; }
+  .tour .hd { display:flex; align-items:center; justify-content:space-between; min-height:30px;
+    padding:var(--cmplz-space-xs) var(--cmplz-space-s); }
+  .tour .hd .title { margin:0; font-weight:700; font-size:var(--cmplz-fs-lg); }
+  .tour.light .hd .title { color:var(--cmplz-text); }
+  .tour .x { background:transparent; border:none; cursor:pointer; font-size:20px; line-height:1; padding:0; }
+  .tour.light .x { color:var(--cmplz-text-muted); }
+  .tour.dark .x { color:#9aa3ac; }
+  .tour .bd { padding:2px var(--cmplz-space-s) var(--cmplz-space-xs); }
+  .tour .bd p { margin:0 0 6px; font-size:var(--cmplz-fs); }
+  .tour .ft { display:flex; align-items:center; justify-content:flex-end; gap:var(--cmplz-space-xs);
+    min-height:30px; padding:var(--cmplz-space-xs) var(--cmplz-space-s); }
+  .btn { font-size:var(--cmplz-fs-sm); padding:5px 12px; border-radius:var(--cmplz-radius-field); cursor:pointer;
+    border:1px solid transparent; font-weight:500; }
+  .btn.primary { background:var(--cmplz-accent-strong); color:#fff; }
+  .btn.secondary { background:var(--cmplz-surface); color:var(--cmplz-text); border-color:var(--cmplz-field-border); }
+  /* old dark footer buttons (the 2.25:1 exemption): WP link-blue on #333 */
+  .btn.old-default { background:#f6f7f7; color:#3858e9; border:1px solid #2271b1; }
+  .btn.old-primary { background:#3858e9; color:#fff; }
+
+  /* ---------- toasts (react-toastify, theme=light) ---------- */
+  .toasts { display:flex; flex-direction:column; gap:12px; width:320px; }
+  .toast { display:flex; align-items:flex-start; gap:10px; background:var(--cmplz-surface); color:var(--cmplz-text);
+    border:1px solid var(--cmplz-border); border-radius:var(--cmplz-radius); box-shadow:var(--cmplz-shadow);
+    padding:12px 14px; min-height:42px; font-size:var(--cmplz-fs); }
+  .toast .ico { flex:0 0 20px; width:20px; height:20px; border-radius:50%; display:flex; align-items:center;
+    justify-content:center; color:#fff; font-size:13px; font-weight:700; margin-top:1px; }
+  .toast .msg { flex:1 1 auto; }
+  .toast .cls { flex:0 0 auto; background:none; border:none; cursor:pointer; color:var(--cmplz-text-muted);
+    font-size:16px; line-height:1; padding:0 2px; }
+  .ico.success { background:var(--cmplz-success); }
+  .ico.error   { background:var(--cmplz-danger); }
+  .ico.warning { background:var(--cmplz-warning); color:#3a2d00; }
+  .ico.info    { background:var(--cmplz-accent); }
+  .ico.default { background:var(--cmplz-text-muted); }
+  .legend { font-size:12px; color:#5b6b7c; }
+  .pill { display:inline-block; font-size:11px; font-weight:700; padding:1px 7px; border-radius:999px;
+    background:var(--cmplz-success-surface); color:#14532d; }
+  .pill.warn { background:var(--cmplz-warning-surface); color:#713f12; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Onboarding / Tour — look preview</h1>
+  <p class="sub">Phase-4, last section. Standalone mock on the C-2 token values (<strong>zero new tokens</strong>). For the design decisions see <code>onboarding-tour.md</code> §4–§8.</p>
+
+  <div class="note">
+    <strong>What this section does:</strong> re-theme the <strong>Shepherd tour</strong> (overrides-only, body-mounted — G1) and the <strong>react-toastify toasts</strong> (ADR-009 Path A — G2) on the tokens; delete the orphaned <code>onboarding.scss</code> (G3); keep the tour as centered modals (G4). The live <code>NewOnboarding</code> websitescan modal is <strong>deferred</strong> to its own sub-task.
+  </div>
+
+  <h2>1 · Shepherd tour popover — dark (today) → light (proposed)</h2>
+  <p class="sub">The tour is free-reachable (Settings → General → “Restart tour”, auto-starts on the dashboard). Moving to the light surface matches every other dialog/popover <em>and</em> fixes the footer-button contrast a11y exemption (blue button text was 2.25:1 on the dark <code>#333</code>; on white it clears AA) — <span class="pill">a11y fix</span>, no new token.</p>
+  <div class="cols">
+    <div class="col">
+      <p class="caption">Today — dark (<span class="pill warn">footer 2.25:1</span>)</p>
+      <div class="stage dash">
+        <div class="tour dark">
+          <div class="hd"><p class="title">Welcome to Complianz</p><button class="x" aria-hidden="true">×</button></div>
+          <div class="bd"><p>Let’s take a quick tour of your privacy suite. We’ll walk through the dashboard, wizard, cookie banner and integrations.</p></div>
+          <div class="ft">
+            <button class="btn old-default">Configure</button>
+            <button class="btn old-primary">Start tour</button>
+          </div>
+          <span class="arrow"></span>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <p class="caption">Proposed — light surface (tokens)</p>
+      <div class="stage">
+        <div class="tour light">
+          <div class="hd"><p class="title">Welcome to Complianz</p><button class="x" aria-label="Close tour">×</button></div>
+          <div class="bd"><p>Let’s take a quick tour of your privacy suite. We’ll walk through the dashboard, wizard, cookie banner and integrations.</p></div>
+          <div class="ft">
+            <button class="btn secondary">Configure</button>
+            <button class="btn primary">Start tour</button>
+          </div>
+          <span class="arrow"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="legend">bg <code>--cmplz-surface</code> + 1px <code>--cmplz-border</code> · text/title <code>--cmplz-text</code> · elevation <code>--cmplz-shadow-lg</code> · radius <code>--cmplz-radius-field</code> (6px) · cancel-× <code>--cmplz-text-muted</code>→<code>--cmplz-text</code> on hover · footer buttons unchanged WP classes (secondary bordered / primary <code>--cmplz-accent-strong</code>).</p>
+
+  <h2>2 · Toasts — react-toastify light theme on tokens</h2>
+  <p class="sub">Config is <code>theme="light"</code>, bottom-right, <code>hideProgressBar</code>, <code>autoClose 2000</code>. White surface for every variant; only the status <strong>icon</strong> carries the colour. Text (<code>--cmplz-text</code> ≈17:1) and close-× (<code>--cmplz-text-muted</code> ≈7:1) are AA by construction. <span class="pill">info-icon = <code>--cmplz-accent</code> (confirm)</span></p>
+  <div class="stage" style="justify-content:flex-start;">
+    <div class="toasts">
+      <div class="toast"><span class="ico success">✓</span><span class="msg">Settings saved.</span><button class="cls" aria-label="close">×</button></div>
+      <div class="toast"><span class="ico error">!</span><span class="msg">Could not save — please try again.</span><button class="cls" aria-label="close">×</button></div>
+      <div class="toast"><span class="ico warning">!</span><span class="msg">Scan is still running in the background.</span><button class="cls" aria-label="close">×</button></div>
+      <div class="toast"><span class="ico info">i</span><span class="msg">Cookie database synced.</span><button class="cls" aria-label="close">×</button></div>
+      <div class="toast"><span class="ico default">•</span><span class="msg">Changes applied.</span><button class="cls" aria-label="close">×</button></div>
+    </div>
+  </div>
+  <p class="legend">surface <code>--cmplz-surface</code> · border <code>--cmplz-border</code> · radius <code>--cmplz-radius</code> (12px) · shadow <code>--cmplz-shadow</code> · icons success <code>--cmplz-success</code> / error <code>--cmplz-danger</code> / warning <code>--cmplz-warning</code> / info <code>--cmplz-accent</code>.</p>
+
+  <h2>3 · onboarding.scss — delete-only</h2>
+  <p class="sub">Nothing to preview: <code>onboarding.scss</code> is scoped entirely under <code>.cmplz-modal.cmplz-onboarding</code>, which no element renders (the live modal is <code>.cmplz-websitescan</code>). It is deleted with its <code>admin.scss</code> import; zero visual effect. The live <code>NewOnboarding</code> websitescan modal (281-line co-located SCSS) is a separate, deferred sub-task.</p>
+</div>
+</body>
+</html>

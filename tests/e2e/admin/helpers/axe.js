@@ -66,12 +66,6 @@ const EXEMPTIONS = [
 		selector: '.rdrDayDisabled',
 		reason: 'react-date-range fades DISABLED day numbers (outside minDate 2022 / maxDate today, not selectable); WCAG 1.4.3 exempts disabled elements. Widget-internal, non-interactive.',
 	},
-	{
-		screen: 'dashboard',
-		rule: 'color-contrast',
-		selector: '.shepherd-footer',
-		reason: 'Shepherd footer buttons at 2.25:1 from the .cmplz-shepherd theme on the widget\'s internal button DOM; fixable by re-theming (Phase 4).',
-	},
 ];
 
 // The axe impacts that gate a migrated screen (§8.1). Lower impacts are recorded only.

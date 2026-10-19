@@ -17,5 +17,13 @@
  * data-table.css pattern), NOT run through build-vendor-css.js: these selectors sit at/above the isolate
  * boundary, so auto-scoping as a zone descendant would leave them dead (T-056 review finding). */
 @import './vendors/date-range-chrome.css';
+/* ADR-009 (T-058): react-toastify vendored upstream CSS, auto-scoped to the toastify isolate zone +
+ * in-file RTL by build-vendor-css.js. toast.built.css is GENERATED (gitignored, ADR-006) by the
+ * build:vendors prebuild step. Both <ToastContainer>s (Page.js + PagePlaceholder.js) are wrapped in
+ * data-cmplz-isolate="toastify". */
+@import './vendors/toast.built.css';
+/* Shepherd guided-tour theme (T-058). Hand-scoped overrides-only (ADR-009 Option B): the widget mounts at
+ * document.body, so auto-scoping would be dead CSS — scoped by its own .cmplz-shepherd class instead. */
+@import './vendors/shepherd.css';
 @tailwind components;
 @tailwind utilities;

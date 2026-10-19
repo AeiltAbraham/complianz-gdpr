@@ -191,7 +191,8 @@ const Page = () => {
 					}
 				</div>
 				{ToastContainer && (
-					<ToastContainer
+					<div data-cmplz-isolate="toastify">
+						<ToastContainer
 						position="bottom-right"
 						autoClose={2000}
 						limit={3}
@@ -202,6 +203,7 @@ const Page = () => {
 						pauseOnHover
 						theme="light"
 					/>
+					</div>
 				)}
 			</>
 			{/*{we want to run the scan also on the background }*/}

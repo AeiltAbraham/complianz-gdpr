@@ -1,0 +1,60 @@
+/*
+ * ADR-009 vendor SOURCE for react-toastify (T-058, Onboarding/Tour section — the pipeline's second
+ * consumer after date-range). @imports the library's upstream stylesheet and remaps its --toastify-*
+ * custom properties to the C-2 tokens; scripts/build-vendor-css.js inlines the import, scopes every
+ * selector to :is(#complianz,#complianz-portal) [data-cmplz-isolate="toastify"] (mapping :root -> the
+ * zone host), and emits [dir=rtl] variants (postcss-rtlcss override mode) into the GENERATED (gitignored)
+ * toast.built.css that tailwind.css @imports. Replaces the legacy VERBATIM-VENDORED react-toastify SCSS
+ * copy at assets/css/admin/modules/toast/ (deleted this PR, ADR-005) — Path A retires that copy entirely.
+ *
+ * The <ToastContainer> renders inside #complianz but has no [data-cmplz-ui] ancestor, so --cmplz-* refs
+ * here carry LITERAL fallbacks (the literal applies now; auto-upgrades at the Phase-5 marker move). No
+ * legacy/responsive-prefixed token NAMES anywhere (the ADR-004 gate greps this file whole; the upstream
+ * import contains none, our overrides use the C-2 tokens). ToastContainer config (Page.js +
+ * PagePlaceholder.js): theme="light", bottom-right, hideProgressBar, autoClose 2000 — so only the light
+ * theme + the status-icon colors render (no progress bar to theme).
+ */
+@import "react-toastify/dist/ReactToastify.css";
+
+/* Remap react-toastify's custom properties to the C-2 tokens. :root is mapped to the isolate-zone host
+ * by build-vendor-css.js, and this block is emitted after the upstream :root, so it wins. */
+:root {
+  --toastify-color-light: var(--cmplz-surface, #ffffff);        /* toast background (light theme) */
+  --toastify-text-color-light: var(--cmplz-text, #0f172a);       /* toast text (was ~#757575) -> AA */
+  --toastify-color-success: var(--cmplz-success, #1f7a34);       /* success icon */
+  --toastify-color-error: var(--cmplz-danger, #d7263d);          /* error icon */
+  --toastify-color-warning: var(--cmplz-warning, #eab308);       /* warning icon */
+  --toastify-color-info: var(--cmplz-accent, #009fff);           /* info icon (G3: accent, was legacy yellow) */
+  --toastify-spinner-color: var(--cmplz-text-muted, #475569);    /* promise-pending spinner */
+  --toastify-toast-min-height: 42px;                             /* legacy compact height (upstream 64) */
+  --toastify-z-index: var(--cmplz-z-toast, 9999);                /* the C-2 toast layer */
+}
+
+/* The 3 structural touches the legacy vendored copy carried, on the C-2 tokens. */
+.Toastify__toast {
+  border: 1px solid var(--cmplz-border, #e2e8f0);
+  border-radius: var(--cmplz-radius, 12px);
+  box-shadow: var(--cmplz-shadow, 0 1px 3px 0 rgba(15, 23, 42, 0.1), 0 1px 2px -1px rgba(15, 23, 42, 0.06));
+}
+
+/* Re-theme the close button. The upstream light theme ships it at #000 / opacity 0.3 (~2.1:1 on the white
+ * toast), which fails WCAG 1.4.11 (3:1 for a control). --cmplz-text-muted on white is ~7.6:1. Target the
+ * base AND the --light theme modifier so this wins the upstream `--light` rule regardless of source order. */
+.Toastify__close-button,
+.Toastify__close-button--light {
+  color: var(--cmplz-text-muted, #475569);
+  opacity: 1;
+}
+.Toastify__close-button:hover,
+.Toastify__close-button:focus {
+  color: var(--cmplz-text, #0f172a);
+}
+
+/* Keep the upstream/legacy squared corners on the <480px full-bleed (100vw) toast — the --cmplz-radius
+ * override above otherwise rounds the edge-to-edge mobile toast. Re-asserted AFTER the override so it wins
+ * at the breakpoint (equal specificity, later source). */
+@media only screen and (max-width: 480px) {
+  .Toastify__toast {
+    border-radius: 0;
+  }
+}

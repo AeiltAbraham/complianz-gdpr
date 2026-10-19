@@ -23,8 +23,13 @@ const rtlcss = require( 'postcss-rtlcss' ).default || require( 'postcss-rtlcss' 
 
 const VENDORS_DIR = path.join( __dirname, '..', 'src', 'styles', 'vendors' );
 
-// One row per auto-scoped vendor. Add toast/shepherd here in the Onboarding/Tour section (one .src.css each).
-const MANIFEST = [ { src: 'date-range.src.css', zone: 'date-range' } ];
+// One row per auto-scoped vendor (a library that ships upstream CSS AND renders inside #complianz).
+// react-shepherd is NOT here: it mounts at document.body, so the #complianz-descendant scope would be
+// dead CSS — it is hand-scoped in vendors/shepherd.css instead (ADR-009 Option B, T-058).
+const MANIFEST = [
+	{ src: 'date-range.src.css', zone: 'date-range' },
+	{ src: 'toast.src.css', zone: 'toastify' },
+];
 
 async function buildOne( { src, zone } ) {
 	const srcPath = path.join( VENDORS_DIR, src );

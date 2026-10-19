@@ -202,6 +202,15 @@ must-fix lands.
 
 ## react-shepherd (guided tour) — `settings/src/Tour/Tour.js`
 
+> **RESOLVED in T-058 (Onboarding/Tour section).** The single exemption (the `.shepherd-footer`
+> `color-contrast`, 2.25:1) is **FIXED, not exempted**: the tour popover was re-themed from the dark
+> `#333` ground to the C-2 **light surface** (`settings/src/styles/vendors/shepherd.css`, the hand-scoped
+> ADR-009 Option B file — shepherd mounts at `document.body`, so the auto-scope pipeline would be dead
+> CSS), on which the WP footer buttons' blue text clears AA. The §8.2 exemption row is **removed**
+> (`helpers/axe.js`). The `landmark-no-duplicate-contentinfo` (moderate) stays recorded-only, and
+> `keyboardNavigation:false` is left as-is (a behavior choice, out of this section's look+a11y scope).
+> The theme file is now `vendors/shepherd.css`, not the deleted `assets/css/admin/modules/shepherd.scss`.
+
 Launched with the `?tour` query param; the step renders as `.shepherd-element`
 (`role="dialog"`) centred over the dashboard. Our theme is
 `assets/css/admin/modules/shepherd.scss` (`.cmplz-shepherd`).
@@ -351,7 +360,6 @@ code findings are deliberately absent (they are must-fix).
 | `select-name` | critical | `.rdrMonthAndYearPickers` | `#tools/data-requests/datarequest-entries` | react-date-range month/year `<select>`s render without a label; fixable via the library `ariaLabels` prop (Phase 4) |
 | `color-contrast` | serious | `.rdrDateDisplayWrapper` | `#tools/data-requests/datarequest-entries` | react-date-range start/end date inputs at ~1.3:1; fixable in the vendored `date-range.scss` (Phase 4) |
 | `color-contrast` | serious | `.rdrDefinedRangesWrapper` | `#tools/data-requests/datarequest-entries` | react-date-range preset-range labels at ~1.29:1; fixable in the vendored `date-range.scss` (Phase 4) |
-| `color-contrast` | serious | `.shepherd-footer` | `dashboard` | Shepherd footer buttons at 2.25:1 from our `.cmplz-shepherd` theme on the widget's internal button DOM; fixable by re-theming (Phase 4) |
 
 ### How the axe spec consumes this table
 

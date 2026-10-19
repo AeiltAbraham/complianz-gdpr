@@ -61,7 +61,8 @@ const PagePlaceholder = (props) => {
             </>}
           </div>
 				{ToastContainer && (
-					<ToastContainer
+					<div data-cmplz-isolate="toastify">
+						<ToastContainer
 						position="bottom-right"
 						autoClose={2000}
 						limit={3}
@@ -72,6 +73,7 @@ const PagePlaceholder = (props) => {
 						pauseOnHover
 						theme="light"
 					/>
+					</div>
 				)}
         </>
     );

@@ -1,0 +1,112 @@
+/*
+ * Shepherd guided-tour theme (T-058, Onboarding/Tour section). HAND-SCOPED, overrides-only — NOT in the
+ * build-vendor-css.js manifest (ADR-009 Option B, the react-data-table analogue; refines ADR-009/ADR-014):
+ * shepherd.js appends every step tooltip to document.body (Tour.js sets no stepsContainer), OUTSIDE
+ * #complianz, so the auto-scope pipeline's #complianz-descendant prefix would emit 100% dead CSS. The
+ * widget's own top-level .cmplz-shepherd class (every step carries classes:'cmplz-shepherd', Tour.js) is
+ * the scope hook, exactly as the legacy shepherd.scss used it. The app has never loaded upstream
+ * shepherd.css; this is the complete, self-contained theme (no @keyframes dependency). Replaces
+ * assets/css/admin/modules/shepherd.scss (deleted this PR, ADR-005).
+ *
+ * Markerless: the tour renders at document.body with no [data-cmplz-ui] ancestor, so --cmplz-* refs carry
+ * LITERAL fallbacks (the literal applies now; auto-upgrades at the Phase-5 marker move). No legacy/
+ * responsive-prefixed token NAMES (ADR-004 greps this file whole). Re-themed from the legacy DARK popover
+ * (#333 bg / white text) to the C-2 LIGHT surface, consistent with every other dialog/popover — this also
+ * FIXES the T-015 .shepherd-footer button-contrast exemption (the WP button link-blue text was 2.25:1 on
+ * the #333 ground; on the white surface it clears AA). Footer buttons keep their WP button/button-primary
+ * classes (styled by legacy-globals).
+ */
+.cmplz-shepherd {
+  background: var(--cmplz-surface, #ffffff);
+  color: var(--cmplz-text, #0f172a);
+  border: 1px solid var(--cmplz-border, #e2e8f0);
+  box-shadow: var(--cmplz-shadow-lg, 0 10px 25px -5px rgba(15, 23, 42, 0.18), 0 8px 10px -6px rgba(15, 23, 42, 0.1));
+  width: min(45ch, 100%);
+  border-radius: var(--cmplz-radius-field, 6px);
+  z-index: 999;
+  margin: var(--cmplz-space-s, 12px) !important; /* overrides shepherd's inline margin */
+}
+
+.cmplz-shepherd .shepherd-arrow,
+.cmplz-shepherd .shepherd-arrow::before {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  z-index: -1;
+}
+
+.cmplz-shepherd .shepherd-arrow::before {
+  content: "";
+  transform: rotate(45deg);
+  background: var(--cmplz-surface, #ffffff);
+  border: 1px solid var(--cmplz-border, #e2e8f0); /* the 2 inner edges sit behind the body (z-index:-1) */
+}
+
+/* popper sets data-popper-placement from actual geometry, so these arrow offsets are physical BY DESIGN
+ * (popper placements are top/bottom/left/right, not document-direction) — hence the logical-props
+ * exception. The free tour runs as centered modals (attachTo commented out in Tour.js), so .shepherd-centered
+ * below hides the arrow in practice; these keep an attached step correct. */
+/* stylelint-disable csstools/use-logical */
+.cmplz-shepherd[data-popper-placement^="top"] > .shepherd-arrow { bottom: -8px; }
+.cmplz-shepherd[data-popper-placement^="bottom"] > .shepherd-arrow { top: -8px; }
+.cmplz-shepherd[data-popper-placement^="left"] > .shepherd-arrow { right: -8px; }
+.cmplz-shepherd[data-popper-placement^="right"] > .shepherd-arrow { left: -8px; }
+/* stylelint-enable csstools/use-logical */
+
+.cmplz-shepherd.shepherd-centered > .shepherd-arrow {
+  opacity: 0;
+}
+
+.cmplz-shepherd .shepherd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 30px;
+  padding-inline: var(--cmplz-space-s, 12px);
+  padding-block: var(--cmplz-space-xs, 8px);
+}
+
+.cmplz-shepherd .shepherd-header .shepherd-title {
+  margin: 0;
+  color: var(--cmplz-text, #0f172a);
+}
+
+.cmplz-shepherd .shepherd-header button.shepherd-cancel-icon {
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  color: var(--cmplz-text-muted, #475569);
+  font-size: 20px;
+  position: relative;
+  inset-block-start: -2px;
+}
+
+.cmplz-shepherd .shepherd-header button.shepherd-cancel-icon:hover {
+  color: var(--cmplz-text, #0f172a);
+}
+
+.cmplz-shepherd .shepherd-text {
+  padding-inline: var(--cmplz-space-s, 12px);
+  padding-block: var(--cmplz-space-2xs, 4px);
+}
+
+.cmplz-shepherd .shepherd-text p {
+  margin: 0;
+  margin-block-start: var(--cmplz-space-2xs, 4px);
+  color: var(--cmplz-text, #0f172a);
+}
+
+.cmplz-shepherd .shepherd-text p:first-of-type {
+  margin-block-start: 0;
+}
+
+.cmplz-shepherd .shepherd-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 30px;
+  gap: var(--cmplz-space-xs, 8px);
+  padding-inline: var(--cmplz-space-s, 12px);
+  padding-block: var(--cmplz-space-xs, 8px);
+}
