@@ -10,7 +10,7 @@
  * exactly the regression this layer is meant to catch, so each check also asserts the English original
  * is ABSENT (translation really happened, not just "some German text exists somewhere").
  *
- * Two independent PHP delivery paths are covered, because they translate through different machinery:
+ * Three independent delivery paths are covered, because each translates through different machinery:
  *   1. MENU TITLES — the top-level section titles come from `cmplz_menu()` (settings/config/menu.php),
  *      serialised into `window.cmplz_settings.menu` by `wp_localize_script` at admin-page render time
  *      (settings/settings.php), and rendered by the shell header as nav links (Header.js). They are
@@ -19,6 +19,14 @@
  *      (settings/config/fields/wizard/general.php) is delivered over REST `/complianz/v1/fields/get`,
  *      which api-fetch requests with `_locale=user`, so its response is translated to the user locale.
  *      This exercises the REST translation path that the menu path does not.
+ *   3. A CODE-SPLIT CHUNK STRING (C-7, DB-14) — a string the settings app's own JavaScript renders with
+ *      `__()`, translated CLIENT-side by `setLocaleData` (Page.js) from the per-chunk translation JSON
+ *      that PHP collects in `cmplz_get_chunk_translations()` and injects as
+ *      `window.cmplz_settings.json_translations`. Because the app code-splits into content-hashed
+ *      chunks, those JSON files are keyed by `md5("settings/build/<chunk>.js")` and must be regenerated
+ *      for the shipping build — the release i18n step (`bin/i18n.sh`); the e2e setup re-keys the de_DE
+ *      pack to the current build so this assertion tests the real free-edition chunk path, not the
+ *      shipped-7.5.5-hash pack. This path is independent of both PHP paths above.
  *
  * Selector contract (§8.1.1): role / accessible name / text / `data-testid` only. Section titles are
  * matched by their visible nav-link text; the field is located by its `data-testid="field-<id>"`
@@ -51,6 +59,14 @@ const FIELD = {
 	en: 'Who is the owner of the website?',
 	de: 'Wer ist der Eigentümer der Website?',
 };
+
+// A string the app's JS renders via __() and that lives in a CODE-SPLIT chunk (not the entry
+// bundle), so it proves the chunk-translation path specifically (C-7, DB-14). "Read more" is a
+// plain __('Read more','complianz-gdpr') in the dashboard blocks (ToolItem.js, OtherRegions.js),
+// rendered as links on the default dashboard, and its de_DE translation ("Mehr lesen") differs
+// from the English — so a pass is a real translation, not an accidental match. Its chunk JSON is
+// one of several complianz-gdpr-de_DE-<md5("settings/build/<chunk>.js")>.json the setup regenerates.
+const CHUNK = { en: 'Read more', de: 'Mehr lesen' };
 
 test.describe.configure( { mode: 'serial', timeout: 300_000 } );
 
@@ -90,5 +106,57 @@ test( 'a field label renders in German (REST /fields/get, _locale=user path)', a
 	await expect(
 		wrapper.getByText( FIELD.en, { exact: false } ),
 		`field ${ FIELD.testid } still shows the English label "${ FIELD.en }"`
+	).toHaveCount( 0 );
+} );
+
+test( 'a code-split chunk JSON carries the German translation (json_translations, C-7/DB-14)', async ( { page } ) => {
+	// PHP (cmplz_get_chunk_translations) scans settings/build, resolves each chunk's translation JSON
+	// from WP_LANG_DIR/plugins by md5 of its path, and injects the set as cmplz_settings.json_translations.
+	// Assert one of those entries carries the German CHUNK string. If the JSON were missing or keyed to a
+	// stale build hash (the whole C-7 risk), nothing here would translate it and the UI would fall back to
+	// English — so this is the direct "the generated .json chunk files carry the translated strings" check.
+	await gotoSettings( page );
+	await waitForAppMounted( page );
+	const found = await page.evaluate( ( en ) => {
+		const list = window.cmplz_settings && window.cmplz_settings.json_translations;
+		if ( ! Array.isArray( list ) ) {
+			return { error: 'cmplz_settings.json_translations is not an array' };
+		}
+		for ( const raw of list ) {
+			let data;
+			try {
+				data = JSON.parse( raw );
+			} catch ( e ) {
+				continue;
+			}
+			const ld = data.locale_data && ( data.locale_data[ 'complianz-gdpr' ] || data.locale_data.messages );
+			const entry = ld && ld[ en ];
+			if ( entry && entry[ 0 ] ) {
+				return { translation: entry[ 0 ], count: list.length };
+			}
+		}
+		return { translation: null, count: list.length };
+	}, CHUNK.en );
+	expect(
+		found.translation,
+		`no chunk-translation JSON carried a German string for "${ CHUNK.en }" (${ JSON.stringify( found ) }) — regenerate the chunk JSON for the current build (bin/i18n.sh / the e2e setup)`
+	).toBe( CHUNK.de );
+} );
+
+test( 'a JS-rendered code-split chunk string renders in German (setLocaleData path)', async ( { page } ) => {
+	// End-to-end: the dashboard "Read more" links are rendered by the app's JS (__()), translated
+	// client-side from the chunk JSON. Seeing "Mehr lesen" — and no English "Read more" link — proves the
+	// chunk path works all the way to the DOM, distinct from the wp_localize_script and REST paths above.
+	await gotoSettings( page );
+	await waitForAppMounted( page );
+	const app = page.locator( APP );
+
+	await expect(
+		app.getByRole( 'link', { name: CHUNK.de, exact: true } ).first(),
+		`the dashboard did not render its JS "${ CHUNK.en }" link in German ("${ CHUNK.de }") — chunk translations not applied (regenerate for the current build)`
+	).toBeVisible( { timeout: 30_000 } );
+	await expect(
+		app.getByRole( 'link', { name: CHUNK.en, exact: true } ),
+		`a JS "${ CHUNK.en }" link still renders in English — setLocaleData did not translate the code-split chunk string`
 	).toHaveCount( 0 );
 } );

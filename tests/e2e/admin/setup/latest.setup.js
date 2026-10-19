@@ -21,6 +21,13 @@ const { seed } = require( '../helpers/seed' );
 
 const WP_CLI = process.env.WP_CLI_CMD_LATEST || 'npx wp-env run cli wp';
 const AUTH_DIR = path.join( __dirname, '..', '..', '.auth' );
+// Repo root (tests/e2e/admin/setup -> ../../../..) and the i18n regeneration script.
+const REPO_ROOT = path.join( __dirname, '..', '..', '..', '..' );
+const I18N_SCRIPT = path.join( REPO_ROOT, 'bin', 'i18n.sh' );
+// `bin/i18n.sh` runs `<CMPLZ_WP_RUN> bash -c "…"` in the WP container; derive that from WP_CLI
+// (the setup's wp-cli invocation minus the trailing `wp`), so CI's WP_CLI_CMD_LATEST override
+// carries through to the regeneration too. Default: `npx wp-env run cli`.
+const CMPLZ_WP_RUN = WP_CLI.replace( /\s+wp$/, '' );
 
 // Test-only throwaway credentials for the disposable wp-env containers. NOT secrets: these
 // accounts exist only inside local/CI wp-env and are never shipped (ADR-011, public repo).
@@ -104,6 +111,26 @@ test.beforeAll( () => {
 	// installed plugin version; allowFail so an offline re-run on an already-populated DB still
 	// proceeds (and admin-i18n then asserts the German strings are really present).
 	wp( 'language plugin install complianz-gdpr de_DE', { allowFail: true } );
+	// The de_DE plugin pack above matches the SHIPPED 7.5.5 build's chunk hashes, not the
+	// freshly-built redesign chunks this suite runs against. Code-split JS strings resolve to
+	// complianz-gdpr-de_DE-<md5("settings/build/<chunk>.js")>.json in WP_LANG_DIR/plugins
+	// (cmplz_get_chunk_translations -> load_script_textdomain; free edition, $path=false), so a
+	// hash mismatch makes every JS/chunk string fall back to English. Re-key the de_DE pack to the
+	// current build with the release i18n step (C-7, DB-14) so the admin-i18n project's chunk-string
+	// assertions test the real free-edition path — and stay green when a later build (e.g. the
+	// ADR-001 marker move) changes the hashes. Non-fatal: if it fails, the chunk assertions surface
+	// it with a clear message; the English admin/admin-rtl projects are unaffected.
+	try {
+		execSync( `bash "${ I18N_SCRIPT }" json de_DE`, {
+			cwd: REPO_ROOT,
+			encoding: 'utf8',
+			stdio: [ 'ignore', 'pipe', 'pipe' ],
+			env: { ...process.env, CMPLZ_WP_RUN },
+		} );
+	} catch ( err ) {
+		// eslint-disable-next-line no-console
+		console.warn( `i18n chunk-JSON regeneration failed (de_DE chunk strings will fall back to English):\n${ err.stdout || '' }${ err.stderr || '' }` );
+	}
 	ensureUser( 'admin-rtl', 'admin-rtl@cmplz.test', RTL_PASS, 'he_IL' );
 	ensureUser( 'admin-de', 'admin-de@cmplz.test', DE_PASS, 'de_DE' );
 } );
