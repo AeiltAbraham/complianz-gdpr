@@ -5,7 +5,6 @@ import Icon from "../../utils/Icon";
 import { __ } from '@wordpress/i18n';
 import {upload} from "../../utils/upload";
 import {memo} from "@wordpress/element";
-import './Import.scss';
 import useMenu from "../../Menu/MenuData";
 
 function ImportControl() {
@@ -48,13 +47,18 @@ function ImportControl() {
 		});
 	}
 
+	// Stage H.5 (H3, Tools): the import form migrated off Import.scss onto tw- utilities + the Button
+	// primitive. The row flexes the file name and the two actions to the end (logical `ms-auto`, RTL-safe —
+	// the legacy `margin-left:auto`), gap on the 4px grid. The Import action moves off the wp-admin
+	// `.button.button-default` onto the shared tertiary Button (FR-020; the ResetBannerButton precedent for
+	// `button-default`). Zero new tokens; markerless, Button carries its own literal fallbacks.
 	return (
-		<div className="cmplz-import-form">
-			<div className="cmplz-import-button-container">
+		<div className="tw-flex">
+			<div className="tw-ms-auto tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs,_8px)]">
 			{file && file.name}
 			<Button
 				variant="secondary"
-				className="tw-gap-[8px]"
+				className="tw-gap-[var(--cmplz-space-xs,_8px)]"
 				onClick={ () => fileInputRef.current && fileInputRef.current.click() }
 			>
 				<Icon name="upload" color='black' />
@@ -71,10 +75,10 @@ function ImportControl() {
 				aria-label={__("Select file","complianz-gdpr")}
 				onChange={ ( event ) => setFile(event.currentTarget.files[0]) }
 			/>
-			<button disabled={disabled} className="button button-default"  onClick={(e) => onClickHandler(e)}>
+			<Button variant="tertiary" disabled={disabled} className="tw-gap-[var(--cmplz-space-xs,_8px)]" onClick={(e) => onClickHandler(e)}>
 				{__("Import","complianz-gdpr")}
 				{uploading && <Icon name = "loading" color = 'grey' />}
-			</button>
+			</Button>
 			</div>
 		</div>
 	)
