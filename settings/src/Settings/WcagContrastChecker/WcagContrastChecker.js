@@ -1,10 +1,31 @@
 import { memo, useState, useEffect, useCallback } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 import { checkContrast } from "./colorContrast.js";
-import "./WcagContrastChecker.scss";
 import Icon from "../../utils/Icon.js";
+import { clsx } from "../../components/ui/cx";
 
 import useFields from "../Fields/FieldsData.js";
+
+// The result pill follows the approved status-callout look (wizard-fields.md §4, Field.js
+// COMMENT_TINT): a faded status-surface tint behind BODY text (#0f172a, ≥15:1 on every tint —
+// AA-safe, replacing the legacy dark-green/amber/red literals). The pass/fail STATUS is carried by
+// the matching tint + the level label + the tooltip; the contrast icon and all pill text render in
+// the neutral #0f172a foreground. The icon is NOT colour-coded on purpose: the legacy per-status
+// icon colours (via a now-deleted `svg path{fill:currentColor}` rule) left the amber AA icon at
+// ~1.74:1 on warning-surface (WCAG 1.4.11 fail); a neutral icon reads AA on every tint and keeps the
+// status colour in the swatch (tint) + label. Zero new tokens. (maintainer sign-off 2026-10-20)
+const PILL_BASE = clsx(
+	"tw-inline-flex tw-items-center tw-gap-[var(--cmplz-space-2xs,_4px)]",
+	"tw-px-[var(--cmplz-space-s,_12px)] tw-py-[var(--cmplz-space-2xs,_4px)]",
+	"tw-rounded-[var(--cmplz-radius-s,_8px)]",
+	"tw-text-[length:var(--cmplz-font-size-sm,_0.8125rem)] tw-font-semibold",
+	"tw-text-[color:var(--cmplz-text,_#0f172a)]"
+);
+const PILL_TINT = {
+	AAA: "tw-bg-[var(--cmplz-success-surface,_#e9f6ec)]",
+	AA: "tw-bg-[var(--cmplz-warning-surface,_#fbf4da)]",
+	Fail: "tw-bg-[var(--cmplz-danger-surface,_#fdebed)]",
+};
 
 const debounce = (fn, delay = 100) => {
     let timer;
@@ -47,7 +68,7 @@ const WcagContrastChecker = (props) => {
         const bg =
             bgRaw && typeof bgRaw === "object" && cmp.background_key
             ? bgRaw[cmp.background_key]
-            : bg;
+            : bgRaw;
 
         return {
             name: `${cmp.foreground_label} vs ${cmp.background_label}`,
@@ -74,34 +95,23 @@ const WcagContrastChecker = (props) => {
 
     return (
         <div className="cmplz-contrast-checker" aria-live="polite">
-        <ul>
+        <ul className="tw-list-none tw-m-0 tw-p-0">
             {results.map((res, i) => (
-            <li key={i} className="cmplz-contrast-row">
-                <span
-                className={`cmplz-contrast-value ${
-                    res.level === "AAA"
-                    ? "cmplz-pass-aaa"
-                    : res.level === "AA"
-                    ? "cmplz-pass-aa"
-                    : "cmplz-fail"
-                }`}
-                >
+            <li
+                key={i}
+                className="cmplz-contrast-row tw-flex tw-justify-start tw-items-center tw-gap-[var(--cmplz-space-s,_12px)] tw-mb-[var(--cmplz-space-xs,_8px)]"
+            >
+                <span className={clsx("cmplz-contrast-value", PILL_BASE, PILL_TINT[res.level] || PILL_TINT.Fail)}>
                 <Icon
                     name="contrast"
                     size={16}
-                    color={
-                    res.level === "AAA"
-                        ? "green"
-                        : res.level === "AA"
-                        ? "orange"
-                        : "red"
-                    }
+                    color="black"
                     tooltip={tooltipText[res.level]}
                 />
-                <strong>{res.ratio ? res.ratio.toFixed(2) : "—"}</strong>
-                <span>{res.level}</span>
+                <strong className="tw-font-bold">{res.ratio ? res.ratio.toFixed(2) : "—"}</strong>
+                <span className="tw-text-[length:var(--cmplz-font-size-xs,_0.6875rem)] tw-uppercase">{res.level}</span>
                 </span>
-                <p>- {res.name}</p>
+                <p className="tw-m-0">- {res.name}</p>
             </li>
             ))}
         </ul>

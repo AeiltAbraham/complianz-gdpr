@@ -1,6 +1,5 @@
 import {memo, useEffect, useState} from "@wordpress/element";;
 import useFields from "../Fields/FieldsData";
-import './PlaceholderPreview.scss'
 import {__} from "@wordpress/i18n";
 
 const PlaceholderPreview = () => {
@@ -18,8 +17,8 @@ const PlaceholderPreview = () => {
 	const url = cmplz_settings.plugin_url + 'assets/images/placeholders/default-' + placeholderStyle + '.jpg';
 	return (
 		<>
-			<div className="cmplz-placeholder-preview">
-				<img alt="placeholder preview" src={url} />
+			<div className="cmplz-placeholder-preview tw-flex">
+				<img className="tw-w-[400px] tw-m-auto" alt="placeholder preview" src={url} />
 			</div>
 			{safeModeEnabled && <div className="cmplz-comment">
 				{__("Safe Mode enabled. To manage integrations, disable Safe Mode under Tools - Support.","complianz-gdpr")}
