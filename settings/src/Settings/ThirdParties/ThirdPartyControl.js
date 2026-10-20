@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import useFields from "../../Settings/Fields/FieldsData";
 import {memo} from "@wordpress/element";
 import ThirdPartyElement from "./ThirdPartyElement";
+import { Button } from "../../components/ui/Button";
 
 const ThirdPartyControl = (props) => {
 	const {updateField, setChangedField} = useFields();
@@ -29,8 +30,8 @@ const ThirdPartyControl = (props) => {
 
 	return (
 		<div className="components-base-control cmplz-thirdparty">
-			<div>
-				<button onClick={ () => onAddNewHandler() } className="button button-default">{__("Add new Third Party", "complianz-gdpr")}</button>
+			<div data-cmplz-ui>
+				<Button variant="secondary" onClick={ () => onAddNewHandler() }>{__("Add new Third Party", "complianz-gdpr")}</Button>
 			</div>
 			<div className="cmplz-panel__list">
 				{thirdParties.map((thirdParty, i) =>

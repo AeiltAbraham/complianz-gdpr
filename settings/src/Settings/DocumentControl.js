@@ -1,4 +1,5 @@
 import { Combobox } from "../components/ui/Combobox";
+import { TextField } from "../components/ui/TextField";
 import { __ } from '@wordpress/i18n';
 import * as cmplz_api from "../utils/api";
 import {useState, useEffect, useRef, memo} from "@wordpress/element";
@@ -6,6 +7,12 @@ import {useUpdateEffect} from 'react-use';
 import Icon from "../utils/Icon";
 import useFields from "./Fields/FieldsData";
 import RadioGroup from './Inputs/RadioGroup';
+
+// Inline "Loading…" row. Migrated off assets/css/admin/modules/documents.scss `.cmplz-documents-loader`
+// (`display:flex; padding:0 <spacing-xs>`) to `tw-` utilities on the semantic tokens with literal
+// fallbacks (markerless chrome, Stage H.5). `items-center` + the xs gap line the spinner up with the
+// label; the file is deleted and its only other consumer (Processors/ProcessorElement) migrated too.
+const LOADER_CLS = 'tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs,_8px)] tw-px-[var(--cmplz-space-xs,_8px)]';
 
 const DocumentControl = ({id, value, options, defaultValue, disabled}) => {
     const [pageId, setPageId] = useState(false);
@@ -112,7 +119,7 @@ const DocumentControl = ({id, value, options, defaultValue, disabled}) => {
 
 			<RadioGroup id={id} options={formattedOptions} value={value} onChange={onChangeHandler} disabled={disabled} />
 			{ value==='custom' && !pagesListLoaded &&
-				<div className="cmplz-documents-loader">
+				<div className={LOADER_CLS}>
 					<div><Icon name = "loading" color = 'grey' /></div><div>{__("Loading...", "complianz-gdpr")}</div>
 				</div>
 			}
@@ -131,12 +138,14 @@ const DocumentControl = ({id, value, options, defaultValue, disabled}) => {
 				</>
 			}
 			{ value==='url' && !pageUrlLoaded &&
-				<div className="cmplz-documents-loader">
+				<div className={LOADER_CLS}>
 					<div><Icon name = "loading" color = 'grey' /></div><div>{__("Loading...", "complianz-gdpr")}</div>
 				</div>
 			}
 			{ value==='url' && pageUrlLoaded &&
-				<><input type="text" value={pageUrl} onChange={onChangeUrlHandler} placeholder="https://domain.com/your-policy"/></>
+				<div data-cmplz-ui>
+					<TextField type="text" value={pageUrl} onChange={onChangeUrlHandler} placeholder="https://domain.com/your-policy" />
+				</div>
 			}
 		</>
 	);
