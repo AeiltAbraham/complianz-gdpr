@@ -27,9 +27,20 @@
 
 @import 'variables.scss';
 @import 'admin/base.scss';
-  @import 'admin/modules/modal.scss';
+  // modules/modal.scss removed (ADR-005, Stage H.5): relocated VERBATIM to legacy-globals.scss. The
+  // legacy Modal/Modal.js is dead, but the live NewOnboarding/websitescan modal (NewOnboarding.js)
+  // renders .cmplz-modal{-backdrop,-header,-header-branding,-content,-footer,-close} and relies on this
+  // base chrome (NewOnboarding.scss only overrides it).
+  // modules/bullets.scss KEPT (ADR-005, Stage H.5): it has NO live free-edition consumer (nothing renders
+  // the `.cmplz-bullet` class — Icon.js emits `cmplz-icon-bullet`, not `cmplz-bullet`), BUT the design note
+  // design/dashboard.md:28 documents that `.cmplz-bullet` may back PREMIUM dashboard blocks via the
+  // `cmplz_blocks` filter (and other-plugins.scss nests `.cmplz-bullet` for exactly that). Per that note +
+  // the T-046 `.no-background` landmine, deletion is deferred until premium can be verified (this is the
+  // free fork; the premium repo is not visible here). Left untouched.
   @import 'admin/modules/bullets.scss';
-  @import 'admin/modules/icons.scss';
+  // modules/icons.scss removed (ADR-005, Stage H.5): relocated VERBATIM to legacy-globals.scss — the
+  // shared legacy Icon component (settings/src/utils/Icon.js) renders cmplz-icon / cmplz-icon-<name>
+  // (incl. the cmplz-icon-loading spinner driven by @keyframes spin) across the still-legacy bodies.
 
   // modules/onboarding.scss removed (ADR-005, T-058): it was 100% orphaned — scoped entirely under
   // `.cmplz-modal.cmplz-onboarding`, which nothing renders (the live modal is `.cmplz-websitescan`).
@@ -65,10 +76,14 @@
   // render their own). (The `.cmplz-cookiebanner-preview-controls` block was also relocated here at T-046 and is
   // now DELETED at T-050, its consumer CookieBannerControls.js having migrated to tw-.)
   // The last-consumed footer-container/scroll-progress/buttons/upsell-bar/confetti rules were deleted.
-  @import 'admin/modules/errorboundary.scss';
+  // modules/errorboundary.scss removed (ADR-005, Stage H.5): relocated VERBATIM to legacy-globals.scss —
+  // its one rule (.cmplz-error-boundary) styles the still-legacy settings/src/utils/ErrorBoundary.js fallback.
     // modules/wizard/notice.scss removed (ADR-005, T-046): the help sidebar + help-notice accordion migrated
     // to tw- utilities (Settings.js help sidebar + Help.js); it had no other consumer, so the file was deleted.
-    @import 'admin/modules/wizard/borderradius.scss';
+    // modules/wizard/borderradius.scss removed (ADR-005, Stage H.5): DELETE-only (no relocation). Its
+    // selectors (.cmplz-borderradius*/.cmplz-borderwidth*/.cmplz-inactive) are rendered ONLY by the orphaned
+    // Settings/BorderRadiusControl.js + BorderWidthControl.js, which nothing imports — the 'borderradius'/
+    // 'borderwidth' field types map to the migrated Settings/Inputs/BorderInput (T-030) via Field.js.
     // modules/wizard/fields.scss removed (ADR-005, T-045): the wizard field-ROW chrome migrated to tw-
     // utilities on the semantic tokens (Settings/Fields/Field.js + LabelWrapper.js + Premium.js); its
     // still-consumed global rules (card body, block-intro, create-document, WP-component tweaks, export/
@@ -79,9 +94,17 @@
     // Documents bundle's bodies. ADR-005: a shared module with surviving out-of-bundle consumers is not
     // ours to delete; it stays for those bodies' own migration / the H5 consolidation.
     @import 'admin/modules/wizard/documents.scss';
-    @import 'admin/modules/wizard/snackbar.scss';
-    @import 'admin/modules/wizard/panel.scss';
-    @import 'admin/modules/wizard/suggested-plugins.scss';
+    // modules/wizard/snackbar.scss removed (ADR-005, Stage H.5): DELETE-only (no relocation). Its
+    // .components-snackbar* / .edit-site-notices selectors are @wordpress/components Snackbar classes;
+    // @wordpress/components was dropped (T-026) and nothing renders a SnackbarList/NoticeList, so the
+    // classes are never produced (TaskElement.js only pushes to the core/notices store, which renders no DOM).
+    // modules/wizard/panel.scss removed (ADR-005, Stage H.5): relocated VERBATIM to legacy-globals.scss
+    // (minus the dead .cmplz-radio-buttons__list block). The shared legacy Panel accordion (Panel.js) + its
+    // ~9 call sites and the .cmplz-details-row rows (Cookiedatabase/Processors/ThirdParties/Integrations)
+    // are still legacy consumers.
+    // modules/wizard/suggested-plugins.scss removed (ADR-005, Stage H.5): relocated VERBATIM to
+    // legacy-globals.scss — InstallPlugin.js + Dashboard/OtherPlugins.js render .cmplz-suggested-plugin* and
+    // button.cmplz-install-plugin; Alert.js renders .cmplz-wscscan-alert.
     // modules/wizard/premium-fields.scss removed (ADR-005, T-045): the `.cmplz-premium` upsell label
     // migrated to tw- utilities in Settings/Premium.js (the accent-subtle pill). No surviving consumer.
     // modules/wizard/documents-menu.scss removed (ADR-005, Stage H.5 Bundle H1): its only rule
@@ -119,6 +142,10 @@
   // consumer being this data-tables section. modules/integrations/integrations.scss also removed (T-054): its
   // table-chrome rules (.cmplz-table-header/.cmplz-settings-overlay/.cmplz-integrations-placeholder) have
   // surviving out-of-section consumers and relocated to legacy-globals.scss.
+  // modules/new-features.scss KEPT (ADR-005, Stage H.5): it has NO live free-edition consumer (nothing
+  // renders `.cmplz-new-feature*`; blocks.php defines no new-features block), BUT design/dashboard.md:28
+  // documents it — alongside bullets.scss and parts of other-plugins.scss — as a style that may back a
+  // PREMIUM dashboard block via the `cmplz_blocks` filter. Deletion deferred until premium is verified.
   @import 'admin/modules/new-features.scss';
   // modules/documents.scss removed (ADR-005, Stage H.5): its only rule (`.cmplz-documents-loader`)
   // migrated to tw- utilities in Settings/DocumentControl.js + Processors/ProcessorElement.js (its two
@@ -134,8 +161,11 @@
   //@import 'admin/modules/dark-mode.scss';
 
 
-  @import 'admin/modules/animations.scss';
-  @import 'admin/modules/tooltip.scss';
+  // modules/animations.scss removed (ADR-005, Stage H.5): the file was empty (0 rules).
+  // modules/tooltip.scss removed (ADR-005, Stage H.5): DELETE-only. Its sole rule targeted
+  // `.cmplz-tooltip-icon .react-tooltip`, but the react-tooltip library was replaced by the Radix
+  // Tooltip (T-024), which emits [data-radix-*]/data-state attributes — never a .react-tooltip class —
+  // so the descendant .react-tooltip never exists in the DOM and the rule never matched.
 
   //@import 'admin/modules/suggested-plugins.scss';
 
