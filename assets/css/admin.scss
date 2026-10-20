@@ -80,7 +80,9 @@
     // modules/wizard/premium-fields.scss removed (ADR-005, T-045): the `.cmplz-premium` upsell label
     // migrated to tw- utilities in Settings/Premium.js (the accent-subtle pill). No surviving consumer.
     @import 'admin/modules/wizard/documents-menu.scss';
-    @import 'admin/modules/wizard/editor.scss';
+    // modules/wizard/editor.scss removed (ADR-005, Stage H.5 Bundle H2): its only rule
+    // `.cmplz-block-editor { min-height:300px }` was dead (no JS/PHP consumer; CKEditor does not render the
+    // class). The Editor body migrated to tw-/tokens (Editor.js) with the CKEditor in a data-cmplz-isolate zone.
     @import 'admin/modules/wizard/processors-thirdparties.scss';
 	// modules/toast/ removed (ADR-005, T-058): it was react-toastify's own SCSS vendored verbatim; the
 	// styling moved to the auto-scoped ADR-009 vendor file settings/src/styles/vendors/toast.src.css ->
@@ -94,7 +96,11 @@
 	// (CookieBannerControls/ResetBannerButton/BannerLogoControl + the banner save-clearance in Page.js), and
 	// the stale `.cmplz-cookiebanner-preview-controls` sub-block was dead (its selectors no longer matched the DOM).
 
-  @import 'admin/modules/cookiescan.scss';
+  // modules/cookiescan.scss removed (ADR-005, Stage H.5 Bundle H2): the CookieScan body migrated to tw-/tokens
+  // (CookieScanControl.js — ui/Button Scan/Clear, a decoupled tw- accent progress bar). Its shared rules
+  // (`#cmplz-scan-progress`/`#cmplz-sync-progress` + progress bars, `button.button.cmplz-reset-button`,
+  // `.cmplz-cookiedatabase-controls`) RELOCATED to legacy-globals.scss for their surviving consumers
+  // (CookieDatabaseSyncControl + the ~11 reset-button controls); the dead `.cmplz-cookie-scan` block was deleted.
   // modules/notices.scss removed (ADR-005, T-042): the file was empty (only a `/** Admin notice */`
   // comment, no rules). In-app notices are react-toastify toasts (the shell ToastContainer in Page.js,
   // a third-party widget) and the `.cmplz-wscscan-alert` screen callout (wizard/suggested-plugins.scss,

@@ -672,3 +672,56 @@ a.button, button.button, input.button {
 	right: 0;
   }
 }
+
+// Relocated from the (now deleted) assets/css/admin/modules/cookiescan.scss (ADR-005, Stage H.5 Bundle H2).
+// The CookieScan body migrated to tw-/tokens, but these rules have SURVIVING consumers OUTSIDE this bundle,
+// so they relocate here (the T-054 pattern) rather than being deleted — preserving the original `#complianz`
+// wrapper so their specificity is unchanged (look-preserving relocation, not a restyle):
+//  - `#cmplz-scan-progress`/`#cmplz-sync-progress` + `.cmplz-progress-bar`/`.cmplz-sync-progress-bar`: the
+//    still-legacy CookieDatabaseSyncControl renders `#cmplz-scan-progress .cmplz-progress-bar` (+ the premium
+//    sync bar). The migrated CookieScan DECOUPLED from this rule (its own tw- accent bar), and the migrated
+//    Dashboard ProgressBlock never matched it (its `.cmplz-progress-bar` is not under `#cmplz-scan-progress`),
+//    so both keep their look with no re-baseline.
+//  - `button.button.cmplz-reset-button`: the shared destructive-button restyle, used by ~11 controls
+//    (DataRequests, RecordsOfConsent, ThirdParties, ProofOfConsent, Processors, ProcessingAgreements,
+//    DataBreachReports, Cookiedatabase, …). It matches only `button.button` (NOT the migrated ui/Button,
+//    which carries no `.button` class — FR-020).
+//  - `.cmplz-cookiedatabase-controls`: CookieDatabaseSyncControl's sync-control chrome (not this bundle).
+// The dead `.cmplz-cookie-scan` block (only a commented Tour.js reference; the field class is the underscore
+// `.cmplz-cookie_scan`) was NOT relocated — deleted as dead.
+#complianz {
+	#cmplz-scan-progress, #cmplz-sync-progress {
+		background-color: #F1F1F1;
+		border-radius: 5px;
+
+		.cmplz-progress-bar, .cmplz-sync-progress-bar {
+			height: 20px;
+			background-color: var(--cmplz-legacy-wp-blue);
+			transition: width 0.5s;
+			-webkit-transition: width 0.5s;
+			font-weight: bold;
+			border-radius: 5px;
+		}
+	}
+
+	button.button {
+		&.cmplz-reset-button {
+			background-color: var(--cmplz-legacy-color-error);
+			border-color: var(--cmplz-legacy-color-error);
+			color: white;
+		}
+	}
+
+	.cmplz-cookiedatabase-controls {
+		display: flex;
+		gap: 10px;
+		margin-bottom: 10px;
+		.cmplz-checkbox-group {
+		  margin-top:4px;
+		}
+
+		details summary {
+			grid-template-columns: 1fr auto auto;
+		}
+	}
+}

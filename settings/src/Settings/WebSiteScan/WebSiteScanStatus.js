@@ -2,7 +2,18 @@ import UseWebSiteScanData from './UseWebSiteScanData';
 import { useEffect, useState, memo } from '@wordpress/element';
 import Icon from '../../utils/Icon';
 import { __ } from '@wordpress/i18n';
-import './WebSiteScanStatus.scss';
+
+// Migrated to the C-2 system (Stage H.5, Bundle H2). `websitescan_status` is a premium-only field type (no
+// free-edition field config uses it), so these screens are not reachable in the free wp-env e2e — the markup
+// follows the same markerless token-with-literal-fallback discipline as the other migrated bodies.
+// The status rows are a simple icon + label flex; the pending/homepage notices use the C-2 warning callout
+// (--cmplz-warning-surface tint, the Field COMMENT_CALLOUT pattern), with links at --cmplz-accent-on-subtle
+// for AA on the tint (the T-045 on-tint-interactive-text lesson). `tw-border-solid` is explicit (markerless,
+// B1 not in scope — T-052).
+const WSC_ALERT_CLS =
+	'tw-w-full tw-mt-[var(--cmplz-space-m,_16px)] tw-rounded-[var(--cmplz-radius,_12px)] tw-border tw-border-solid tw-border-[color:var(--cmplz-warning,_#eab308)] tw-bg-[var(--cmplz-warning-surface,_#fbf4da)] tw-py-[var(--cmplz-space-s,_12px)] tw-px-[var(--cmplz-space-m,_16px)]';
+const WSC_ALERT_LINK_CLS =
+	'tw-text-[color:var(--cmplz-accent-on-subtle,_#17608f)] tw-underline';
 
 const statuses = {
 	enabled: {
@@ -76,9 +87,9 @@ const WebSiteScanStatus = () => {
 	};
 
 	return (
-		<div className="cmplz-wsc-status-container">
+		<div className="cmplz-wsc-status-container tw-flex tw-flex-col tw-gap-[var(--cmplz-space-s,_12px)]">
 			{ tokenStatus && (
-				<div className="cmplz-wsc-status-row">
+				<div className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-s,_12px)]">
 					<Icon
 						name={ 'circle-check' }
 						color={ tokenStatuses[ tokenStatus ]?.color }
@@ -86,13 +97,15 @@ const WebSiteScanStatus = () => {
 					/>
 					<span>
 						{ __( 'Token Status:', 'complianz-gdpr' ) }
-						<strong>{ tokenStatuses[ tokenStatus ]?.label }</strong>
+						<strong className="tw-ms-[var(--cmplz-space-2xs,_4px)]">
+							{ tokenStatuses[ tokenStatus ]?.label }
+						</strong>
 					</span>
 				</div>
 			) }
 
 			{ wscStatus && (
-				<div className="cmplz-wsc-status-row">
+				<div className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-s,_12px)]">
 					<Icon
 						name={ 'circle-check' }
 						color={ statuses[ wscStatus ]?.color }
@@ -100,30 +113,31 @@ const WebSiteScanStatus = () => {
 					/>
 					<span>
 						{ __( 'Website Scan:', 'complianz-gdpr' ) }
-						<strong>{ statuses[ wscStatus ]?.label }</strong>
+						<strong className="tw-ms-[var(--cmplz-space-2xs,_4px)]">
+							{ statuses[ wscStatus ]?.label }
+						</strong>
 					</span>
 				</div>
 			) }
 			{ wscStatus && wscStatus === 'enabled' && ! isPremium && (
-				<div className="cmplz-wsc-status-row">
-					<div className="cmplz-wsc-alert cmplz-wsc-alert-warning">
-						<span className="cmplz-wsc-alert-title">
-							{ __(
-								'Website Scan only scans your homepage.',
-								'complianz-gdpr'
-							) }
-						</span>{ ' ' }
-						<a
-							href={ cmplz_settings.upgrade_link }
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							{ __(
-								'Upgrade to scan all pages individually.',
-								'complianz-gdpr'
-							) }
-						</a>
-					</div>
+				<div className={ WSC_ALERT_CLS }>
+					<span className="tw-font-bold">
+						{ __(
+							'Website Scan only scans your homepage.',
+							'complianz-gdpr'
+						) }
+					</span>{ ' ' }
+					<a
+						href={ cmplz_settings.upgrade_link }
+						target="_blank"
+						rel="noopener noreferrer"
+						className={ WSC_ALERT_LINK_CLS }
+					>
+						{ __(
+							'Upgrade to scan all pages individually.',
+							'complianz-gdpr'
+						) }
+					</a>
 				</div>
 			) }
 
@@ -132,7 +146,7 @@ const WebSiteScanStatus = () => {
 				isPremium &&
 				batchStats &&
 				batchStats.enabled && (
-					<div className="cmplz-wsc-status-row">
+					<div className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-s,_12px)]">
 						<Icon
 							name={ 'circle-check' }
 							color={ 'green' }
@@ -143,7 +157,9 @@ const WebSiteScanStatus = () => {
 								'Website Scan — Background scanning:',
 								'complianz-gdpr'
 							) }
-							<strong>{ batchStats.done }</strong>
+							<strong className="tw-ms-[var(--cmplz-space-2xs,_4px)]">
+								{ batchStats.done }
+							</strong>
 							{ __( 'scanned', 'complianz-gdpr' ) }
 							{ batchStats.inflight > 0 && (
 								<>
@@ -168,55 +184,54 @@ const WebSiteScanStatus = () => {
 				isPremium &&
 				batchStats &&
 				! batchStats.enabled && (
-					<div className="cmplz-wsc-status-row">
+					<div className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-s,_12px)]">
 						<Icon name={ 'info' } color={ 'orange' } size={ 16 } />
 						<span>
 							{ __(
 								'Website Scan — Background scanning:',
 								'complianz-gdpr'
 							) }
-							<strong>
+							<strong className="tw-ms-[var(--cmplz-space-2xs,_4px)]">
 								{ __( 'Disabled', 'complianz-gdpr' ) }
 							</strong>
 						</span>
 					</div>
 				) }
 
-			{ wscStatus && wscStatus === 'pending' && (
-				<div className="cmplz-wsc-status-row">
-					{ canRequestAgain ? (
-						<div className="cmplz-wsc-alert cmplz-wsc-alert-warning">
-							<span className="cmplz-wsc-alert-title">
-								{ __(
-									"Didn't receive the activation email?",
-									'complianz-gdpr'
-								) }
-							</span>
-							<a
-								href="#"
-								onClick={ handleRequestActivationEmail }
-							>
-								{ __( 'Request again!', 'complianz-gdpr' ) }
-							</a>
-						</div>
-					) : (
-						<div className="cmplz-wsc-alert cmplz-wsc-alert-warning">
-							<p className="cmplz-wsc-alert-title">
-								{ __(
-									'Check your email to activate the Website Scan!',
-									'complianz-gdpr'
-								) }
-							</p>
-							<p>
-								{ __(
-									"Didn't receive the activation email? Please wait 1 hour before requesting again.",
-									'complianz-gdpr'
-								) }
-							</p>
-						</div>
-					) }
-				</div>
-			) }
+			{ wscStatus &&
+				wscStatus === 'pending' &&
+				( canRequestAgain ? (
+					<div className={ WSC_ALERT_CLS }>
+						<span className="tw-font-bold">
+							{ __(
+								"Didn't receive the activation email?",
+								'complianz-gdpr'
+							) }
+						</span>{ ' ' }
+						<a
+							href="#"
+							onClick={ handleRequestActivationEmail }
+							className={ WSC_ALERT_LINK_CLS }
+						>
+							{ __( 'Request again!', 'complianz-gdpr' ) }
+						</a>
+					</div>
+				) : (
+					<div className={ WSC_ALERT_CLS }>
+						<p className="tw-m-0 tw-font-bold">
+							{ __(
+								'Check your email to activate the Website Scan!',
+								'complianz-gdpr'
+							) }
+						</p>
+						<p className="tw-mt-[var(--cmplz-space-2xs,_4px)] tw-mb-0">
+							{ __(
+								"Didn't receive the activation email? Please wait 1 hour before requesting again.",
+								'complianz-gdpr'
+							) }
+						</p>
+					</div>
+				) ) }
 		</div>
 	);
 };

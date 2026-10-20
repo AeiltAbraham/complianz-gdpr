@@ -1,7 +1,16 @@
-import { memo, useCallback, useEffect } from "@wordpress/element";
-import UseWebSiteScanData from "./UseWebSiteScanData";
+import { memo, useCallback, useEffect } from '@wordpress/element';
+import UseWebSiteScanData from './UseWebSiteScanData';
 import { __ } from '@wordpress/i18n';
-import "./WebSiteScanActions.scss";
+import { Button } from '../../components/ui/Button';
+
+// Migrated to the C-2 system (Stage H.5, Bundle H2). `websitescan_actions` is a premium-only field type (no
+// free-edition field config uses it), so this screen is not reachable in the free wp-env e2e. The action bar
+// is the C-2 card-footer pattern: a `--cmplz-surface-sunken` strip with a top `--cmplz-border`, full-bleed to
+// the field-wrap edges as a CONSTANT `-space-l` (NOT the legacy stepped -25px — the field-wrap padding is a
+// constant token, the T-054 lesson). `data-cmplz-ui` marks the footer so the Buttons get the base reset
+// (B1 border-style; the `error` variant's `--cmplz-danger`); `tw-border-t-solid` is explicit since B1 does not
+// style the marked element itself. Buttons map: enable=primary / disable=secondary, activate=primary /
+// reset=error (the legacy button-danger), as the legacy classes dictated.
 
 const WebSiteScanActions = () => {
 	const {
@@ -12,18 +21,20 @@ const WebSiteScanActions = () => {
 		startOnboarding,
 		resetWsc,
 		enableWsc,
-		disableWsc
+		disableWsc,
 	} = UseWebSiteScanData();
 
 	// get the status before the render
-	useEffect(() => {
+	useEffect( () => {
 		getStatus();
-	}, []);
+	}, [] );
 
-	const handleActivationReset = useCallback(() => {
-		if (!tokenStatus) return;
+	const handleActivationReset = useCallback( () => {
+		if ( ! tokenStatus ) {
+			return;
+		}
 
-		switch (tokenStatus) {
+		switch ( tokenStatus ) {
 			case 'enabled':
 				resetWsc();
 				break;
@@ -36,12 +47,14 @@ const WebSiteScanActions = () => {
 			default:
 				break;
 		}
-	}, [tokenStatus]);
+	}, [ tokenStatus ] );
 
-	const handleEnableDisable = useCallback(() => {
-		if (!wscStatus) return;
+	const handleEnableDisable = useCallback( () => {
+		if ( ! wscStatus ) {
+			return;
+		}
 
-		switch (wscStatus) {
+		switch ( wscStatus ) {
 			case 'enabled':
 				disableWsc();
 				break;
@@ -51,29 +64,46 @@ const WebSiteScanActions = () => {
 			default:
 				break;
 		}
-	}, [wscStatus]);
-
+	}, [ wscStatus ] );
 
 	// handle the first button - Enable/Disable Website Scan
-	let enableDisableButtonText = wscStatus === 'enabled' ? __("Disable Website Scan", "complianz-gdpr") : __("Enable Website Scan", "complianz-gdpr");
-	let enableDisableButtonClass = wscStatus === 'enabled' ? 'button-secondary' : 'button-primary';
+	const enableDisableButtonText =
+		wscStatus === 'enabled'
+			? __( 'Disable Website Scan', 'complianz-gdpr' )
+			: __( 'Enable Website Scan', 'complianz-gdpr' );
+	const enableDisableButtonVariant =
+		wscStatus === 'enabled' ? 'secondary' : 'primary';
 	// handle the second button - Activate (send Token) / Reset
-	let activateResetButtonText = tokenStatus === 'enabled' ? __("Reset Website Scan", "complianz-gdpr") : __("Activate Website Scan", "complianz-gdpr");
-	let activateResetButtonClass = tokenStatus === 'enabled' ? 'button-danger' : 'button-primary';
-	let activateResetButtonStatus = tokenStatus === 'pending';
+	const activateResetButtonText =
+		tokenStatus === 'enabled'
+			? __( 'Reset Website Scan', 'complianz-gdpr' )
+			: __( 'Activate Website Scan', 'complianz-gdpr' );
+	const activateResetButtonVariant =
+		tokenStatus === 'enabled' ? 'error' : 'primary';
+	const activateResetButtonStatus = tokenStatus === 'pending';
 
 	return (
-		<div className="cmplz-wsc_actions-container">
-			<div className="cmplz-wsc_actions-row">
-				<div className="cmplz-wsc_actions-buttons">
-					{tokenStatus !== 'disabled' && wscStatus !== 'pending' &&
-						<button className={`button ${enableDisableButtonClass}`} onClick={handleEnableDisable}>{enableDisableButtonText}</button>
-					}
-					<button disabled={activateResetButtonStatus} className={`button ${activateResetButtonClass}`} onClick={handleActivationReset}>{activateResetButtonText}</button>
-				</div>
-			</div>
+		<div
+			data-cmplz-ui
+			className="cmplz-wsc_actions-container tw-flex tw-justify-end tw-items-center tw-gap-[var(--cmplz-space-s,_12px)] tw-mx-[calc(var(--cmplz-space-l,_24px)*-1)] tw-mb-[calc(var(--cmplz-space-l,_24px)*-1)] tw-mt-[var(--cmplz-space-m,_16px)] tw-py-[var(--cmplz-space-s,_12px)] tw-px-[var(--cmplz-space-l,_24px)] tw-border-t tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)] tw-bg-[var(--cmplz-surface-sunken,_#f1f5f9)]"
+		>
+			{ tokenStatus !== 'disabled' && wscStatus !== 'pending' && (
+				<Button
+					variant={ enableDisableButtonVariant }
+					onClick={ handleEnableDisable }
+				>
+					{ enableDisableButtonText }
+				</Button>
+			) }
+			<Button
+				variant={ activateResetButtonVariant }
+				disabled={ activateResetButtonStatus }
+				onClick={ handleActivationReset }
+			>
+				{ activateResetButtonText }
+			</Button>
 		</div>
-	)
-}
+	);
+};
 
-export default memo(WebSiteScanActions)
+export default memo( WebSiteScanActions );

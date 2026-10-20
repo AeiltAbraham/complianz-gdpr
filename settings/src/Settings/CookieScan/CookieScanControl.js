@@ -10,6 +10,7 @@ import useProgress from '../../Dashboard/Progress/ProgressData';
 import Icon from '../../utils/Icon';
 import Alert from '../../utils/Alert';
 import { startWscOnboarding, getScanUpsellAlertProps } from '../../utils/wsc';
+import { Button } from '../../components/ui/Button';
 
 const CookieScanControl = () => {
 	const {
@@ -217,24 +218,39 @@ const CookieScanControl = () => {
 			) }
 			{ ! wscLocked && upsellProps && <Alert { ...upsellProps } /> }
 
-			<div className="cmplz-table-header">
-				<button
+			{ /* `data-cmplz-ui` marks this pure-primitive button row so the Buttons get the base reset
+			     (B1 border-style; the `error` variant's `--cmplz-danger`); `.cmplz-table-header` is the
+			     shared, relocated `display:flex` hook (legacy-globals). */ }
+			<div
+				data-cmplz-ui
+				className="cmplz-table-header tw-gap-[var(--cmplz-space-xs,_8px)]"
+			>
+				<Button
+					variant="primary"
 					disabled={ scanDisabled }
-					className="button button-default"
 					onClick={ ( e ) => Start( e ) }
 				>
 					{ __( 'Scan', 'complianz-gdpr' ) }
-				</button>
-				<button
+				</Button>
+				<Button
+					variant="error"
 					disabled={ scanDisabled }
-					className="button button-default cmplz-reset-button"
 					onClick={ ( e ) => clearCookies( e ) }
 				>
 					{ __( 'Clear Cookies', 'complianz-gdpr' ) }
-				</button>
+				</Button>
 			</div>
-			<div id="cmplz-scan-progress">
-				<div className="cmplz-progress-bar" style={ getStyles() }></div>
+			{ /* Scan progress bar (maintainer sign-off C, 2026-10-20): re-themed to `--cmplz-accent`. Fully
+			     migrated to tw- (surface-sunken track + accent fill, matching the Dashboard ProgressBlock
+			     treatment) and DECOUPLED from the shared `#cmplz-scan-progress .cmplz-progress-bar` legacy rule
+			     (relocated unchanged, now serving only the still-legacy CookieDatabaseSync sync bar) — so the
+			     Dashboard stays blue with no re-baseline. The `.cmplz-progress-bar` class is KEPT only so the
+			     visual.spec mask still hides the timing-driven width. */ }
+			<div className="tw-mt-[var(--cmplz-space-s,_12px)] tw-overflow-hidden tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-surface-sunken,_#f1f5f9)]">
+				<div
+					className="cmplz-progress-bar tw-h-[20px] tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-accent,_#009fff)] tw-transition-[width] tw-duration-500"
+					style={ getStyles() }
+				></div>
 			</div>
 			{ ! wscLocked && (
 				<div className="cmplz-panel__list">
