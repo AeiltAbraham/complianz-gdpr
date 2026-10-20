@@ -725,3 +725,330 @@ a.button, button.button, input.button {
 		}
 	}
 }
+
+
+// =====================================================================================
+// Relocated in Stage H.5 (shared-SCSS consolidation). These shared modules still have
+// LIVE consumers (grepped across settings/src JS, settings/config PHP, tests/e2e and
+// dynamic className suffixes), so per ADR-005 their rules move here VERBATIM (specificity
+// preserved) rather than being deleted; their files + admin.scss @imports are removed.
+// Delete in Phase 5 / Bundle D with the rest of this file.
+// =====================================================================================
+
+// --- from modules/modal.scss (consumer: the live NewOnboarding / websitescan modal —
+//     NewOnboarding.js renders .cmplz-modal{-backdrop,-header,-header-branding,-content,
+//     -footer,-close}; NewOnboarding.scss only overrides, the base chrome lives here.
+//     The nested .modal-title/.cmplz-modal-subtitle/.cmplz-modal-description are only
+//     rendered by the dead Modal/Modal.js — kept verbatim here, deletion deferred to Bundle D.)
+.cmplz-modal-backdrop {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-color: grey;
+	opacity: 0.45;
+	width: 100%;
+	height: 100%;
+	z-index: 15;
+}
+
+.cmplz-modal {
+	max-width: 526px;
+	min-width:526px;
+	position: fixed;
+	z-index: 20;
+	border-radius: 12px;
+	background-color: white;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	margin: 25px;
+
+	.cmplz-modal-header {
+		background-color: white;
+		padding: 20px 20px 10px 20px;
+		justify-content: space-between;
+		align-items: center;
+		border-radius: 12px;
+	   .cmplz-modal-header-branding {
+		 display:flex;
+		 .cmplz-header-logo {
+		   width:100%;
+		 }
+
+	   }
+		.modal-title {
+			font-size: 20px;
+			margin: 0;
+			background-color: white;
+		}
+		.cmplz-modal-close {
+			cursor: pointer;
+			background: none;
+			border: none;
+			font-size: 1.5em;
+			font-weight: 700;
+		}
+		button {
+			img {
+				height: 16px;
+				width: 16px;
+			}
+		}
+	}
+
+	.cmplz-modal-content {
+		position: relative;
+		padding: 10px 20px 10px 20px;
+		font-size: 12px;
+		.cmplz-modal-subtitle {
+			font-weight: 600;
+			font-size: 15px;
+			margin-bottom: 10px;
+		}
+		.cmplz-modal-description {
+			overflow-wrap: anywhere;
+			margin-top: 0;
+			font-weight: 500;
+		}
+	}
+	.cmplz-modal-footer {
+		background: var(--cmplz-legacy-grey-100);
+		padding: var(--cmplz-legacy-spacing-m) var(--cmplz-legacy-spacing-l);
+	    bottom: 0;
+		box-shadow: var(--cmplz-legacy-box-shadow);
+		border-radius: 0 0 var(--cmplz-legacy-border-radius) var(--cmplz-legacy-border-radius);
+		border-top: 1px solid var(--cmplz-legacy-grey-300);
+		box-sizing: border-box;
+		display: grid;
+	    grid-template-columns: auto auto auto 1fr;
+	    align-items: center;
+		gap: var(--cmplz-legacy-grid-margin);
+		width: 100%;
+		min-height: 20px;
+	}
+}
+
+// --- from modules/icons.scss (consumer: the shared legacy Icon component, settings/src/
+//     utils/Icon.js — dynamic cmplz-icon / cmplz-icon-<name> / cmplz-<color>; .cmplz-icon-
+//     loading + @keyframes spin drive every name="loading" spinner. The `animation: beat`
+//     ref on .cmplz-click-animation targets a keyframe defined nowhere — a pre-existing
+//     no-op kept verbatim, not introduced here.)
+.cmplz-icon{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  svg{
+    fill: currentColor;
+  }
+  &-loading svg{
+	animation: spin 2s linear infinite;
+  }
+
+  @keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+  }
+
+  &.cmplz-click-animation{
+	animation: beat 0.4s ease-out;
+  }
+}
+
+.cmplz-icon-shortcode{
+  cursor:pointer;
+}
+
+//loaders in buttons
+button.button .cmplz-icon.cmplz-icon-loading {
+  padding-top: 6px;
+  >div {line-height: inherit;}
+}
+
+
+
+
+// --- from modules/errorboundary.scss (consumer: settings/src/utils/ErrorBoundary.js, still legacy)
+.cmplz-error-boundary{
+	padding: var(--cmplz-legacy-spacing-l);
+}
+
+// --- from modules/wizard/panel.scss (consumer: the shared legacy Panel accordion,
+//     settings/src/Settings/Panel.js + ~9 legacy control call sites, and the .cmplz-details-row
+//     rows across Cookiedatabase/Processors/ThirdParties/Integrations. The dead
+//     .cmplz-radio-buttons__list block (no consumer anywhere) is dropped per "delete the rest".)
+#complianz {
+  .cmplz-details-row {
+	display:flex;
+	flex-direction: column;
+	padding:5px 0;
+	&__buttons {
+	  flex-direction: row;
+	  button {
+		margin: 10px 10px 10px 0;
+	  }
+	}
+	& > label {
+	  margin-top: var(--cmplz-legacy-spacing-s);
+	  margin-bottom: var(--cmplz-legacy-spacing-xs);
+	  font-weight: 500;
+	}
+	input[type=text] {
+	  flex: 1;
+	}
+  }
+  .cmplz-panel {
+	&__cookie_list {
+	  .cmplz-panel__list__item {
+		background-color: #fff;
+		margin: 10px 0;
+	  }
+	}
+	&__buttons {
+	  margin:10px 0;
+	}
+	&__list {
+		display: flex;
+		flex-wrap: wrap;
+		flex-direction: column;
+		gap: var(--cmplz-legacy-spacing-s);
+		margin-top: var(--cmplz-legacy-spacing-s);
+
+		&__item {
+			width: 100%;
+			background-color: var(--cmplz-legacy-grey-200);
+			border-radius: var(--cmplz-legacy-border-radius);
+
+			&__details{
+				padding: var(--cmplz-legacy-spacing-xxs) var(--cmplz-legacy-spacing-s);
+			}
+
+			details {
+				border-radius: var(--cmplz-legacy-border-radius);
+				border: 1px solid var(--cmplz-legacy-grey-300);
+
+				summary {
+					padding: var(--cmplz-legacy-spacing-xxs) var(--cmplz-legacy-spacing-s);
+					display: grid;
+					grid-template-columns: auto 1fr auto auto auto;
+					align-items: center;
+					gap: var(--cmplz-legacy-spacing-s);
+					list-style: none;
+					min-height: 40px;
+
+					&::-webkit-details-marker {
+						display: none;
+					}
+
+					&::marker {
+						display: none;
+					}
+					>.cmplz-icon {
+					  padding-top: 5px;
+					}
+
+					h5 {
+						font-weight: 500;
+						font-size: var(--cmplz-legacy-fs-200);
+						display: inline-block;
+					}
+
+					.components-toggle-control {
+						display: flex;
+						align-items: center;
+						margin: 0;
+						.components-flex{ gap: 0 }
+					}
+
+					.cmplz-icon-chevron-down {
+						transition: all .25s ease-in-out;
+						transform: rotate(0deg);
+						// last in grid
+						grid-column: -1;
+					}
+					.cmplz-panel__list__item__icons{
+						position: relative;
+						grid-column: -2;
+						display: flex;
+						gap: var(--cmplz-legacy-spacing-xxs);
+						.cmplz-button-icon .cmplz-tooltip-icon {
+						  padding-top: 5px;
+						  padding-left: 2px;
+						}
+					}
+				}
+
+				&[open] {
+					&>summary {
+						//padding-bottom: var(--cmplz-legacy-spacing-s);
+						border-bottom: 1px solid var(--cmplz-legacy-grey-300);
+
+						&>.cmplz-icon-chevron-down {
+							transform: rotate(180deg);
+						}
+					}
+				}
+
+				.cmplz-field-wrap {
+					padding-inline: 0;
+					padding: 0;
+					padding-top: var(--cmplz-legacy-spacing-m);
+				}
+
+				.cmplz-label {
+					color: var(--cmplz-legacy-text-color);
+					font-size: var(--cmplz-legacy-fs-400);
+					font-weight: 600;
+					margin-bottom: var(--cmplz-legacy-spacing-xs);
+				}
+			}
+		}
+	}
+  }
+}
+
+// --- from modules/wizard/suggested-plugins.scss (consumers: InstallPlugin.js + Dashboard
+//     OtherPlugins.js render .cmplz-suggested-plugin* and button.cmplz-install-plugin;
+//     Alert.js renders .cmplz-wscscan-alert.)
+.cmplz-suggested-plugin,
+.cmplz-wscscan-alert {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  background-color: #f9f9f9;
+  padding: 20px;
+  &-group {
+	&-title {
+	  font-size: 14px;
+	  font-weight: 600;
+	}
+	&-desc {
+	  font-size: 12px;
+	  white-space: nowrap;
+	  margin: 4px 0;
+	}
+  }
+  &-desc-long {
+	flex: 1;
+	font-size: 12px;
+	line-height: 1.6;
+	font-weight: 400;
+	min-width: 25ch;
+	margin-right: auto;
+  }
+  &-img {
+	width: 70px;
+	height: 70px;
+	border-radius: 5px;
+  }
+  button.cmplz-install-plugin {
+	display: flex;
+	align-items: center;
+	.cmplz-icon {
+	  margin-left:10px;
+	  margin-top:5px;
+	}
+  }
+}

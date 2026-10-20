@@ -57,6 +57,57 @@ Phase 5:                              └─▶ D (legacy-globals/variables.scss
 B (i18n, PR #6) and C (readme, PR #5) already merged and stand. The baseline-determinism cleanup
 (`banner-general-768` / `proof-of-consent-768`) still rides whichever agent re-baselines.
 
+## H5 outcome (2026-10-20): SPLIT — Part 1 landed, Part 2 (marker move) deferred
+
+When H5 ran, the shared-SCSS consolidation (**Part 1**) completed and landed look-preservingly: 9 modules
+retired — `modal`/`icons`/`errorboundary`/`wizard/panel`(minus its dead `.cmplz-radio-buttons__list`)/
+`wizard/suggested-plugins` **relocated verbatim** to `legacy-globals.scss` (surviving legacy consumers);
+`wizard/borderradius`/`wizard/snackbar`/`animations`/`tooltip` **deleted** (fully dead). `bullets`,
+`new-features`, `other-plugins` were **KEPT** — no live free consumer but documented premium `cmplz_blocks`
+extension points (dashboard.md:28); deletion waits on premium verification.
+
+The **full ADR-001 marker move (Part 2) is BLOCKED and was deferred** (maintainer call 2026-10-20). The
+assumption above — "now safe because every body is migrated" — is **false**. H1–H4 migrated the ~14 field-bodies
+Bundle A enumerated, but a whole category of still-legacy bodies was never assigned to any Phase-4 section or
+H1–H4 bundle. They render **69 raw wp-admin `button button-default` buttons across 29 components, raw `<input>`s,
+and the legacy `Panel` accordion** on **~16 FREE-reachable screens** (present in the visual baselines). Once
+`data-cmplz-ui` moves to `#complianz-app`, base reset B1/B3/B4 reaches every non-isolate element at (1,0,0),
+beating the unscoped legacy-globals `a.button,button.button,input.button` (0,1,1), `.cmplz input` (0,1,1) and
+wp-admin `.wp-core-ui .button` (0,2,0) → borderless/transparent controls (the T-038/T-052 landmine, app-wide).
+Confirmed empirically on the current free baselines (`wizard-create-documents`, `tools-data-requests`).
+
+### Remaining still-legacy bodies — to migrate in new bundles before the marker move
+
+All render raw buttons/inputs and/or the legacy `Panel` accordion; none is isolate-zoned or tw-restored:
+
+- **Document-tools screens** (premium-document management, rendered in free with full body DOM — no lock):
+  `CreateDocuments`, `RecordsOfConsent` (+`ExportRecordsOfConsent`), `DataRequests` (+`ExportDatarequests`),
+  `ProofOfConsent` (+`CreateProofOfConsent`), `ProcessingAgreements` (+`CreateProcessingAgreements`),
+  `DataBreachReports` (+`CreateDataBreachReport`). Shared react-data-table chrome + Panel + raw buttons/inputs.
+- **Cookiedatabase editing**: `Cookie`, `Service`, `CookieDatabaseSyncControl` (Panel `__cookie_list`/`__buttons`
+  + `.cmplz-details-row` rows + raw buttons/inputs).
+- **Integrations detail rows**: `ThirdPartyScript`, `Urls`, `Placeholder`, `Dependency` (`.cmplz-details-row*`),
+  `PluginsOverviewControl`, `PluginsPrivacyStatements/SinglePrivacyStatement`, `ThirdParties/ThirdPartyElement`,
+  `Processors/ProcessorElement`.
+- **The shared legacy `Panel` component itself** (`settings/src/Settings/Panel.js`, native `<details>` + BEM
+  hooks) — a primitive that must migrate (or gain an isolate strategy) for its ~9 call sites.
+- **Tools/misc**: `InstallPlugin`, `License`, `Multisite/CopyMultisite`.
+- **Utility chrome**: the lazy `NewOnboarding` websitescan modal (`.cmplz-modal*` + raw controls),
+  `ErrorBoundary`, `Error`, `Alert`.
+
+A proposed carve-up (needs maintainer sign-off, like the earlier section re-plans): **H6** document-tools screens,
+**H7** Cookiedatabase + Integrations detail rows + the `Panel` primitive, **H8** InstallPlugin/License/Multisite +
+the NewOnboarding modal + ErrorBoundary/Error/Alert. **Then** re-run the full marker move + 4-project re-baseline
+(formerly "H5 Part 2"), **then** Bundle D.
+
+### Corrected Phase-5 dependency chain
+
+```
+Stage H.5:  H1 ∥ H2 ∥ H3 ∥ H4  ──▶  H5·Part 1 (shared-SCSS consolidation) ✅
+Stage H.6+: H6 ∥ H7 ∥ H8 (migrate the remaining legacy bodies)  ──▶  marker move + re-baseline (H5·Part 2)
+Phase 5:                                                             └─▶ D (legacy removal) ─▶ F release
+```
+
 ## Ready-to-paste cornercase prompts
 
 > Common: "Read CLAUDE.md + `.agent/{constitution,conventions,glossary,learnings}.md` + `docs/progress.md`,
