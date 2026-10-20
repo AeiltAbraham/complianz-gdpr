@@ -1,7 +1,12 @@
 import {useState} from "@wordpress/element";
 import { __ } from '@wordpress/i18n';
 import {memo} from "@wordpress/element";
+import {Button} from "../../components/ui/Button";
 
+// Stage H.5 (H3, Tools): the Export action moved off the wp-admin `.button.button-default` onto the shared
+// tertiary Button primitive (FR-020; the ResetBannerButton precedent for `button-default`). The
+// `.cmplz-export-container` wrapper has no CSS rule (shared verbatim with Multisite/CopyMultisite, which
+// this bundle does not touch) so it is left as-is. Zero new tokens.
 function ExportControl({ field, label }) {
 	const [disabled, setDisabled] = useState(false);
 
@@ -34,7 +39,7 @@ function ExportControl({ field, label }) {
 
 	return (
 		<div className="cmplz-export-container">
-				<button className="button button-default" onClick={() => Download()}>{__("Export","complianz-gdpr")}</button>
+				<Button variant="tertiary" onClick={() => Download()}>{__("Export","complianz-gdpr")}</Button>
 		</div>
 	)
 }

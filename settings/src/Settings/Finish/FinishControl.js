@@ -6,10 +6,17 @@ import {memo} from "@wordpress/element";
 import useMenu from "../../Menu/MenuData";
 import Icon from "../../utils/Icon";
 import useFinishData from "./useFinishData";
-import './Finish.scss';
 /**
  * Render a help notice in the sidebar
  */
+// Stage H.5 (H3, Tools): Finish.scss (`#complianz .cmplz-finish ul …`) was DEAD — no element ever carried
+// `.cmplz-finish` (grep: the only source reference was the stylesheet itself), so the not-completed list
+// rendered on UA defaults. Its intended look (disc bullets, bold labels, a flex label+chevron row) is now
+// applied directly on the elements with tw- utilities on the C-2 grid. Zero new tokens; markerless, symmetric
+// `mx`/`my` spacing (RTL-safe), no bare color tokens.
+const FINISH_LIST = 'tw-list-disc tw-mx-[var(--cmplz-space-l,_24px)] tw-my-[var(--cmplz-space-xs,_8px)]';
+const FINISH_ITEM = 'tw-font-bold';
+const FINISH_ROW = 'tw-flex tw-items-center';
 const FinishControl = () => {
 	const {fieldsLoaded, fields, updateField, getFieldValue, changedFields, setChangedField, updateFieldsData, addHelpNotice, fetchAllFieldsCompleted, allRequiredFieldsCompleted, notCompletedRequiredFields} = useFields();
 	const {getMenuLinkById } = useMenu();
@@ -75,13 +82,13 @@ const FinishControl = () => {
 						__("Please check the wizard to complete all required questions.", 'complianz-gdpr')}
 					</p>
 					<p>{__("The following required fields have not been completed:", 'complianz-gdpr' )}</p>
-					<ul>
+					<ul className={FINISH_LIST}>
 						{notCompletedRequiredFields.map( (field, i) =>
-							<li key={i}>
-								<div>
+							<li key={i} className={FINISH_ITEM}>
+								<div className={FINISH_ROW}>
 								{field.parent_label ? field.parent_label : field.label}
 									&nbsp;
-								<a href={getMenuLinkById(field.menu_id)}><Icon name={'circle-chevron-right'} color="black" tooltip={__("Go to question","complianz-gdpr")} size={14} /></a>
+								<a href={getMenuLinkById(field.menu_id)} aria-label={__("Go to question","complianz-gdpr")}><Icon name={'circle-chevron-right'} color="black" tooltip={__("Go to question","complianz-gdpr")} size={14} /></a>
 								</div>
 							</li>)}
 					</ul>
