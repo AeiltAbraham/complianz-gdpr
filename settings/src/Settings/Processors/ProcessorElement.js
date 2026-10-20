@@ -110,7 +110,7 @@ const ProcessorElement = (props) => {
 						</select>
 					}
 					{!documentsLoaded &&
-						<div className="cmplz-documents-loader">
+						<div className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs,_8px)] tw-px-[var(--cmplz-space-xs,_8px)]">
 							<div><Icon name = "loading" color = 'grey' /></div><div>{__("Loading...", "complianz-gdpr")}</div>
 						</div>
 					}

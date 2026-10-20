@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import ProcessorElement from "./ProcessorElement";
+import { Button } from "../../components/ui/Button";
 import useFields from "../../Settings/Fields/FieldsData";
 import {memo, useEffect} from "@wordpress/element";
 import useProcessingAgreementsData from "../ProcessingAgreements/ProcessingAgreementsData";
@@ -37,8 +38,8 @@ const ProcessorControl = (props) => {
 
 	return (
 		<div className="components-base-control cmplz-processor">
-			<div>
-				<button onClick={ () => onAddNewHandler() } className="button button-default">{__("Add new Processors & Service Providers", "complianz-gdpr")}</button>
+			<div data-cmplz-ui>
+				<Button variant="secondary" onClick={ () => onAddNewHandler() }>{__("Add new Processors & Service Providers", "complianz-gdpr")}</Button>
 			</div>
 			<div className="cmplz-panel__list">
 			{processors.map((processor, i) =>

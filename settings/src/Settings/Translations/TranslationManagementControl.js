@@ -2,7 +2,29 @@ import {useEffect, memo} from "@wordpress/element";
 import {__} from '@wordpress/i18n';
 import useFields from "../Fields/FieldsData";
 import {UseTranslationsData} from "./useTranslationsData";
-import './Translations.scss';
+import { Button } from "../../components/ui/Button";
+
+// Migrated off Translations.scss (ADR-005, Stage H.5) onto `tw-` utilities on the semantic C-2 tokens
+// with literal fallbacks (markerless chrome, so they resolve now and auto-upgrade at the Phase-5 marker
+// move). Cards = the C-2 surface/border/radius; the status table drops the wp-admin `wp-list-table`
+// classes (FR-020) for a token-styled table. Status text keeps the AA-passing green/red; the former
+// low-contrast yellow warning text (constitution §5) becomes the default readable text colour, the
+// status still carried by its ⚠/⏳ glyph. Zero new tokens.
+const WRAP = 'tw-my-[var(--cmplz-space-l,_24px)]';
+const CARD = 'tw-bg-[var(--cmplz-surface,_#ffffff)] tw-border tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)] tw-rounded-[var(--cmplz-radius-s,_8px)] tw-p-[var(--cmplz-space-l,_24px)] tw-mb-[var(--cmplz-space-l,_24px)]';
+const CARD_TITLE = 'tw-mt-0 tw-text-[color:var(--cmplz-text,_#0f172a)]';
+const TABLE = 'tw-mt-[var(--cmplz-space-l,_24px)] tw-w-full tw-border-collapse';
+const CELL = 'tw-p-[var(--cmplz-space-s,_12px)] tw-text-start tw-border-b tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)]';
+const TH = CELL + ' tw-bg-[var(--cmplz-surface-sunken,_#f1f5f9)] tw-font-semibold';
+const ERROR_CALLOUT = 'tw-text-[color:var(--cmplz-danger,_#d7263d)] tw-bg-[var(--cmplz-danger-surface,_#fdebed)] tw-border tw-border-solid tw-border-[color:var(--cmplz-danger,_#d7263d)] tw-rounded-[var(--cmplz-radius-s,_8px)] tw-p-[var(--cmplz-space-s,_12px)] tw-mb-[var(--cmplz-space-s,_12px)]';
+
+// Status text: success/error pass WCAG AA on white; warning uses the readable text colour (the glyph
+// carries the "attention" meaning) rather than the sub-AA yellow.
+const STATUS_CLS = {
+	ok: 'tw-text-[color:var(--cmplz-success,_#1f7a34)] tw-font-medium',
+	warning: 'tw-text-[color:var(--cmplz-text,_#0f172a)] tw-font-medium',
+	error: 'tw-text-[color:var(--cmplz-danger,_#d7263d)] tw-font-medium',
+};
 
 const TranslationManagementControl = () => {
 	const { showSavedSettingsNotice} = useFields();
@@ -11,23 +33,14 @@ const TranslationManagementControl = () => {
 		translationDataLoading,
 		saving,
 		error,
-		testResults,
 		fetchTranslationStatus,
 		fetchTranslations,
-		testTranslations,
 		clearError
 	} = UseTranslationsData();
 
 	useEffect(() => {
 		fetchTranslationStatus();
 	}, []);
-
-	const handleTestTranslations = async () => {
-		const result = await testTranslations();
-		if (result.success) {
-			showSavedSettingsNotice(result.message);
-		}
-	};
 
 	const handleRetry = () => {
 		clearError();
@@ -40,37 +53,37 @@ const TranslationManagementControl = () => {
 			'no_translation_needed': {
 				icon: '✓',
 				text: __('No translation needed', 'complianz-gdpr'),
-				className: 'cmplz-status-ok',
+				className: STATUS_CLS.ok,
 			},
 			'available': {
 				icon: '✓',
 				text: __('Available', 'complianz-gdpr'),
-				className: 'cmplz-status-ok',
+				className: STATUS_CLS.ok,
 			},
 			'not_fetched': {
 				icon: '⏳',
 				text: __('Not fetched', 'complianz-gdpr'),
-				className: 'cmplz-status-warning',
+				className: STATUS_CLS.warning,
 			},
 			'not_supported': {
 				icon: '✗',
 				text: __('Not supported', 'complianz-gdpr'),
-				className: 'cmplz-status-error',
+				className: STATUS_CLS.error,
 			},
 			'version_mismatch': {
 				icon: '⚠',
 				text: __('Version mismatch', 'complianz-gdpr'),
-				className: 'cmplz-status-warning',
+				className: STATUS_CLS.warning,
 			},
 			'invalid_format': {
 				icon: '✗',
 				text: __('Invalid format', 'complianz-gdpr'),
-				className: 'cmplz-status-error',
+				className: STATUS_CLS.error,
 			},
 			'error': {
 				icon: '✗',
 				text: __('Error', 'complianz-gdpr'),
-				className: 'cmplz-status-error',
+				className: STATUS_CLS.error,
 			}
 		};
 
@@ -79,7 +92,7 @@ const TranslationManagementControl = () => {
 
 	if (translationDataLoading) {
 		return (
-			<div className="cmplz-translation-management">
+			<div className={WRAP}>
 				<p>{__('Loading translation status...', 'complianz-gdpr')}</p>
 			</div>
 		);
@@ -87,39 +100,38 @@ const TranslationManagementControl = () => {
 
 	if (error) {
 		return (
-			<div className="cmplz-translation-management">
-				<p className="cmplz-error">{error}</p>
-				<button 
-					className="button button-secondary" 
-					onClick={handleRetry}
-				>
-					{__('Retry', 'complianz-gdpr')}
-				</button>
+			<div className={WRAP}>
+				<p className={ERROR_CALLOUT}>{error}</p>
+				<div data-cmplz-ui>
+					<Button variant="secondary" onClick={handleRetry}>
+						{__('Retry', 'complianz-gdpr')}
+					</Button>
+				</div>
 			</div>
 		);
 	}
 
 	if (!translationStatus) {
 		return (
-			<div className="cmplz-translation-management">
+			<div className={WRAP}>
 				<p>{__('No status information available', 'complianz-gdpr')}</p>
 			</div>
 		);
 	}
 
 	return (
-		<div className="cmplz-translation-management">
+		<div className={WRAP}>
 			{/* Language Files Status Table */}
 			{translationStatus.language_files && Object.keys(translationStatus.language_files).length > 0 && (
-				<div className="cmplz-language-files">
-					<h4>{__('Language Files Status', 'complianz-gdpr')}</h4>
+				<div className={CARD}>
+					<h4 className={CARD_TITLE}>{__('Language Files Status', 'complianz-gdpr')}</h4>
 					<p>{__('If the translations have been recently fetched or updated, you may want to reload the page or clear the cache to see the latest changes.', 'complianz-gdpr')}</p>
-					<table className="wp-list-table widefat fixed striped">
+					<table className={TABLE}>
 						<thead>
 							<tr>
-								<th>{__('Language', 'complianz-gdpr')}</th>
-								<th>{__('Status', 'complianz-gdpr')}</th>
-								<th>{__('Last Updated', 'complianz-gdpr')}</th>
+								<th className={TH}>{__('Language', 'complianz-gdpr')}</th>
+								<th className={TH}>{__('Status', 'complianz-gdpr')}</th>
+								<th className={TH}>{__('Last Updated', 'complianz-gdpr')}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -127,13 +139,13 @@ const TranslationManagementControl = () => {
 								const statusDisplay = getStatusDisplay(fileInfo);
 								return (
 									<tr key={lang}>
-										<td><strong>{lang}</strong></td>
-										<td>
+										<td className={CELL}><strong>{lang}</strong></td>
+										<td className={CELL}>
 											<span className={statusDisplay.className}>
 												{statusDisplay.icon} {statusDisplay.text}
 											</span>
 										</td>
-										<td>
+										<td className={CELL}>
 											{fileInfo.last_updated ? (
 												new Date(fileInfo.last_updated * 1000).toLocaleString()
 											) : (
@@ -149,9 +161,9 @@ const TranslationManagementControl = () => {
 			)}
 
 			{/* Check Now Button */}
-			<div style={{marginBottom: '20px', textAlign: 'center'}}>
-				<button 
-					className="button button-primary" 
+			<div data-cmplz-ui className="tw-mb-[var(--cmplz-space-l,_24px)] tw-text-center">
+				<Button
+					variant="primary"
 					onClick={async () => {
 						const result = await fetchTranslations();
 						if (result.success) {
@@ -161,46 +173,10 @@ const TranslationManagementControl = () => {
 					disabled={saving}
 				>
 					{saving ? __('Checking...', 'complianz-gdpr') : __('Check Now', 'complianz-gdpr')}
-				</button>
+				</Button>
 			</div>
-
-			{/* Hidden Test Section - Only shown if there are test results */}
-			{/*testResults && (
-				<div className="cmplz-test-section" style={{marginTop: '20px', padding: '10px', backgroundColor: '#f9f9f9', border: '1px solid #ddd'}}>
-					<details>
-						<summary style={{cursor: 'pointer', fontWeight: 'bold', color: '#666'}}>
-							{__('Test Results (Click to expand)', 'complianz-gdpr')}
-						</summary>
-						<div style={{marginTop: '10px'}}>
-							<button 
-								className="button button-secondary" 
-								onClick={handleTestTranslations}
-								style={{marginBottom: '10px'}}
-							>
-								{__('Run Test Again', 'complianz-gdpr')}
-							</button>
-							<pre style={{backgroundColor: '#fff', padding: '10px', border: '1px solid #ccc', fontSize: '12px', overflow: 'auto'}}>
-								{JSON.stringify(testResults, null, 2)}
-							</pre>
-						</div>
-					</details>
-				</div>
-			)*/}
-
-			{/* Hidden Test Button - Only for debugging */}
-			{/*process.env.NODE_ENV === 'development' && (
-				<div style={{marginTop: '10px', textAlign: 'center'}}>
-					<button 
-						className="button button-secondary" 
-						onClick={handleTestTranslations}
-						style={{fontSize: '11px', padding: '5px 10px'}}
-					>
-						{__('Test Functionality (Dev)', 'complianz-gdpr')}
-					</button>
-				</div>
-			)*/}
 		</div>
 	);
 };
 
-export default memo(TranslationManagementControl); 
+export default memo(TranslationManagementControl);
