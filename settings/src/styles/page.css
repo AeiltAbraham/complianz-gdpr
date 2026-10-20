@@ -63,3 +63,12 @@ body.toplevel_page_complianz :is(.error, .notice, .update-nag, .notice-info).rea
     animation: none;
   }
 }
+
+/* CKEditor 5 "Powered by" badge (Stage H.5, Bundle H2). Relocated from the deleted
+ * settings/src/Settings/Editor/Editor.scss. CKEditor appends this badge to `.ck-body-wrapper` at the
+ * END OF <body> — OUTSIDE `#complianz` — so it is the documented unscoped CKEditor exception (ADR-001),
+ * and it belongs in this unscoped page sheet rather than a scoped island. Hidden, as before (no behavior
+ * change). The editor itself stays in its `data-cmplz-isolate="ckeditor"` zone (Editor.js). */
+.ck.ck-powered-by {
+  display: none;
+}
