@@ -54,8 +54,8 @@ const Urls = (props) => {
 	}
 	let urls = script.hasOwnProperty('urls') ? Object.entries(script.urls) : [''];
 	return (
-		<div className="cmplz-details-row">
-			<label>
+		<div className="tw-flex tw-flex-col tw-py-[5px]">
+			<label className="tw-mt-[var(--cmplz-space-s,_12px)] tw-mb-[var(--cmplz-space-xs,_8px)] tw-font-medium">
 				{type==='block_script' && __("URLs that should be blocked before consent.", "complianz-gdpr")}
 				{type==='whitelist_script' &&
 					<>{__("URLs that should be whitelisted.", "complianz-gdpr")}

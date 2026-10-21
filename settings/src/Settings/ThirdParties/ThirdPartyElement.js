@@ -3,6 +3,12 @@ import useFields from "../../Settings/Fields/FieldsData";
 import {memo, useEffect} from "@wordpress/element";
 import { __ } from '@wordpress/i18n';
 import useMenu from "../../Menu/MenuData";
+import TextInput from "../Inputs/TextInput";
+import { Button } from "../../components/ui/Button";
+
+// Shared detail-row layout (Stage H7, replacing the deleted `.cmplz-details-row*` SCSS).
+const rowCls = "tw-flex tw-flex-col tw-py-[5px]";
+const rowLabelCls = "tw-mt-[var(--cmplz-space-s,_12px)] tw-mb-[var(--cmplz-space-xs,_8px)] tw-font-medium";
 
 const ThirdPartyElement = (props) => {
 	const {updateField, setChangedField} = useFields();
@@ -83,24 +89,24 @@ const ThirdPartyElement = (props) => {
 	const Details = () => {
 		return (
 			<>
-				<div className="cmplz-details-row">
-					<label>{__("Name", "complianz-gdpr")}</label>
-					<input onChange={ ( e ) => setName(e.target.value) } type="text" placeholder={__("Name", "complianz-gdpr")} value={name} />
+				<div className={rowCls}>
+					<label className={rowLabelCls}>{__("Name", "complianz-gdpr")}</label>
+					<TextInput onChange={ ( value ) => setName(value) } placeholder={__("Name", "complianz-gdpr")} name="name" value={name} />
 				</div>
-				<div className="cmplz-details-row">
-					<label>{__("Country", "complianz-gdpr")}</label>
-					<input onChange={ ( e ) => setCountry(e.target.value) } type="text" placeholder={__("Country", "complianz-gdpr")}  value={country} />
+				<div className={rowCls}>
+					<label className={rowLabelCls}>{__("Country", "complianz-gdpr")}</label>
+					<TextInput onChange={ ( value ) => setCountry(value) } placeholder={__("Country", "complianz-gdpr")} name="country" value={country} />
 				</div>
-				<div className="cmplz-details-row">
-					<label>{__("Purpose", "complianz-gdpr")}</label>
-					<input onChange={ ( e ) => setPurpose(e.target.value) } type="text" placeholder={__("Purpose", "complianz-gdpr")}  value={purpose} />
+				<div className={rowCls}>
+					<label className={rowLabelCls}>{__("Purpose", "complianz-gdpr")}</label>
+					<TextInput onChange={ ( value ) => setPurpose(value) } placeholder={__("Purpose", "complianz-gdpr")} name="purpose" value={purpose} />
 				</div>
-				<div className="cmplz-details-row">
-					<label>{__("Data", "complianz-gdpr")}</label>
-					<input onChange={ ( e ) => setData(e.target.value) } type="text" placeholder={__("Data", "complianz-gdpr")}  value={data} />
+				<div className={rowCls}>
+					<label className={rowLabelCls}>{__("Data", "complianz-gdpr")}</label>
+					<TextInput onChange={ ( value ) => setData(value) } placeholder={__("Data", "complianz-gdpr")} name="data" value={data} />
 				</div>
-				<div className="cmplz-details-row__buttons">
-					<button className="button button-default cmplz-reset-button" onClick={ ( e ) => onDeleteHandler(e) }>{__("Delete", "complianz-gdpr")}</button>
+				<div data-cmplz-ui className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs,_8px)] tw-mt-[var(--cmplz-space-s,_12px)] tw-pb-[5px]">
+					<Button variant="error" onClick={ ( e ) => onDeleteHandler(e) }>{__("Delete", "complianz-gdpr")}</Button>
 				</div>
 			</>
 		);

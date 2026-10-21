@@ -6,6 +6,10 @@ import {__} from '@wordpress/i18n';
 import useIntegrations from './IntegrationsData';
 import CheckboxGroup from '../Inputs/CheckboxGroup';
 
+// Shared detail-row layout (Stage H7, replacing the deleted `.cmplz-details-row*` SCSS).
+const rowCls = "tw-flex tw-flex-col tw-py-[5px]";
+const rowLabelCls = "tw-mt-[var(--cmplz-space-s,_12px)] tw-mb-[var(--cmplz-space-xs,_8px)] tw-font-medium";
+
 const Category = (props) => {
 	const {setScript, fetching, placeholders} = useIntegrations();
 	const script = props.script;
@@ -19,8 +23,8 @@ const Category = (props) => {
 
 	return (
 		<>
-			<div className="cmplz-details-row cmplz-details-row__checkbox">
-				<label>{__('Placeholder', 'complianz-gdpr')}</label>
+			<div className={rowCls}>
+				<label className={rowLabelCls}>{__('Placeholder', 'complianz-gdpr')}</label>
 				<CheckboxGroup
 					id={script.id + 'placeholder'}
 					disabled={fetching}
@@ -34,7 +38,7 @@ const Category = (props) => {
 			{!!script.enable_placeholder && <>
 
 				{type === 'block_script' &&
-					<div className="cmplz-details-row cmplz-details-row__checkbox">
+					<div className={rowCls}>
 						<CheckboxGroup
 							id={script.id + 'iframe'}
 							disabled={fetching}
@@ -47,7 +51,7 @@ const Category = (props) => {
 				}
 
 				{!script.iframe &&
-					<div className="cmplz-details-row cmplz-details-row">
+					<div className={rowCls}>
 						<p>{__('Enter the div class or ID that should be targeted.',
 							'complianz-gdpr')}
 							{readMore(
@@ -63,7 +67,7 @@ const Category = (props) => {
 					</div>
 				}
 
-				<div className="cmplz-details-row cmplz-details-row__checkbox">
+				<div className={rowCls}>
 					<SelectInput
 						disabled={fetching}
 						value={script.placeholder ? script.placeholder : 'default'}

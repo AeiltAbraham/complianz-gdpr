@@ -12,6 +12,10 @@ import CheckboxGroup from '../Inputs/CheckboxGroup';
 import TextInput from "../Inputs/TextInput";
 import { Button } from "../../components/ui/Button";
 
+// Shared detail-row layout (Stage H7, replacing the deleted `.cmplz-details-row*` SCSS).
+const rowCls = "tw-flex tw-flex-col tw-py-[5px]";
+const rowLabelCls = "tw-mt-[var(--cmplz-space-s,_12px)] tw-mb-[var(--cmplz-space-xs,_8px)] tw-font-medium";
+
 const ThirdPartyScript = (props) => {
 	const { setScript, fetching, saveScript, deleteScript } = useIntegrations();
 	const script = props.script;
@@ -51,8 +55,8 @@ const ThirdPartyScript = (props) => {
 
 		return (
 			<>
-				<div className="cmplz-details-row">
-					<label>{__("Name", "complianz-gdpr")}</label>
+				<div className={rowCls}>
+					<label className={rowLabelCls}>{__("Name", "complianz-gdpr")}</label>
 					<TextInput
 						disabled={fetching}
 						onChange={ ( value ) => onChangeHandler(value, 'name') }
@@ -64,7 +68,7 @@ const ThirdPartyScript = (props) => {
 				</div>
 
 				{type==='add_script' &&
-					<div className="cmplz-details-row">
+					<div className={rowCls}>
 						<AceEditorControl
 							disabled={fetching}
 							onChange={ (value) => onEditorChangeHandler(value)	}
@@ -79,7 +83,7 @@ const ThirdPartyScript = (props) => {
 
 				{ type!=='whitelist_script' &&
 					<>
-						<div className="cmplz-details-row cmplz-details-row__checkbox">
+						<div className={rowCls}>
 							<CheckboxGroup
 								id={script.id}
 								disabled={fetching}
@@ -88,7 +92,7 @@ const ThirdPartyScript = (props) => {
 								options={{true: __('This script contains an async attribute.','complianz-gdpr')}}
 							/>
 						</div>
-						<div className="cmplz-details-row">
+						<div className={rowCls}>
 							<Category script={script} type={type} />
 						</div>
 						<Placeholder  script={script} type={type} />
@@ -96,15 +100,15 @@ const ThirdPartyScript = (props) => {
 				}
 
 				{type==='block_script' &&
-					<div className="cmplz-details-row cmplz-details-row__checkbox">
-						<label>{__('Dependency', 'complianz-gdpr')}</label>
+					<div className={rowCls}>
+						<label className={rowLabelCls}>{__('Dependency', 'complianz-gdpr')}</label>
 						<Dependency script={script} type={type} />
 					</div>
 				}
 
 				<div data-cmplz-ui className="tw-flex tw-gap-[var(--cmplz-space-xs,_8px)] tw-mt-[var(--cmplz-space-s,_12px)] tw-pb-[5px]">
 					<Button variant="secondary" disabled={fetching} onClick={ () => onSaveHandler() }>{__("Save", "complianz-gdpr")}</Button>
-					<Button variant="error" disabled={fetching} className="cmplz-reset-button" onClick={ () => onDeleteHandler() }>
+					<Button variant="error" disabled={fetching} onClick={ () => onDeleteHandler() }>
 						{__("Delete", "complianz-gdpr")}
 					</Button>
 				</div>
