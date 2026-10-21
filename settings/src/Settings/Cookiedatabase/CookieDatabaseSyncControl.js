@@ -5,6 +5,8 @@ import { __ } from '@wordpress/i18n';
 import useFields from '../../Settings/Fields/FieldsData';
 import { memo } from '@wordpress/element';
 import CheckboxGroup from '../Inputs/CheckboxGroup';
+import SelectInput from '../Inputs/SelectInput';
+import { Button } from '../../components/ui/Button';
 import { memoize } from 'lodash';
 import Alert from '../../utils/Alert';
 import { startWscOnboarding, getScanUpsellAlertProps } from '../../utils/wsc';
@@ -214,26 +216,28 @@ const CookieDatabaseSyncControl = () => {
 				/>
 			) }
 			{ ! wscLocked && upsellProps && <Alert { ...upsellProps } /> }
-			<div className="cmplz-cookiedatabase-controls">
-				<button
+			{ /* `.cmplz-cookiedatabase-controls` is KEPT as the visual.spec mask hook (its legacy SCSS is
+			     deleted; the layout is reproduced with tw- here). `data-cmplz-ui` marks this pure-primitive
+			     row so the Sync `ui/Button` gets base.css B1 (border-style); the Select/Checkbox self-mark. */ }
+			<div
+				data-cmplz-ui
+				className="cmplz-cookiedatabase-controls tw-flex tw-items-center tw-gap-[10px] tw-mb-[10px]"
+			>
+				<Button
+					variant="primary"
 					disabled={ disabled || loadingSyncData }
-					className="button button-default"
 					onClick={ ( e ) => Start( e ) }
 				>
 					{ __( 'Sync', 'complianz-gdpr' ) }
-				</button>
+				</Button>
 				{ languages.length > 1 && (
-					<select
+					<SelectInput
 						disabled={ loadingSyncData }
 						value={ language }
-						onChange={ ( e ) => setLanguage( e.target.value ) }
-					>
-						{ languages.map( ( language, i ) => (
-							<option key={ i } value={ language }>
-								{ language }
-							</option>
-						) ) }
-					</select>
+						canBeEmpty={ false }
+						options={ languages.map( ( l ) => ( { value: l, label: l } ) ) }
+						onChange={ ( value ) => setLanguage( value ) }
+					/>
 				) }
 				<CheckboxGroup
 					id={ 'show_deleted_cookies' }
@@ -245,8 +249,16 @@ const CookieDatabaseSyncControl = () => {
 					} }
 				/>
 			</div>
-			<div id="cmplz-scan-progress">
-				<div className="cmplz-progress-bar" style={ getStyles() }></div>
+			{ /* Sync progress bar: re-themed to `--cmplz-accent` (maintainer sign-off 2026-10-21) and
+			     DECOUPLED from the shared `#cmplz-scan-progress .cmplz-progress-bar` legacy rule by dropping
+			     the `#cmplz-scan-progress` id wrapper — matching H2's cookie-scan bar, so the Dashboard +
+			     premium sync bar stay blue with no re-baseline. The `.cmplz-progress-bar` class is KEPT only
+			     so the visual.spec width mask still hides the timing-driven fill. */ }
+			<div className="tw-overflow-hidden tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-surface-sunken,_#f1f5f9)]">
+				<div
+					className="cmplz-progress-bar tw-h-[20px] tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-accent,_#009fff)] tw-transition-[width] tw-duration-500"
+					style={ getStyles() }
+				></div>
 			</div>
 			<div className="cmplz-panel__list">
 				{ servicesAndCookies.map( ( service, i ) => (
@@ -260,14 +272,14 @@ const CookieDatabaseSyncControl = () => {
 					/>
 				) ) }
 			</div>
-			<div className="cmplz-panel__buttons">
-				<button
+			<div data-cmplz-ui className="tw-flex tw-mt-[10px] tw-mb-[10px]">
+				<Button
+					variant="secondary"
 					disabled={ loadingSyncData }
 					onClick={ ( e ) => onAddServiceHandler() }
-					className="button button-default"
 				>
 					{ __( 'Add service', 'complianz-gdpr' ) }
-				</button>
+				</Button>
 			</div>
 		</>
 	);

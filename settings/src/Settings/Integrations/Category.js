@@ -19,7 +19,7 @@ const Category = (props) => {
 
 	return (
 		<>
-				<label>{__("Category", "complianz-gdpr")}</label>
+				<label className="tw-mt-[var(--cmplz-space-s,_12px)] tw-mb-[var(--cmplz-space-xs,_8px)] tw-font-medium">{__("Category", "complianz-gdpr")}</label>
 				<RadioGroup
 					disabled={fetching}
 					label={__("Marketing", "complianz-gdpr")} id="category" value={script.category}

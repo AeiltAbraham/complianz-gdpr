@@ -4,6 +4,9 @@ import SelectInput from "../Inputs/SelectInput";
 import useIntegrations from "./IntegrationsData";
 import CheckboxGroup from '../Inputs/CheckboxGroup';
 
+// Shared detail-row layout (Stage H7, replacing the deleted `.cmplz-details-row*` SCSS).
+const rowCls = "tw-flex tw-flex-col tw-py-[5px]";
+
 const Dependency = (props) => {
 	const { setScript, blockedScripts, fetching } = useIntegrations();
 	const options = blockedScripts;
@@ -50,7 +53,7 @@ const Dependency = (props) => {
 	let urls = script.hasOwnProperty('urls') ? Object.entries(script.urls) : [''];
 	return (
 		<>
-			<div className="cmplz-details-row cmplz-details-row__checkbox">
+			<div className={rowCls}>
 				<CheckboxGroup
 					id={script.id + 'dependency'}
 					disabled={fetching}
@@ -60,7 +63,7 @@ const Dependency = (props) => {
 				/>
 			</div>
 			{ !!script.enable_dependency &&
-				<div className="cmplz-details-row cmplz-details-row">
+				<div className={rowCls}>
 					{ urls.length>1 && urls.map( ([index, waitFor], i)=>
 						<div key={i} className="cmplz-scriptcenter-dependencies tw-flex tw-items-center [&_.cmplz-select-group]:tw-me-[10px] [&_.cmplz-select-group]:tw-mb-[10px] [&_.cmplz-select-group]:tw-min-w-[max(250px,50%)]" >
 							<SelectInput

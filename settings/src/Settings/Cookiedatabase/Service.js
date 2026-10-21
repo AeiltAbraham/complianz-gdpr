@@ -6,7 +6,13 @@ import Icon from '../../utils/Icon';
 import useFields from '../../Settings/Fields/FieldsData';
 import CheckboxGroup from '../Inputs/CheckboxGroup';
 import SelectInput from '../Inputs/SelectInput';
+import TextInput from '../Inputs/TextInput';
+import { Button } from '../../components/ui/Button';
 import { memo, useEffect, useState } from '@wordpress/element';
+
+// Shared detail-row layout (Stage H7, replacing the deleted `.cmplz-details-row*` SCSS).
+const rowCls = 'tw-flex tw-flex-col tw-py-[5px]';
+const rowLabelCls = 'tw-mt-[var(--cmplz-space-s,_12px)] tw-mb-[var(--cmplz-space-xs,_8px)] tw-font-medium';
 
 const ServiceDetails = ( service ) => {
 	const { getFieldValue, showSavedSettingsNotice } = useFields();
@@ -125,7 +131,7 @@ const ServiceDetails = ( service ) => {
 	}
 	return (
 		<>
-			<div className="cmplz-details-row cmplz-details-row__checkbox">
+			<div className={ rowCls }>
 				<CheckboxGroup
 					id={ service.ID + 'sharesData' }
 					disabled={ disabled }
@@ -145,7 +151,7 @@ const ServiceDetails = ( service ) => {
 					} }
 				/>
 			</div>
-			<div className="cmplz-details-row cmplz-details-row__checkbox">
+			<div className={ rowCls }>
 				<CheckboxGroup
 					id={ service.ID + 'sync' }
 					disabled={ ! useCdbApi }
@@ -161,19 +167,20 @@ const ServiceDetails = ( service ) => {
 					} }
 				/>
 			</div>
-			<div className="cmplz-details-row">
-				<label>{ __( 'Name', 'complianz-gdpr' ) }</label>
-				<input
+			<div className={ rowCls }>
+				<label className={ rowLabelCls }>{ __( 'Name', 'complianz-gdpr' ) }</label>
+				<TextInput
 					disabled={ disabled }
-					onChange={ ( e ) => setServiceName( e.target.value ) }
-					type="text"
+					onChange={ ( value ) => setServiceName( value ) }
 					placeholder={ __( 'Name', 'complianz-gdpr' ) }
+					id={ service.ID + '_name' }
+					name="name"
 					value={ serviceName }
 				/>
 			</div>
 
-			<div className="cmplz-details-row">
-				<label>{ __( 'Service Types', 'complianz-gdpr' ) }</label>
+			<div className={ rowCls }>
+				<label className={ rowLabelCls }>{ __( 'Service Types', 'complianz-gdpr' ) }</label>
 				<SelectInput
 					disabled={ disabled }
 					value={ service.serviceType }
@@ -183,22 +190,22 @@ const ServiceDetails = ( service ) => {
 					}
 				/>
 			</div>
-			<div className="cmplz-details-row">
-				<label>
+			<div className={ rowCls }>
+				<label className={ rowLabelCls }>
 					{ __( 'Privacy Statement URL', 'complianz-gdpr' ) }
 				</label>
-				<input
+				<TextInput
 					disabled={ disabled }
-					onChange={ ( e ) =>
-						setPrivacyStatementUrl( e.target.value )
-					}
-					type="text"
+					onChange={ ( value ) => setPrivacyStatementUrl( value ) }
+					id={ service.ID + '_privacyStatementURL' }
+					name="privacyStatementURL"
 					value={ privacyStatementUrl }
 				/>
 			</div>
 			{ cdbLink && (
-				<div className="cmplz-details-row">
+				<div className={ rowCls }>
 					<a
+						className="tw-mt-[var(--cmplz-space-s,_12px)] tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]"
 						href={ cdbLink }
 						target="_blank"
 						rel="noopener noreferrer"
@@ -210,20 +217,23 @@ const ServiceDetails = ( service ) => {
 					</a>
 				</div>
 			) }
-			<div className="cmplz-details-row cmplz-details-row__buttons">
-				<button
+			<div
+				data-cmplz-ui
+				className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs,_8px)] tw-mt-[var(--cmplz-space-s,_12px)] tw-pb-[5px]"
+			>
+				<Button
+					variant="secondary"
 					disabled={ saving }
 					onClick={ ( e ) => onSaveHandler( service.ID ) }
-					className="button button-default"
 				>
 					{ __( 'Save', 'complianz-gdpr' ) }
-				</button>
-				<button
-					className="button button-default cmplz-reset-button"
+				</Button>
+				<Button
+					variant="error"
 					onClick={ ( e ) => onDeleteHandler( service.ID ) }
 				>
 					{ __( 'Delete Service', 'complianz-gdpr' ) }
-				</button>
+				</Button>
 			</div>
 		</>
 	);
@@ -256,23 +266,25 @@ const Service = ( props ) => {
 					</div>
 				) }
 				{ ! isUnknownService && (
-					<div>
-						<button
-							disabled={ adding || ! serviceIsSaved }
-							onClick={ ( e ) =>
-								onAddCookieHandler(
-									props.service.ID,
-									serviceName
-								)
-							}
-							className="button button-default"
-						>
-							{ __(
-								'Add cookie to %s',
-								'complianz-gdpr'
-							).replace( '%s', serviceName ) }
-							{ adding && <Icon name="loading" color="grey" /> }
-						</button>
+					<div className="tw-mt-[var(--cmplz-space-s,_12px)]">
+						<div data-cmplz-ui className="tw-flex">
+							<Button
+								variant="secondary"
+								disabled={ adding || ! serviceIsSaved }
+								onClick={ ( e ) =>
+									onAddCookieHandler(
+										props.service.ID,
+										serviceName
+									)
+								}
+							>
+								{ __(
+									'Add cookie to %s',
+									'complianz-gdpr'
+								).replace( '%s', serviceName ) }
+								{ adding && <Icon name="loading" color="grey" /> }
+							</Button>
+						</div>
 						{ ! serviceIsSaved && (
 							<div className="cmplz-comment">
 								{ __(

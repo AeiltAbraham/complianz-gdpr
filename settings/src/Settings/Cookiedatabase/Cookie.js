@@ -6,6 +6,13 @@ import useFields from "../../Settings/Fields/FieldsData";
 import {memo,useEffect, useState} from "@wordpress/element";
 import CheckboxGroup from "../Inputs/CheckboxGroup";
 import SelectInput from "../Inputs/SelectInput";
+import TextInput from "../Inputs/TextInput";
+import { Button } from "../../components/ui/Button";
+
+// Shared detail-row layout (Stage H7, replacing the deleted `.cmplz-details-row*` SCSS): a flex column
+// with the legacy 5px vertical padding; its label gets the legacy row-label rhythm + medium weight.
+const rowCls = "tw-flex tw-flex-col tw-py-[5px]";
+const rowLabelCls = "tw-mt-[var(--cmplz-space-s,_12px)] tw-mb-[var(--cmplz-space-xs,_8px)] tw-font-medium";
 
 const CookieDetails = (cookie) => {
 	const {getFieldValue, showSavedSettingsNotice} = useFields();
@@ -122,7 +129,6 @@ const CookieDetails = (cookie) => {
 		return null;
 	}
 	let retentionDisabled = cookie.name.indexOf('cmplz_')!==-1 ? true:sync;
-	let deletedClass = cookie.deleted!=1 ? 'cmplz-reset-button':'';
 	let servicesOptions = services.map((service, i) => {
 		return {value:service.ID, label:service.name};
 	});
@@ -161,7 +167,7 @@ const CookieDetails = (cookie) => {
 
 	return (
 		<>
-			<div className="cmplz-details-row cmplz-details-row__checkbox">
+			<div className={rowCls}>
 				<CheckboxGroup
 					id={cookie.ID+'_cdb_api'}
 					disabled={!useCdbApi}
@@ -170,7 +176,7 @@ const CookieDetails = (cookie) => {
 					options={{true: __('Sync cookie with cookiedatabase.org', 'complianz-gdpr')}}
 				/>
 			</div>
-			<div className="cmplz-details-row cmplz-details-row__checkbox">
+			<div className={rowCls}>
 				<CheckboxGroup
 					id={cookie.ID+'showOnPolicy'}
 					disabled={disabled}
@@ -179,15 +185,17 @@ const CookieDetails = (cookie) => {
 					options={{true: __('Show cookie on Cookie Policy', 'complianz-gdpr')}}
 				/>
 			</div>
-			<div className="cmplz-details-row">
-				<label>{__("Name", "complianz-gdpr")}</label>
-				<input disabled={disabled}
-					   onChange={ ( e ) =>  setName(e.target.value) }
-					   type="text" placeholder={__("Name", "complianz-gdpr")}
+			<div className={rowCls}>
+				<label className={rowLabelCls}>{__("Name", "complianz-gdpr")}</label>
+				<TextInput disabled={disabled}
+					   onChange={ ( value ) => setName(value) }
+					   placeholder={__("Name", "complianz-gdpr")}
+					   id={cookie.ID+'_name'}
+					   name="name"
 					   value={name} />
 			</div>
-			<div className="cmplz-details-row">
-				<label>{__("Service", "complianz-gdpr")}</label>
+			<div className={rowCls}>
+				<label className={rowLabelCls}>{__("Service", "complianz-gdpr")}</label>
 				<SelectInput
 					disabled={disabled}
 					value={cookie.serviceID}
@@ -195,22 +203,26 @@ const CookieDetails = (cookie) => {
 					onChange={(value) => onChangeHandler(value, cookie.ID, 'serviceID')}
 				/>
 			</div>
-			<div className="cmplz-details-row">
-				<label>{__("Expiration", "complianz-gdpr")}</label>
-				<input disabled={retentionDisabled}
-					   onChange={ ( e ) =>  setRetention(e.target.value) }
-					   type="text" placeholder={__("1 year", "complianz-gdpr")}
+			<div className={rowCls}>
+				<label className={rowLabelCls}>{__("Expiration", "complianz-gdpr")}</label>
+				<TextInput disabled={retentionDisabled}
+					   onChange={ ( value ) => setRetention(value) }
+					   placeholder={__("1 year", "complianz-gdpr")}
+					   id={cookie.ID+'_retention'}
+					   name="retention"
 					   value={retention} />
 			</div>
-			<div className="cmplz-details-row">
-				<label>{__("Cookie function", "complianz-gdpr")}</label>
-				<input disabled={disabled}
-					   onChange={ ( e ) =>  setCookieFunction(e.target.value) }
-					   type="text" placeholder={__("e.g. store user ID", "complianz-gdpr")}
+			<div className={rowCls}>
+				<label className={rowLabelCls}>{__("Cookie function", "complianz-gdpr")}</label>
+				<TextInput disabled={disabled}
+					   onChange={ ( value ) => setCookieFunction(value) }
+					   placeholder={__("e.g. store user ID", "complianz-gdpr")}
+					   id={cookie.ID+'_function'}
+					   name="cookieFunction"
 					   value={cookieFunction} />
 			</div>
-			<div className="cmplz-details-row">
-				<label>{__("Purpose", "complianz-gdpr")}</label>
+			<div className={rowCls}>
+				<label className={rowLabelCls}>{__("Purpose", "complianz-gdpr")}</label>
 				<SelectInput
 					disabled={disabled}
 					value={cookiePurpose}
@@ -219,16 +231,16 @@ const CookieDetails = (cookie) => {
 				/>
 			</div>
 			{cdbLink &&
-				<div className="cmplz-details-row">
-					<a href={cdbLink} target="_blank" rel="noopener noreferrer">{__( "View cookie on cookiedatabase.org", "complianz-gdpr" )}</a>
+				<div className={rowCls}>
+					<a className="tw-mt-[var(--cmplz-space-s,_12px)] tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]" href={cdbLink} target="_blank" rel="noopener noreferrer">{__( "View cookie on cookiedatabase.org", "complianz-gdpr" )}</a>
 				</div>
 			}
-			<div className="cmplz-details-row cmplz-details-row__buttons">
-				<button disabled={saving} onClick={ ( e ) => onSaveHandler(cookie.ID) } className="button button-default">{__("Save", "complianz-gdpr")}</button>
-				<button className={"button button-default "+ deletedClass } onClick={ ( e ) => onDeleteHandler(cookie.ID) }>
+			<div data-cmplz-ui className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs,_8px)] tw-mt-[var(--cmplz-space-s,_12px)] tw-pb-[5px]">
+				<Button variant="secondary" disabled={saving} onClick={ ( e ) => onSaveHandler(cookie.ID) }>{__("Save", "complianz-gdpr")}</Button>
+				<Button variant={cookie.deleted==1 ? "secondary" : "error"} onClick={ ( e ) => onDeleteHandler(cookie.ID) }>
 					{cookie.deleted==1 && __("Restore", "complianz-gdpr")}
 					{cookie.deleted!=1 && __("Delete", "complianz-gdpr")}
-				</button>
+				</Button>
 			</div>
 		</>
 	);
@@ -254,15 +266,6 @@ const Cookie = ({cookie, id}) => {
 		)
 	}
 
-	const getStyles = () => {
-		if (!cookie.deleted) return;
-
-		return Object.assign(
-			{},
-			{"backgroundColor": "var(--cmplz-legacy-red-faded)"},
-		);
-	}
-
 	let comment = '';
 	if (cookie.deleted) {
 		comment =  " | "+__( 'Deleted', 'complianz-gdpr' );
@@ -274,7 +277,7 @@ const Cookie = ({cookie, id}) => {
 	let description = cookie.name
 	return (
 		<>
-			<Panel id={id}  summary={description} comment={comment} icons={Icons()} details={CookieDetails(cookie)} style={getStyles()}/>
+			<Panel id={id}  summary={description} comment={comment} icons={Icons()} details={CookieDetails(cookie)} tone={cookie.deleted ? 'deleted' : 'nested'}/>
 		</>
 
 	);
