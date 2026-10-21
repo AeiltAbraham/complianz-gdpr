@@ -167,15 +167,15 @@ const CreateProcessingAgreements = () => {
 					<div className="cmplz-table-header">
 						<div className='cmplz-table-header-controls'>
 							{editDocumentId && <>
-								<button disabled={updating} className="button button-default" onClick={()=>{resetEditDocumentId();setStep(0)}}>{__("Cancel",'complianz-gdpr')}</button>
-								<button disabled={updating} className="button button-primary" onClick={()=>setStep(step+1)}>{__("Next",'complianz-gdpr')}</button>
-								<button disabled={updating} className="button button-primary" onClick={()=>saveFields()}>{__("Save",'complianz-gdpr')}</button>
+								<Button variant="secondary" className="tw-border-solid" disabled={updating} onClick={()=>{resetEditDocumentId();setStep(0)}}>{__("Cancel",'complianz-gdpr')}</Button>
+								<Button variant="primary" className="tw-border-solid" disabled={updating} onClick={()=>setStep(step+1)}>{__("Next",'complianz-gdpr')}</Button>
+								<Button variant="primary" className="tw-border-solid" disabled={updating} onClick={()=>saveFields()}>{__("Save",'complianz-gdpr')}</Button>
 							</>}
 							{!editDocumentId && <>
 								{file && file.name}
 								<Button
 									variant="secondary"
-									className="tw-gap-[8px]"
+									className="tw-border-solid tw-gap-[8px]"
 									onClick={ () => fileInputRef.current && fileInputRef.current.click() }
 								>
 									<Icon name='upload' color='black' />
@@ -192,15 +192,15 @@ const CreateProcessingAgreements = () => {
 									aria-label={__("Select file","complianz-gdpr")}
 									onChange={ ( event ) => setFile(event.currentTarget.files[0]) }
 								/>
-								<button disabled={uploadDisabled} className="button button-default"  onClick={(e) => onUploadHandler(e)}>
+								<Button variant="secondary" className="tw-border-solid tw-gap-[var(--cmplz-space-xs,_8px)]" disabled={uploadDisabled} onClick={(e) => onUploadHandler(e)}>
 									{__("Upload","complianz-gdpr")}
 									{uploading && <Icon name = "loading" color = 'grey' />}
-								</button>
+								</Button>
 
-								<button disabled={createBtnDisabled || loadingFields} className="button cmplz-button button-primary" onClick={()=>onCreateHandler() }>
+								<Button variant="primary" className="tw-border-solid tw-gap-[var(--cmplz-space-xs,_8px)]" disabled={createBtnDisabled || loadingFields} onClick={()=>onCreateHandler() }>
 									{__("Create",'complianz-gdpr')}
 									{loadingFields && <Icon name = "loading" color = 'grey' />}
-								</button>
+								</Button>
 							</>}
 						</div>
 					</div>
@@ -218,25 +218,25 @@ const CreateProcessingAgreements = () => {
 					}
 					<div className="cmplz-table-header">
 						<div className='cmplz-table-header-controls'>
-							<button disabled={updating} className="button button-default" onClick={()=>{resetEditDocumentId();setStep(0)}}>{__("Cancel",'complianz-gdpr')}</button>
-							<button className="button button-default" onClick={()=>setStep(step-1)}>{__("Previous","complianz-gdpr")}</button>
+							<Button variant="secondary" className="tw-border-solid" disabled={updating} onClick={()=>{resetEditDocumentId();setStep(0)}}>{__("Cancel",'complianz-gdpr')}</Button>
+							<Button variant="secondary" className="tw-border-solid" onClick={()=>setStep(step-1)}>{__("Previous","complianz-gdpr")}</Button>
 
 							{ step < lastStep &&
 								<>
-									<button className="button button-primary" onClick={()=>setStep(step+1)}>{__("Next","complianz-gdpr")}</button>
+									<Button variant="primary" className="tw-border-solid" onClick={()=>setStep(step+1)}>{__("Next","complianz-gdpr")}</Button>
 								</>
 							}
 
 							{  step === lastStep &&
 								<>
-									<button className="button button-primary" onClick={()=>saveAndExit()}>
+									<Button variant="primary" className="tw-border-solid tw-gap-[var(--cmplz-space-xs,_8px)]" onClick={()=>saveAndExit()}>
 										{__("Finish","complianz-gdpr")}
 										{updating && <Icon name = "loading" color = 'grey' />}
-									</button>
+									</Button>
 								</>
 							}
 							{editDocumentId && step < lastStep && <>
-								<button disabled={updating} className="button button-primary" onClick={()=>saveFields()}>{__("Save",'complianz-gdpr')}</button>
+								<Button variant="primary" className="tw-border-solid" disabled={updating} onClick={()=>saveFields()}>{__("Save",'complianz-gdpr')}</Button>
 							</>}
 					</div></div>
 				</>

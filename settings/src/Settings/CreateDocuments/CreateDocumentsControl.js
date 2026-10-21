@@ -5,6 +5,7 @@ import {useEffect} from "@wordpress/element";
 import useFields from "../../Settings/Fields/FieldsData";
 import Placeholder from '../../Placeholder/Placeholder';
 import Icon from "../../utils/Icon";
+import {Button} from "../../components/ui/Button";
 import {memo, useState} from "@wordpress/element";
 
 /**
@@ -63,10 +64,19 @@ const CreateDocumentsControl = () => {
 			{documentsDataLoaded && requiredPages.map((page, i) => <CreateDocument page={page} key={i} />)}
 			{requiredPages.length>0 &&
 				<div>
-					<button disabled={disabled} onClick={()=> onButtonClickHandler()} className="button button-default">
+					{ /* C-2 migration (Stage H.6): legacy `button button-default` -> secondary Button.
+					   Markerless row, so `tw-border-solid` supplies the base-reset border-style (B1) that a
+					   data-cmplz-ui ancestor would otherwise give under Preflight-off (T-052); the variant
+					   colours + the icon gap resolve via the Bundle-A #complianz-app token broadening. */ }
+					<Button
+						variant="secondary"
+						className="tw-border-solid tw-gap-[var(--cmplz-space-xs,_8px)]"
+						disabled={disabled}
+						onClick={()=> onButtonClickHandler()}
+					>
 						{hasMissingPages ? __("Create missing pages","complianz-gdpr") : __("Update","complianz-gdpr")}
 						{saving && <Icon name = "loading" color = 'grey' />}
-					</button>
+					</Button>
 				</div>
 			}
 		</>
