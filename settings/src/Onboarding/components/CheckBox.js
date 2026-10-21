@@ -1,4 +1,3 @@
-import { useEffect, useState } from "@wordpress/element";
 import Icon from "../../utils/Icon";
 import { useNewOnboardingData } from "../NewOnboardingData";
 // status: not-installed / activated / installed
@@ -30,6 +29,9 @@ const statuses = {
 	}
 }
 
+// Onboarding plugin checkbox (Stage H.8). The fancy legacy custom checkmark (hidden input + styled
+// span) becomes a clean accessible native checkbox (accent-strong) + label + the status Icon, on C-2
+// tokens. Rendered inside the Radix Dialog portal island. Checked/disabled/onChange logic unchanged.
 const CheckBox = ({ plugin, className = '', handleChange, ...otherProps }) => {
 
 	const { isInstalling } = useNewOnboardingData();
@@ -39,26 +41,27 @@ const CheckBox = ({ plugin, className = '', handleChange, ...otherProps }) => {
 	};
 
 	return (
-		<div className={`cmplz-websitescan-input-wrapper plugin-checkbox ${plugin.slug}`}>
-			<label>
+		<div className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs)]">
+			<label className="tw-flex tw-flex-1 tw-items-center tw-gap-[var(--cmplz-space-xs)] tw-cursor-pointer tw-text-[0.75rem]">
 				<input
-					className={`${className} cmplz-websitescan-input`}
+					className={`tw-h-4 tw-w-4 tw-shrink-0 tw-accent-[var(--cmplz-accent-strong)] ${className}`}
 					checked={plugin.checked}
 					disabled={isInstalling ? true : statuses[plugin.status].checked}
 					onChange={handleCheckboxChange}
 					type="checkbox"
 					{...otherProps}
 				/>
-				<span className="checkmark"></span>
-				<span className="description">{plugin.description}</span>
+				<span>{plugin.description}</span>
 			</label>
 			{plugin.status &&
-				<Icon
-					name={statuses[plugin.status]?.iconName}
-					color={statuses[plugin.status]?.iconColor}
-					size={14}
-					tooltip={statuses[plugin.status]?.label}
-				/>
+				<span className="tw-ms-auto tw-flex tw-shrink-0">
+					<Icon
+						name={statuses[plugin.status]?.iconName}
+						color={statuses[plugin.status]?.iconColor}
+						size={14}
+						tooltip={statuses[plugin.status]?.label}
+					/>
+				</span>
 			}
 		</div>
 	)

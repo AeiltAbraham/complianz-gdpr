@@ -721,100 +721,13 @@ a.button, button.button, input.button {
 // Delete in Phase 5 / Bundle D with the rest of this file.
 // =====================================================================================
 
-// --- from modules/modal.scss (consumer: the live NewOnboarding / websitescan modal —
-//     NewOnboarding.js renders .cmplz-modal{-backdrop,-header,-header-branding,-content,
-//     -footer,-close}; NewOnboarding.scss only overrides, the base chrome lives here.
-//     The nested .modal-title/.cmplz-modal-subtitle/.cmplz-modal-description are only
-//     rendered by the dead Modal/Modal.js — kept verbatim here, deletion deferred to Bundle D.)
-.cmplz-modal-backdrop {
-	position: fixed;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	background-color: grey;
-	opacity: 0.45;
-	width: 100%;
-	height: 100%;
-	z-index: 15;
-}
-
-.cmplz-modal {
-	max-width: 526px;
-	min-width:526px;
-	position: fixed;
-	z-index: 20;
-	border-radius: 12px;
-	background-color: white;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	margin: 25px;
-
-	.cmplz-modal-header {
-		background-color: white;
-		padding: 20px 20px 10px 20px;
-		justify-content: space-between;
-		align-items: center;
-		border-radius: 12px;
-	   .cmplz-modal-header-branding {
-		 display:flex;
-		 .cmplz-header-logo {
-		   width:100%;
-		 }
-
-	   }
-		.modal-title {
-			font-size: 20px;
-			margin: 0;
-			background-color: white;
-		}
-		.cmplz-modal-close {
-			cursor: pointer;
-			background: none;
-			border: none;
-			font-size: 1.5em;
-			font-weight: 700;
-		}
-		button {
-			img {
-				height: 16px;
-				width: 16px;
-			}
-		}
-	}
-
-	.cmplz-modal-content {
-		position: relative;
-		padding: 10px 20px 10px 20px;
-		font-size: 12px;
-		.cmplz-modal-subtitle {
-			font-weight: 600;
-			font-size: 15px;
-			margin-bottom: 10px;
-		}
-		.cmplz-modal-description {
-			overflow-wrap: anywhere;
-			margin-top: 0;
-			font-weight: 500;
-		}
-	}
-	.cmplz-modal-footer {
-		background: var(--cmplz-legacy-grey-100);
-		padding: var(--cmplz-legacy-spacing-m) var(--cmplz-legacy-spacing-l);
-	    bottom: 0;
-		box-shadow: var(--cmplz-legacy-box-shadow);
-		border-radius: 0 0 var(--cmplz-legacy-border-radius) var(--cmplz-legacy-border-radius);
-		border-top: 1px solid var(--cmplz-legacy-grey-300);
-		box-sizing: border-box;
-		display: grid;
-	    grid-template-columns: auto auto auto 1fr;
-	    align-items: center;
-		gap: var(--cmplz-legacy-grid-margin);
-		width: 100%;
-		min-height: 20px;
-	}
-}
+// --- from modules/modal.scss: RETIRED at H.8. Its only LIVE consumer was the NewOnboarding /
+//     websitescan modal, now rebuilt on the Radix `ui/Dialog` primitive (maintainer sign-off
+//     2026-10-21). The only remaining references to `.cmplz-modal*` are the dead, UNIMPORTED
+//     `settings/src/Modal.js` + `settings/src/Modal/Modal.js` (never rendered), so the whole
+//     `.cmplz-modal*` block is deleted here (ADR-005 dead rule). Those dead files are left for a
+//     Bundle-D sweep. Removing these unscoped `.cmplz-modal .button`-style rules also removes one
+//     of the marker-move landmines this stage exists to clear.
 
 // --- from modules/icons.scss (consumer: the shared legacy Icon component, settings/src/
 //     utils/Icon.js — dynamic cmplz-icon / cmplz-icon-<name> / cmplz-<color>; .cmplz-icon-
@@ -855,10 +768,9 @@ button.button .cmplz-icon.cmplz-icon-loading {
 
 
 
-// --- from modules/errorboundary.scss (consumer: settings/src/utils/ErrorBoundary.js, still legacy)
-.cmplz-error-boundary{
-	padding: var(--cmplz-legacy-spacing-l);
-}
+// --- from modules/errorboundary.scss: RETIRED at H.8. ErrorBoundary.js was migrated to the C-2
+//     system — its only rule (the container padding) is reproduced with a tw- token utility and the
+//     `.cmplz-error-boundary` class dropped — so this orphaned rule is deleted (ADR-005).
 
 // --- from modules/wizard/panel.scss (consumer: the shared legacy Panel accordion,
 //     settings/src/Settings/Panel.js + ~9 legacy control call sites, and the .cmplz-details-row
@@ -994,11 +906,12 @@ button.button .cmplz-icon.cmplz-icon-loading {
   }
 }
 
-// --- from modules/wizard/suggested-plugins.scss (consumers: InstallPlugin.js + Dashboard
-//     OtherPlugins.js render .cmplz-suggested-plugin* and button.cmplz-install-plugin;
-//     Alert.js renders .cmplz-wscscan-alert.)
-.cmplz-suggested-plugin,
-.cmplz-wscscan-alert {
+// --- from modules/wizard/suggested-plugins.scss (consumer: Dashboard OtherPlugins.js renders
+//     .cmplz-suggested-plugin* and button.cmplz-install-plugin. InstallPlugin.js was migrated to the
+//     C-2 system at H.8 but still renders the shared .cmplz-suggested-plugin* CARD chrome, so these
+//     rules stay. The .cmplz-wscscan-alert selector was REMOVED at H.8: its only consumer, Alert.js,
+//     was migrated to the C-2 warning callout, so that chrome is retired — ADR-005.)
+.cmplz-suggested-plugin {
   display: flex;
   flex-wrap: wrap;
   align-items: center;

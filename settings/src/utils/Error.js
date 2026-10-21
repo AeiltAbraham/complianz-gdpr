@@ -29,10 +29,16 @@ const Error = (props) => {
 
 	}
 
+	// Migrated to the C-2 system (Stage H.8). The `.rsssl-rest-error-message` panel (which carried no
+	// SCSS rule in the source tree) becomes a C-2 danger callout, and the "More information" CTA (the
+	// raw `button button-default` the Hyperlink rendered — a marker-move landmine) becomes a secondary
+	// button-styled link. This UI only renders when the REST load fails, so it is markerless: every
+	// colour/space is a token-with-literal-fallback (fallback == token value) and `tw-border-solid`
+	// pins the CTA/panel border-style (Preflight off, B1 not in scope — T-052).
 	return (
 		<>
-			{props.error && <div className="rsssl-rest-error-message">
-				<h3>{__("A problem was detected during the loading of the settings", "complianz-gdpr")}</h3>
+			{props.error && <div className="rsssl-rest-error-message tw-rounded-[var(--cmplz-radius,_12px)] tw-border tw-border-solid tw-border-[color:var(--cmplz-danger,_#d7263d)] tw-bg-[var(--cmplz-danger-surface,_#fdebed)] tw-p-[var(--cmplz-space-l,_24px)] tw-text-[color:var(--cmplz-text,_#0f172a)]">
+				<h3 className="tw-mt-0">{__("A problem was detected during the loading of the settings", "complianz-gdpr")}</h3>
 				{description &&
 					<p>{description}</p>
 				}
@@ -46,7 +52,7 @@ const Error = (props) => {
 					</ul>
 				</div>
 				<Hyperlink
-					className="button button-default"
+					className="tw-inline-flex tw-items-center tw-justify-center tw-mt-[var(--cmplz-space-s,_12px)] tw-min-h-[30px] tw-py-0 tw-px-[10px] tw-rounded-[4px] tw-border tw-border-solid tw-border-[#2271b1] tw-bg-[#fff] tw-text-[0.8125rem] tw-font-normal tw-text-[#2271b1] tw-no-underline tw-transition-all tw-duration-300 tw-ease-[ease] hover:tw-bg-[#f7f7f7] focus-visible:tw-outline focus-visible:tw-outline-2 focus-visible:tw-outline-offset-1 focus-visible:tw-outline-[color:var(--cmplz-accent-strong,_#1e73be)]"
 					target="_blank"
 					rel="noopener noreferrer"
 					text={__("More information","complianz-gdpr")}

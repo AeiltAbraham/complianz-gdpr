@@ -6,6 +6,8 @@ import useLicense from './LicenseData';
 import {useEffect} from '@wordpress/element';
 import {memo} from "@wordpress/element";
 import useProgress from "../../Dashboard/Progress/ProgressData";
+import { TextField } from '../../components/ui/TextField';
+import { Button } from '../../components/ui/Button';
 
 const License = (props) => {
 	const {fields, setChangedField, updateField} = useFields();
@@ -47,22 +49,36 @@ const License = (props) => {
 	 * license field.
 	 */
 	let processingClass = processing ? 'cmplz-processing' : '';
+	/*
+	 * Migrated to the C-2 system (Stage H.8). The raw `<input>` + `button button-default` (the
+	 * marker-move landmines) become the `ui/TextField` (type password) + `ui/Button` primitives. The
+	 * `.cmplz-license-field` flex row is MARKED `data-cmplz-ui` — a pure-primitive row (input + button
+	 * only) — so both primitives get the base reset (B1 border-style; the `--cmplz-*` tokens) regardless
+	 * of the still-deferred app-root marker move. The `.cmplz-license .cmplz-license-field` (flex),
+	 * `.cmplz-processing` (dim) and `.cmplz-task-element` (notice padding) rules in legacy-globals stay:
+	 * `cmplz-license` is auto-applied by Field.js (`cmplz-` + field.type) and TaskElement is shared.
+	 */
 	return (
 		<div className="components-base-control">
-			<div className="cmplz-license-field">
-				<input className="components-text-control__input"
-							 type="password"
-							 id={field.id}
-							 value={field.value}
-							 onChange={(e) => onChangeHandler(e.target.value)}
+			<div className="cmplz-license-field" data-cmplz-ui>
+				<TextField
+					type="password"
+					id={field.id}
+					value={field.value}
+					onChange={(e) => onChangeHandler(e.target.value)}
+					className="tw-flex-1"
 				/>
-				<button className="button button-default" disabled={processing}
-								onClick={() => toggleActivation()}>
+				<Button
+					variant="secondary"
+					disabled={processing}
+					onClick={() => toggleActivation()}
+					className="tw-ms-[var(--cmplz-space-xs,_8px)] tw-shrink-0"
+				>
 					{licenseStatus === 'valid' &&
 						__('Deactivate', 'complianz-gdpr') }
 					{licenseStatus !== 'valid' &&
 						__('Activate', 'complianz-gdpr')}
-				</button>
+				</Button>
 			</div>
 			{!noticesLoaded && <Placeholder></Placeholder>}
 			{noticesLoaded && <div className={processingClass}>

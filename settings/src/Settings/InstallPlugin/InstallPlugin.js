@@ -3,6 +3,7 @@ import Icon from "../../utils/Icon";
 import {__} from '@wordpress/i18n';
 import useInstallPluginData from "./InstallPluginData";
 import {memo} from "@wordpress/element";
+import { Button } from "../../components/ui/Button";
 
 const InstallPlugin = ( {field} ) => {
 	const {statusLoaded, startPluginAction, apiRequestActive, pluginAction, rating, upgradeUrl, setStatusLoaded} = useInstallPluginData();
@@ -83,15 +84,21 @@ const InstallPlugin = ( {field} ) => {
 			<div className="cmplz-suggested-plugin-desc-long">
 				{ description }
 			</div>
+			{ /* Migrated to the C-2 system (Stage H.8): the raw `button-secondary` / upgrade `<a>` (the
+			     marker-move landmines) become the `ui/Button` secondary primitive / a secondary
+			     button-styled link. The shared `.cmplz-suggested-plugin*` card chrome is KEPT (Dashboard
+			     OtherPlugins.js still renders it, so its legacy-globals rules survive); only the controls
+			     migrate. Markerless (still-legacy plugin card), so `tw-border-solid` pins the border-style
+			     (Preflight off, B1 not in scope — T-052); the loading Icon stays markerless. */ }
 			<div>
 				{pluginAction!=='upgrade-to-premium' &&
-					<button type="button" disabled={disabled} onClick={ ( e ) => onClickHandler(e) } className="button-secondary cmplz-install-plugin">
+					<Button variant="secondary" className="tw-border-solid" disabled={disabled} onClick={ ( e ) => onClickHandler(e) }>
 						{ buttonString }
-						{ apiRequestActive && <Icon name = "loading" color = 'grey' /> }
-					</button>
+						{ apiRequestActive && <span className="tw-ms-[10px] tw-flex"><Icon name = "loading" color = 'grey' /></span> }
+					</Button>
 				}
 				{pluginAction ==='upgrade-to-premium' &&
-					<a target="_blank" rel="noopener noreferrer" href={upgradeUrl} type="button" className="button-secondary cmplz-install-plugin">
+					<a target="_blank" rel="noopener noreferrer" href={upgradeUrl} className="tw-inline-flex tw-items-center tw-justify-center tw-min-h-[30px] tw-py-0 tw-px-[10px] tw-rounded-[4px] tw-border tw-border-solid tw-border-[#2271b1] tw-bg-[#fff] tw-text-[0.8125rem] tw-font-normal tw-text-[#2271b1] tw-no-underline tw-transition-all tw-duration-300 tw-ease-[ease] hover:tw-bg-[#f7f7f7] focus-visible:tw-outline focus-visible:tw-outline-2 focus-visible:tw-outline-offset-1 focus-visible:tw-outline-[color:var(--cmplz-accent-strong,_#1e73be)]">
 						{ buttonString }
 					</a>
 				}

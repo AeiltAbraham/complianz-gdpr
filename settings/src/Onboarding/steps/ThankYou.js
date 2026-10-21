@@ -2,10 +2,10 @@ import { __ } from '@wordpress/i18n';
 import { useNewOnboardingData } from "../NewOnboardingData";
 
 const ThankYou = () => {
-	const { currentStep, enableWsc } = useNewOnboardingData();
+	const { enableWsc } = useNewOnboardingData();
 	return (
-		<div className={`cmplz-modal-content-step ${currentStep}`}>
-			<div className='cmplz_thank-you'>
+		<div className="tw-flex tw-flex-col tw-items-center tw-gap-[var(--cmplz-space-m)]">
+			<div className="tw-flex tw-flex-col tw-items-center tw-text-center tw-gap-[var(--cmplz-space-m)] tw-mb-[var(--cmplz-space-m)] min-[576px]:tw-max-w-[60%]">
 
 				{enableWsc ? (
 					<svg width="180" height="162" viewBox="0 0 180 162" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -53,7 +53,7 @@ const ThankYou = () => {
 
 				)}
 
-				<p className='cmplz-h2'>{__("Thanks for joining us!", "complianz-gdpr")}</p>
+				<p className="tw-m-0 tw-text-[1.25rem] tw-font-semibold">{__("Thanks for joining us!", "complianz-gdpr")}</p>
 
 				{enableWsc &&
 					<p>{__("We've sent you an email - all you need to do is confirm your email address and you can start using Complianz.", "complianz-gdpr")}</p>

@@ -4,6 +4,17 @@ import useFields from '../Settings/Fields/FieldsData';
 /**
  * Generic alert/notice block component.
  *
+ * Migrated to the C-2 system (Stage H.8). The legacy `.cmplz-wscscan-alert*` chrome (relocated to
+ * legacy-globals.scss at H.5 from suggested-plugins.scss) is retired here — Alert was its only consumer
+ * — and the block is rebuilt as the approved C-2 warning callout: a warning-tinted card
+ * (`--cmplz-warning-surface` on a `--cmplz-warning` border), the same pattern WebSiteScanStatus uses
+ * (WSC_ALERT_CLS). It is MARKERLESS (rendered in the still-legacy CookieScan / Integrations /
+ * CookieDatabaseSync bodies), so every colour/space is a `var(--cmplz-*, <literal>)` whose fallback
+ * equals the token value (resolves now via the `#complianz-app` token broadening, auto-upgrades at the
+ * marker move), the border-style is pinned with `tw-border-solid` (Preflight is off — base reset B1 is
+ * not in scope markerless; the T-052 landmine), and the CTA button/anchor each carry `tw-border-solid`
+ * so they render bordered without a marker.
+ *
  * Props:
  *   title      {string}   - Bold heading text
  *   subtitle   {string}   - Short sub-heading below title (optional)
@@ -25,6 +36,19 @@ import useFields from '../Settings/Fields/FieldsData';
  * @param root0.ctaFieldId
  * @param root0.onCtaClick
  */
+
+// The callout card — warning-tinted, matching the WebSiteScanStatus WSC_ALERT_CLS pattern, plus the
+// legacy flex/gap/padding layout (gap 20px ≈ space-l, padding 20px ≈ space-l). Body text #0f172a is
+// >15:1 on the warning tint.
+const CARD_CLS =
+	'tw-flex tw-flex-wrap tw-items-center tw-gap-[var(--cmplz-space-l,_24px)] tw-rounded-[var(--cmplz-radius,_12px)] tw-border tw-border-solid tw-border-[color:var(--cmplz-warning,_#eab308)] tw-bg-[var(--cmplz-warning-surface,_#fbf4da)] tw-p-[var(--cmplz-space-l,_24px)]';
+
+// CTA button/anchor — the secondary-button look (white fill, accent-strong text/border) as a complete
+// literal class string (ADR-013), with `tw-border-solid` so it renders bordered in this markerless
+// subtree. Reused for the onCtaClick <button> and the ctaUrl <a> so both read identically.
+const CTA_CLS =
+	'tw-inline-flex tw-items-center tw-justify-center tw-m-0 tw-min-h-[30px] tw-py-0 tw-px-[10px] tw-rounded-[4px] tw-border tw-border-solid tw-border-[#2271b1] tw-bg-[#fff] tw-text-[0.8125rem] tw-font-normal tw-text-[#2271b1] tw-no-underline tw-cursor-pointer tw-transition-all tw-duration-300 tw-ease-[ease] hover:tw-bg-[#f7f7f7] focus-visible:tw-outline focus-visible:tw-outline-2 focus-visible:tw-outline-offset-1 focus-visible:tw-outline-[color:var(--cmplz-accent-strong,_#1e73be)]';
+
 const Alert = ( {
 	title,
 	subtitle,
@@ -41,18 +65,22 @@ const Alert = ( {
 		: null;
 
 	return (
-		<div className="cmplz-wscscan-alert">
+		<div className={ CARD_CLS }>
 			<Icon name={ icon } color={ iconColor } size={ 48 } />
-			<div className="cmplz-wscscan-alert-group">
-				<div className="cmplz-wscscan-alert-group-title">{ title }</div>
+			<div className="tw-flex tw-flex-col">
+				<div className="tw-text-[0.875rem] tw-font-semibold tw-text-[color:var(--cmplz-text,_#0f172a)]">
+					{ title }
+				</div>
 				{ subtitle && (
-					<div className="cmplz-wscscan-alert-group-desc">
+					<div className="tw-my-[var(--cmplz-space-2xs,_4px)] tw-whitespace-nowrap tw-text-[0.75rem] tw-text-[color:var(--cmplz-text-muted,_#475569)]">
 						{ subtitle }
 					</div>
 				) }
 			</div>
 			{ body && (
-				<div className="cmplz-wscscan-alert-desc-long">{ body }</div>
+				<div className="tw-flex-1 tw-me-auto tw-min-w-[25ch] tw-text-[0.75rem] tw-leading-[1.6] tw-text-[color:var(--cmplz-text,_#0f172a)]">
+					{ body }
+				</div>
 			) }
 			{ ( resolvedUrl || onCtaClick ) && ctaLabel && (
 				<div>
@@ -61,7 +89,7 @@ const Alert = ( {
 							href={ resolvedUrl }
 							target="_blank"
 							rel="noopener noreferrer"
-							className="button button-default"
+							className={ CTA_CLS }
 						>
 							{ ctaLabel }
 						</a>
@@ -69,7 +97,7 @@ const Alert = ( {
 						<button
 							type="button"
 							onClick={ onCtaClick }
-							className="button button-default"
+							className={ CTA_CLS }
 						>
 							{ ctaLabel }
 						</button>

@@ -4,7 +4,7 @@ import { __ } from '@wordpress/i18n';
 import CheckBox from '../components/CheckBox';
 
 const Plugins = () => {
-	const { currentStep, plugins, fetchPlugins, setPlugins, setEnablePluginInstallation, setIsContentLoading } = useNewOnboardingData();
+	const { plugins, fetchPlugins, setPlugins, setEnablePluginInstallation, setIsContentLoading } = useNewOnboardingData();
 
 	useEffect(() => {
 		const loadPlugins = async () => {
@@ -37,7 +37,7 @@ const Plugins = () => {
 	};
 
 	return (
-		<div className={`cmplz-modal-content-step ${currentStep}`}>
+		<div className="tw-flex tw-flex-col tw-gap-[var(--cmplz-space-m)]">
 			<p>{__("You want more Really Simple Plugins? Select below plugins you'd like to install for free! It only takes 10 seconds..", "complianz-gdpr")}</p>
 			{plugins && plugins.map((plugin, i) => <CheckBox key={plugin.slug} plugin={plugin} handleChange={handleChange} />)}
 		</div>

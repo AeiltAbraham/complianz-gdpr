@@ -10,9 +10,10 @@ import { clsx } from "../components/ui/cx";
 // (only Skeletons), so the scoped base reset (base.css B1-B5, `[data-cmplz-ui] *`) has nothing legacy to
 // strip (learnings 2026-10-11: mark only fully-migrated subtrees).
 //
-// The `<Error>` branch (shown by OtherPlugins/ProgressBlock on a load failure) renders LEGACY chrome (a
-// `button button-default` link + h3/ul styled by wp-admin): it stays OUTSIDE the island, UNMARKED, so the
-// reset never reaches it (FR-019 — behavior preserved). The outer `.cmplz-placeholder` hook is KEPT because
+// The `<Error>` branch (shown by OtherPlugins/ProgressBlock on a load failure) was migrated to the C-2
+// system at Stage H.8 (tw- danger callout + a secondary button-styled link, each with `tw-border-solid`);
+// it stays OUTSIDE this island, UNMARKED, carrying its own border-style so the reset is not needed
+// (FR-019 — behavior preserved). The outer `.cmplz-placeholder` hook is KEPT because
 // retained modules still target it as a descendant (other-plugins.scss makes it transparent; progress.scss
 // adds block padding); dropping it would orphan those overrides. Logical CSS only (ADR-007).
 const ROWS = "tw-flex tw-flex-col tw-gap-[var(--cmplz-space-s)] tw-py-[var(--cmplz-space-xs)]";

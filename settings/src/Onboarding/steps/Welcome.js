@@ -13,7 +13,6 @@ const Welcome = () => {
 		setNextStepDisabled,
 		setEnableWsc,
 		isValidEmail,
-		currentStep,
 		isContentLoading,
 		setIsContentLoading,
 	} = useNewOnboardingData();
@@ -49,7 +48,7 @@ const Welcome = () => {
 	};
 
 	return (
-		<div className={`cmplz-modal-content-step ${currentStep}`}>
+		<div className="tw-flex tw-flex-col tw-gap-[var(--cmplz-space-m)]">
 			{
 				isContentLoading ? <Placeholder /> : <>
 					<p>{__("In the latest release of Complianz, we introduce our newest Website Scan. This scan will not only retrieve services and cookies but also help you configure our plugin and keep you up-to-date if changes are made that might need legal changes.", "complianz-gdpr")}</p>
