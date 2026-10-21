@@ -4,6 +4,7 @@ import { __ } from '@wordpress/i18n';
 import Icon from "../../utils/Icon";
 import {memo} from "@wordpress/element";
 import CheckboxGroup from '../Inputs/CheckboxGroup';
+import {Button} from "../../components/ui/Button";
 
 const DataBreachReportsControl = () => {
 	const { documents, documentsLoaded, fetchData, deleteDocuments, editDocument} = useDataBreachReportsData();
@@ -239,15 +240,15 @@ const DataBreachReportsControl = () => {
 					{selectedDocuments.length>1 && __("%s items selected", "complianz-gdpr").replace("%s", selectedDocuments.length)}
 					{selectedDocuments.length===1 && __("1 item selected", "complianz-gdpr")}
 					<div className="cmplz-selected-document-controls">
-						<button disabled={btnDisabled || selectedDocuments.length>1} className="button button-default" onClick={() => editDocument(selectedDocuments[0])}>{__("Edit","complianz-gdpr")}</button>
-						{showDownloadButton && <button disabled={btnDisabled} className="button button-default cmplz-btn-reset" onClick={() => downloadDocuments()}>
+						<Button variant="secondary" className="tw-border-solid" disabled={btnDisabled || selectedDocuments.length>1} onClick={() => editDocument(selectedDocuments[0])}>{__("Edit","complianz-gdpr")}</Button>
+						{showDownloadButton && <Button variant="secondary" className="tw-border-solid tw-gap-[var(--cmplz-space-xs,_8px)]" disabled={btnDisabled} onClick={() => downloadDocuments()}>
 							{__("Download Data Breach Report", "complianz-gdpr")}
 							{downloading && <Icon name = "loading" color = 'grey' />}
-						</button> }
-						{!showDownloadButton && <button disabled={true} className="button button-default cmplz-btn-reset" onClick={() => downloadDocuments()}>
+						</Button> }
+						{!showDownloadButton && <Button variant="secondary" className="tw-border-solid" disabled={true} onClick={() => downloadDocuments()}>
 							{__("Reporting not required", "complianz-gdpr")}
-						</button> }
-						<button className="button button-default cmplz-reset-button" onClick={() => onDeleteDocuments(selectedDocuments)}>{__("Delete", "complianz-gdpr")}</button>
+						</Button> }
+						<Button variant="error" className="tw-border-solid" onClick={() => onDeleteDocuments(selectedDocuments)}>{__("Delete", "complianz-gdpr")}</Button>
 					</div>
 				</div>
 			}

@@ -8,6 +8,7 @@ import DataBreachConclusion from "./DataBreachConclusion";
 import {memo} from "@wordpress/element";
 import LabelWrapper from "../Fields/LabelWrapper";
 import SelectInput from "../Inputs/SelectInput";
+import {Button} from "../../components/ui/Button";
 
 const CreateDataBreachReport = ({label, field}) => {
 	const { fields, fileName, fetching, loadingFields, updating, regions, documentsLoaded, resetEditDocumentId, savedDocument, fetchData, fetchFields, updateField, save, editDocumentId, region, setRegion} = useDataBreachReportsData();
@@ -145,15 +146,15 @@ const CreateDataBreachReport = ({label, field}) => {
 									  type={'button'}/>
 						<div className='cmplz-table-header-controls'>
 							{editDocumentId && <>
-								<button disabled={updating} className="button button-default" onClick={()=>{resetEditDocumentId();setStep(0)}}>{__("Cancel",'complianz-gdpr')}</button>
-								<button disabled={updating} className="button button-primary" onClick={()=>setStep(step+1)}>{__("Next",'complianz-gdpr')}</button>
-								<button disabled={updating} className="button button-primary" onClick={()=>saveFields()}>{__("Save",'complianz-gdpr')}</button>
+								<Button variant="secondary" className="tw-border-solid" disabled={updating} onClick={()=>{resetEditDocumentId();setStep(0)}}>{__("Cancel",'complianz-gdpr')}</Button>
+								<Button variant="primary" className="tw-border-solid" disabled={updating} onClick={()=>setStep(step+1)}>{__("Next",'complianz-gdpr')}</Button>
+								<Button variant="primary" className="tw-border-solid" disabled={updating} onClick={()=>saveFields()}>{__("Save",'complianz-gdpr')}</Button>
 							</>}
 							{!editDocumentId && <>
-								<button disabled={createBtnDisabled || loadingFields} className="button button-primary" onClick={()=>onCreateHandler() }>
+								<Button variant="primary" className="tw-border-solid tw-gap-[var(--cmplz-space-xs,_8px)]" disabled={createBtnDisabled || loadingFields} onClick={()=>onCreateHandler() }>
 									{__("Create",'complianz-gdpr')}
 									{loadingFields && <Icon name = "loading" color = 'grey' />}
-								</button>
+								</Button>
 							</>}
 						</div>
 					</div>
@@ -171,33 +172,33 @@ const CreateDataBreachReport = ({label, field}) => {
 					}
 					<div className="cmplz-table-header">
 						<div className='cmplz-table-header-controls'>
-							<button disabled={updating} className="button button-default" onClick={()=>{resetEditDocumentId();setStep(0)}}>
+							<Button variant="secondary" className="tw-border-solid" disabled={updating} onClick={()=>{resetEditDocumentId();setStep(0)}}>
 								{ step <= lastStep && __("Cancel",'complianz-gdpr')}
 								{ step > lastStep && __("Exit",'complianz-gdpr')}
-							</button>
-							{ step <= lastStep && <button className="button button-default" onClick={()=>setStep(step-1)}>{__("Previous","complianz-gdpr")}</button>}
+							</Button>
+							{ step <= lastStep && <Button variant="secondary" className="tw-border-solid" onClick={()=>setStep(step-1)}>{__("Previous","complianz-gdpr")}</Button>}
 
 							{ step < lastStep &&
 								<>
-									<button className="button button-primary" onClick={()=>setStep(step+1)}>{__("Next","complianz-gdpr")}</button>
+									<Button variant="primary" className="tw-border-solid" onClick={()=>setStep(step+1)}>{__("Next","complianz-gdpr")}</Button>
 								</>
 							}
 
 							{ step === lastStep &&
 								<>
-									<button className="button button-primary" onClick={()=>saveAndExit()}>
+									<Button variant="primary" className="tw-border-solid tw-gap-[var(--cmplz-space-xs,_8px)]" onClick={()=>saveAndExit()}>
 										{__("Finish","complianz-gdpr")}
 										{updating && <Icon name = "loading" color = 'grey' />}
-									</button>
+									</Button>
 								</>
 							}
 							{ step > lastStep && savedDocument && savedDocument.has_to_be_reported && <>
-								<button disabled={downloadBtnDisabled} className="button button-primary" onClick={()=>download()}>
+								<Button variant="primary" className="tw-border-solid" disabled={downloadBtnDisabled} onClick={()=>download()}>
 									{__("Download","complianz-gdpr")}
-								</button>
+								</Button>
 							</>}
 							{editDocumentId && step < lastStep && <>
-								<button disabled={updating} className="button button-primary" onClick={()=>saveFields()}>{__("Save",'complianz-gdpr')}</button>
+								<Button variant="primary" className="tw-border-solid" disabled={updating} onClick={()=>saveFields()}>{__("Save",'complianz-gdpr')}</Button>
 							</>}
 					</div></div>
 				</>

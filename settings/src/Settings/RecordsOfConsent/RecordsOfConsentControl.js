@@ -3,6 +3,7 @@ import { __ } from '@wordpress/i18n';
 import useRecordsOfConsentData from './useRecordsOfConsentData';
 import { memo } from '@wordpress/element';
 import CheckboxGroup from '../Inputs/CheckboxGroup';
+import { Button } from '../../components/ui/Button';
 const RecordsOfConsentControl = () => {
 	const [ indeterminate, setIndeterminate ] = useState( false );
 	const [ entirePageSelected, setEntirePageSelected ] = useState( false );
@@ -350,23 +351,25 @@ const RecordsOfConsentControl = () => {
 						__( '1 item selected', 'complianz-gdpr' ) }
 					<div className="cmplz-selected-document-controls">
 						{ selectedRecords.length > 0 && (
-							<button
+							<Button
+								variant="secondary"
+								className="tw-border-solid"
 								disabled={ btnDisabled }
-								className="button button-default cmplz-btn-reset"
 								onClick={ () => downloadRecords() }
 							>
 								{ __(
 									'Download Proof of Consent',
 									'complianz-gdpr'
 								) }
-							</button>
+							</Button>
 						) }
-						<button
-							className="button button-default cmplz-reset-button"
+						<Button
+							variant="error"
+							className="tw-border-solid"
 							onClick={ () => onDeleteRecords( selectedRecords ) }
 						>
 							{ __( 'Delete', 'complianz-gdpr' ) }
-						</button>
+						</Button>
 					</div>
 				</div>
 			) }

@@ -2,8 +2,26 @@ import {useState, useEffect} from "@wordpress/element";
 import { __ } from '@wordpress/i18n';
 import useDatarequestsData from "./useDatarequestsData";
 import {memo} from "@wordpress/element";
+import {Button} from "../../components/ui/Button";
 
 import CheckboxGroup from "../Inputs/CheckboxGroup";
+
+// C-2 field look for the native status <select> (Stage H.6). A styled native <select> — not SelectInput —
+// keeps the element's own `aria-label` (the gated #tools/data-requests axe select-name fix, axe.js) and its
+// native interaction; SelectInput does not plumb aria-label. Markerless, so `tw-border-solid` supplies the
+// base-reset border-style (B1) under Preflight-off; tokens carry literal fallbacks (resolve now, auto-upgrade
+// at the marker move). Mirrors the migrated .cmplz-datatable-search field look in data-table.css.
+// `tw-h-auto` + `tw-mt-[space-s]` override the retained shared legacy `.cmplz-table-header-controls select`
+// rule (`height:20px; margin-top:10px`, legacy-globals.scss) — the `important:` scope boosts these tw-
+// utilities to (1,1,0), beating that (0,2,1) rule — so the select is a full field, top-aligned with the
+// sibling search input (also margin-block-start space-s).
+const statusSelectCls =
+	"tw-border tw-border-solid tw-border-[color:var(--cmplz-field-border,_#94a3b8)] " +
+	"tw-rounded-[var(--cmplz-radius-field,_6px)] tw-h-auto tw-mt-[var(--cmplz-space-s,_12px)] " +
+	"tw-py-[5px] tw-px-[var(--cmplz-space-xs,_8px)] " +
+	"tw-text-[0.8125rem] tw-leading-normal tw-text-[color:var(--cmplz-text,_#0f172a)] " +
+	"tw-bg-[var(--cmplz-field-surface,_#ffffff)] tw-outline-none " +
+	"focus:tw-border-[color:var(--cmplz-accent-strong,_#1e73be)] focus:tw-shadow-[0_0_0_2px_var(--cmplz-accent-strong,_#1e73be)]";
 const progressComponent = () => {
 	return (
 		<div>
@@ -227,7 +245,7 @@ const DatarequestsControl = () => {
 		<>
 			<div className="cmplz-table-header">
 				<div className="cmplz-table-header-controls">
-					<select value={status} onChange={(e) => handleStatusFilter(e.target.value)} aria-label={__('Filter by status',"complianz-gdpr")}>
+					<select className={statusSelectCls} value={status} onChange={(e) => handleStatusFilter(e.target.value)} aria-label={__('Filter by status',"complianz-gdpr")}>
 						<option value='all'>{__('All',"complianz-gdpr")}</option>
 						<option value='open'>{__('Open',"complianz-gdpr")}</option>
 						<option value='resolved'>{__('Resolved',"complianz-gdpr")}</option>
@@ -241,8 +259,8 @@ const DatarequestsControl = () => {
 					{selectedRecords.length>1 && __("%s items selected", "complianz-gdpr").replace("%s", selectedRecords.length)}
 					{selectedRecords.length===1 && __("1 item selected", "complianz-gdpr")}
 					<div className="cmplz-selected-document-controls">
-						{records.filter((record) => {return selectedRecords.includes(record.ID) && record.resolved!=1 }).length>0 && <button disabled={fetching} className="button button-default" onClick={() => resolveRecords(selectedRecords)}>{__("Mark as resolved", "complianz-gdpr")}</button> }
-						<button disabled={fetching} className="button button-default cmplz-reset-button" onClick={() => onDeleteRecords(selectedRecords)}>{__("Delete", "complianz-gdpr")}</button>
+						{records.filter((record) => {return selectedRecords.includes(record.ID) && record.resolved!=1 }).length>0 && <Button variant="secondary" className="tw-border-solid" disabled={fetching} onClick={() => resolveRecords(selectedRecords)}>{__("Mark as resolved", "complianz-gdpr")}</Button> }
+						<Button variant="error" className="tw-border-solid" disabled={fetching} onClick={() => onDeleteRecords(selectedRecords)}>{__("Delete", "complianz-gdpr")}</Button>
 					</div>
 				</div>
 			}

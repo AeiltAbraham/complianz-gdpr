@@ -2,6 +2,7 @@ import {useState, useEffect} from "@wordpress/element";
 import CheckboxGroup from '../Inputs/CheckboxGroup';
 import { __ } from '@wordpress/i18n';
 import useProofOfConsentData from "./useProofOfConsentData";
+import {Button} from "../../components/ui/Button";
 import {memo} from "@wordpress/element";
 
 const ProofOfConsentControl = () => {
@@ -206,8 +207,8 @@ const ProofOfConsentControl = () => {
 						{selectedDocuments.length>1 && __("%s items selected", "complianz-gdpr").replace("%s", selectedDocuments.length)}
 						{selectedDocuments.length===1 && __("1 item selected", "complianz-gdpr")}
 						<div className="cmplz-selected-document-controls">
-							<button disabled={btnDisabled} className="button button-default cmplz-btn-reset" onClick={() => downloadDocuments()}>{__("Download Proof of Consent", "complianz-gdpr")}</button>
-							<button className="button button-default cmplz-reset-button" onClick={() => onDeleteDocuments(selectedDocuments)}>{__("Delete", "complianz-gdpr")}</button>
+							<Button variant="secondary" className="tw-border-solid" disabled={btnDisabled} onClick={() => downloadDocuments()}>{__("Download Proof of Consent", "complianz-gdpr")}</Button>
+							<Button variant="error" className="tw-border-solid" onClick={() => onDeleteDocuments(selectedDocuments)}>{__("Delete", "complianz-gdpr")}</Button>
 						</div>
 					</div>
 			}

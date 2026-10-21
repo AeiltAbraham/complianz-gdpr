@@ -392,29 +392,15 @@ a.button, button.button, input.button {
 // the legacy tokens, same `#complianz div[class^="cmplz-wizard-"]` scope. Delete in Phase 5. Consumers:
 //   - `.cmplz-grid-item-content` flex body + `.cmplz-settings-block-intro` padding: DELETED at T-046
 //     (section 1b migrated SettingsGroup.js + SettingsPlaceholder.js, their only consumers, to tw-).
-//   - `.cmplz-create-document`: CreateDocuments/CreateDocument.js.
 //   - the @wordpress/components tweaks: CheckboxControl.js / License.js / Password.js (ToggleControl, Flex).
 //   - `.button` row layout + `.cmplz-field-button`/`.cmplz-export`/`.cmplz-import`: the export / import /
 //     records-export / proof-of-consent bodies.
 //   - the `.cmplz-license` task tail: License/License.js.
 #complianz {
 	div[class^="cmplz-wizard-"] {
-		.cmplz-create-document {
-			padding: 10px 0;
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-
-			.cmplz-icon {
-				margin-right: 10px;
-			}
-
-			input {
-				width: 50%;
-				min-width: 200px;
-				margin-right: 10px;
-			}
-		}
+		// `.cmplz-create-document` (CreateDocuments/CreateDocument.js) DELETED at Stage H.6: its row +
+		// raw `<input>` migrated to tw- utilities + the ui/TextField primitive (flex row, 10px gap,
+		// 50%/200px field), so this body-specific rule is last-consumed (ADR-005).
 
 		.components-flex {
 			.components-flex-item label {

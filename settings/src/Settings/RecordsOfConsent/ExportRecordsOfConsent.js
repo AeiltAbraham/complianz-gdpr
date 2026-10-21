@@ -2,6 +2,8 @@ import { __ } from '@wordpress/i18n';
 import {useState, useEffect} from "@wordpress/element";
 import useRecordsOfConsentData from "./useRecordsOfConsentData";
 import Icon from "../../utils/Icon";
+import {Button} from "../../components/ui/Button";
+import {downloadButtonCls} from "../../components/ui/downloadLink";
 import useDate from "../../DateRange/useDateStore";
 import {memo} from "@wordpress/element";
 const ExportRecordsOfConsent = () => {
@@ -31,10 +33,15 @@ const ExportRecordsOfConsent = () => {
 			<div className={'cmplz-field-button cmplz-table-header'}>
 				<div className="cmplz-table-header-controls">
 					{DateRange && <DateRange />}
-					<button disabled={generating} className="button button-default cmplz-field-button" onClick={()=>startExport()} >
+					<Button
+						variant="secondary"
+						className="tw-border-solid tw-gap-[var(--cmplz-space-xs,_8px)]"
+						disabled={generating}
+						onClick={()=>startExport()}
+					>
 						{__("Export to CSV","complianz-gdpr")}
 						{generating && <><Icon name = "loading" color = 'grey' />&nbsp;{progress}%</>}
-					</button>
+					</Button>
 				</div>
 			</div>
 			{ progress>=100 && (exportLink!=='' || noData ) &&
@@ -42,7 +49,7 @@ const ExportRecordsOfConsent = () => {
 					{!noData && __("Your Records Of Consent Export has been completed.","complianz-gdpr")}
 					{noData && __("Your selection does not contain any data.","complianz-gdpr")}
 					<div className="cmplz-selected-document-controls">
-						{!noData && <a className="button button-default" download href={exportLink}>{__("Download","complianz-gdpr")}</a>}
+						{!noData && <a className={downloadButtonCls} download href={exportLink}>{__("Download","complianz-gdpr")}</a>}
 					</div>
 				</div>
 			}

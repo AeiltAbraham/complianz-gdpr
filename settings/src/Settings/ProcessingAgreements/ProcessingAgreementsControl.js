@@ -4,6 +4,7 @@ import { __ } from '@wordpress/i18n';
 import Icon from "../../utils/Icon";
 import {memo} from "@wordpress/element";
 import CheckboxGroup from '../Inputs/CheckboxGroup';
+import {Button} from "../../components/ui/Button";
 
 const ProcessingAgreementsControl = () => {
 	const { documents, documentsLoaded, fetchData, deleteDocuments, editDocument} = useProcessingAgreementsData();
@@ -228,14 +229,14 @@ const ProcessingAgreementsControl = () => {
 					{selectedDocuments.length>1 && __("%s items selected", "complianz-gdpr").replace("%s", selectedDocuments.length)}
 					{selectedDocuments.length===1 && __("1 item selected", "complianz-gdpr")}
 					<div className="cmplz-selected-document-controls">
-						<button disabled={btnDisabled || selectedDocuments.length>1} className="button button-default" onClick={(e) => editDocument(selectedDocuments[0])}>{__("Edit","complianz-gdpr")}</button>
-						<button disabled={btnDisabled} className="button button-default cmplz-btn-reset" onClick={() => downloadDocuments()}>
+						<Button variant="secondary" className="tw-border-solid" disabled={btnDisabled || selectedDocuments.length>1} onClick={(e) => editDocument(selectedDocuments[0])}>{__("Edit","complianz-gdpr")}</Button>
+						<Button variant="secondary" className="tw-border-solid tw-gap-[var(--cmplz-space-xs,_8px)]" disabled={btnDisabled} onClick={() => downloadDocuments()}>
 							{__("Download Processing Agreement", "complianz-gdpr")}
 							{downloading && <Icon name = "loading" color = 'grey' />}
-						</button>
-						<button className="button button-default cmplz-reset-button" onClick={() => onDeleteDocuments(selectedDocuments)}>
+						</Button>
+						<Button variant="error" className="tw-border-solid" onClick={() => onDeleteDocuments(selectedDocuments)}>
 							{__("Delete", "complianz-gdpr")}
-						</button>
+						</Button>
 					</div>
 				</div>
 			}
