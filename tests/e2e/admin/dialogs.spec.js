@@ -16,9 +16,12 @@
  *     both with focus trap + Escape + focus-return. The specs locate it by a `dialog`-or-`alertdialog`
  *     union (Playwright's role match is exact), so they hold across that swap unchanged — DB-09 subject.
  *   - The onboarding modal (Onboarding/NewOnboarding.js), shown when the URL carries `websitescan`.
- *     It is a plain (non-ARIA) modal with a labelled Close control and step navigation; it is NOT part
- *     of the Phase-2 Radix migration, so it is characterised for open / step / close as it behaves
- *     today (it has no focus trap or Escape handler, so those are not asserted for it).
+ *     As of Stage H.8 it is rebuilt on the Radix `Dialog` primitive (maintainer sign-off 2026-10-21,
+ *     which approved this characterization change): it now exposes `role="dialog"`, a focus trap and
+ *     Escape-to-dismiss — the a11y affordances the legacy plain-div modal lacked. Outside-click is
+ *     intentionally NOT a dismiss (progress must not be lost by a stray click), so that is not
+ *     asserted. It is still characterised for open / step / close, plus the new role/focus/Escape
+ *     contracts.
  *
  * Determinism (§8.1.2): the confirm action is Reset-all-data — destructive. Its test intercepts the
  * `reset_settings` REST call and fulfils a benign success, so the confirm path never reaches the
@@ -130,8 +133,16 @@ async function openOnboarding( page ) {
 	await expect( page.getByText( 'Welcome to Complianz', { exact: false } ).first() ).toBeVisible( { timeout: 30_000 } );
 }
 
-test( 'onboarding modal opens and advances a step', async ( { page } ) => {
+test( 'onboarding modal opens as a dialog, traps focus, and advances a step', async ( { page } ) => {
 	await openOnboarding( page );
+	// As of H.8 it is a Radix Dialog: it exposes role="dialog" and moves focus inside (focus trap).
+	const dialog = page.getByRole( 'dialog' );
+	await expect( dialog ).toBeVisible();
+	const focusInDialog = await page.evaluate( () => {
+		const d = document.querySelector( '[role=dialog]' );
+		return !! d && d.contains( document.activeElement );
+	} );
+	expect( focusInDialog ).toBe( true );
 	// Open state exposes a labelled Close control and the step navigation.
 	await expect( page.getByRole( 'button', { name: 'Close', exact: true } ) ).toBeVisible();
 	// Advancing: "Continue" moves to the next step (its title changes).
@@ -144,4 +155,13 @@ test( 'onboarding modal closes via its Close control', async ( { page } ) => {
 	await page.getByRole( 'button', { name: 'Close', exact: true } ).click();
 	// The modal is dismissed: its content is gone.
 	await expect( page.getByText( 'Welcome to Complianz', { exact: false } ) ).toHaveCount( 0, { timeout: 10_000 } );
+} );
+
+test( 'onboarding modal closes on Escape (H.8 Radix dialog)', async ( { page } ) => {
+	await openOnboarding( page );
+	await expect( page.getByRole( 'dialog' ) ).toBeVisible();
+	await page.keyboard.press( 'Escape' );
+	// Escape dismisses the dialog (routed to closeModal → the stubbed dismiss); its content is gone.
+	await expect( page.getByRole( 'dialog' ) ).toHaveCount( 0, { timeout: 10_000 } );
+	await expect( page.getByText( 'Welcome to Complianz', { exact: false } ) ).toHaveCount( 0 );
 } );

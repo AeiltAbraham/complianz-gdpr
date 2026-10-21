@@ -1,7 +1,15 @@
 import { useNewOnboardingData, steps } from "../NewOnboardingData";
 import { memo, useEffect, useState } from "@wordpress/element";
 import Icon from "../../utils/Icon";
+import { Button } from "../../components/ui/Button";
+import { clsx } from "../../components/ui/cx";
 
+// Onboarding footer button (Stage H.8). The raw `button button-default`/`button-primary` become the
+// `ui/Button` primitive (prev → secondary, next → primary); it renders inside the Radix Dialog portal
+// (a marked `data-cmplz-ui` island), so the base reset supplies the border-style. The next button keeps
+// its loading spinner, now INSIDE the blue primary button (white on blue, visible — the legacy white
+// spinner sat on a grey footer that no longer exists). On <576px both the wrapper and button go
+// full-width (legacy column layout). Step/label/disabled logic is unchanged.
 const OnboardingButton = ({ type, ...otherProps }) => {
 	const {
 		goToNextStep,
@@ -14,7 +22,7 @@ const OnboardingButton = ({ type, ...otherProps }) => {
 		currentStep
 	} = useNewOnboardingData();
 
-	const [prevButtonLabel, setPrevButtonLabel] = useState(steps[currentStep].prevButton);
+	const [prevButtonLabel] = useState(steps[currentStep].prevButton);
 	const [nextButtonLabel, setNextButtonLabel] = useState(steps[currentStep].nextButton);
 	const [buttonDisabledStatus, setButtonDisabledStatus] = useState(false);
 
@@ -57,19 +65,17 @@ const OnboardingButton = ({ type, ...otherProps }) => {
 	}
 
 	return (
-		<div className={`cmplz-modal-footer-btn-wrap cmplz-btn-${type}`}>
-			{(isInstalling || isLoading) && type === 'next' && <Icon name="loading" color={type === 'next' ? 'white' : 'blue'} size={14} />}
-			<button
-				type="button"
+		<div className={clsx('tw-flex tw-items-center', type === 'next' && 'tw-ms-auto', 'max-[576px]:tw-w-full')}>
+			<Button
+				variant={type === 'prev' ? 'secondary' : 'primary'}
 				onClick={handleClick}
-				className={`button ${type === 'prev' ? 'button-default' : 'button-primary'}`}
 				disabled={buttonDisabledStatus}
+				className="tw-gap-[var(--cmplz-space-xs)] tw-px-[var(--cmplz-space-l)] max-[576px]:tw-w-full"
 				{...otherProps}
 			>
-				<span>
-					{type === 'next' ? nextButtonLabel : prevButtonLabel}
-				</span>
-			</button>
+				{(isInstalling || isLoading) && type === 'next' && <Icon name="loading" color="white" size={14} />}
+				{type === 'next' ? nextButtonLabel : prevButtonLabel}
+			</Button>
 		</div>
 	)
 }

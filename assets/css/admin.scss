@@ -27,10 +27,10 @@
 
 @import 'variables.scss';
 @import 'admin/base.scss';
-  // modules/modal.scss removed (ADR-005, Stage H.5): relocated VERBATIM to legacy-globals.scss. The
-  // legacy Modal/Modal.js is dead, but the live NewOnboarding/websitescan modal (NewOnboarding.js)
-  // renders .cmplz-modal{-backdrop,-header,-header-branding,-content,-footer,-close} and relies on this
-  // base chrome (NewOnboarding.scss only overrides it).
+  // modules/modal.scss removed (ADR-005, Stage H.5): relocated to legacy-globals.scss, then DELETED
+  // there at Stage H.8 — the live NewOnboarding/websitescan modal was rebuilt on the Radix ui/Dialog
+  // primitive (and NewOnboarding.scss retired), so the only remaining `.cmplz-modal*` references are the
+  // dead, unimported Modal.js / Modal/Modal.js. No live consumer remains.
   // modules/bullets.scss KEPT (ADR-005, Stage H.5): it has NO live free-edition consumer (nothing renders
   // the `.cmplz-bullet` class — Icon.js emits `cmplz-icon-bullet`, not `cmplz-bullet`), BUT the design note
   // design/dashboard.md:28 documents that `.cmplz-bullet` may back PREMIUM dashboard blocks via the

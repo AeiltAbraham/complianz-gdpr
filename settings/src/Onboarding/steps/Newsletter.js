@@ -5,6 +5,11 @@ import DOMPurify from "dompurify";
 import OnboardingInput from '../components/Input';
 import Placeholder from '../../Placeholder/Placeholder';
 import OnboardingError from "../components/OnboardingError";
+import { Button } from "../../components/ui/Button";
+
+// Scroll box for the injected newsletter document (Stage H.8) — see Terms.js for the rationale.
+const TERMS_SCROLL_CLS =
+	'tw-mb-4 tw-max-h-[160px] tw-overflow-y-auto tw-rounded-[var(--cmplz-radius-s)] tw-border tw-border-solid tw-border-[color:var(--cmplz-border)] tw-bg-[var(--cmplz-surface-sunken)] tw-p-[var(--cmplz-space-s)] max-[576px]:tw-max-h-[40vh]';
 
 const Newsletter = () => {
 	const {
@@ -16,7 +21,6 @@ const Newsletter = () => {
 		enableWsc,
 		isValidEmail,
 		setNextStepDisabled,
-		currentStep,
 		newsletterTerms,
 		isContentLoading,
 		setIsContentLoading,
@@ -54,18 +58,18 @@ const Newsletter = () => {
 	};
 
 	return (
-		<div className={`cmplz-modal-content-step ${currentStep}`}>
+		<div className="tw-flex tw-flex-col tw-gap-[var(--cmplz-space-m)]">
 			{isContentLoading ? <Placeholder /> :
 				<>
 					<p>{__("We want you to get the most out of Complianz. So over the next week we'll be sending eight tips and tricks to your inbox - be sure to keep a lookout.", "complianz-gdpr")}</p>
 					{fetchError &&
 						<OnboardingError>
-							<button className="button button-default" onClick={fetchDoc}>{__('Try again!', 'complianz-gdpr')}</button>
+							<Button variant="secondary" onClick={fetchDoc}>{__('Try again!', 'complianz-gdpr')}</Button>
 						</OnboardingError>
 					}
 					{sanitized &&
 						<>
-							<div className='wrap-terms' dangerouslySetInnerHTML={{ __html: sanitized }}></div>
+							<div className={TERMS_SCROLL_CLS} dangerouslySetInnerHTML={{ __html: sanitized }}></div>
 							{!enableWsc &&
 								<OnboardingInput
 									type="email"
