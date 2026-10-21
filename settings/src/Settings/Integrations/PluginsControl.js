@@ -211,6 +211,7 @@ const PluginsControl = () => {
 			<div className="cmplz-table-header">
 				{ plugins.length > 5 && (
 					<input
+						className="cmplz-datatable-search"
 						type="text"
 						placeholder={ __( 'Search', 'complianz-gdpr' ) }
 						value={ searchValue }

@@ -7,6 +7,8 @@ import useFields from "../Settings/Fields/FieldsData";
 import useProgress from "./Progress/ProgressData";
 import useMenu from "../Menu/MenuData";
 import DOMPurify from 'dompurify';
+import { Button } from "../components/ui/Button";
+import { secondaryLinkButtonCls } from "../components/ui/downloadLink";
 
 const TaskElement = ({notice, index}) => {
 	const {dismissNotice, fetchProgressData} = useProgress();
@@ -50,9 +52,14 @@ const TaskElement = ({notice, index}) => {
 			<p className="cmplz-task-message tw-flex-1 tw-m-0"
 		    	dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(notice.message) }}></p>{/* nosemgrep: react-dangerouslysetinnerhtml */}
 			{urlIsExternal && notice.url && <a target="_blank" href={notice.url} rel="noopener noreferrer">{__("More info", "complianz-gdpr")}</a> }
-			{notice.clear_cache_id && <span className="cmplz-task-enable button button-secondary" onClick={ () => handleClearCache(notice.clear_cache_id ) }>{__("Re-check", "complianz-gdpr")}</span> }
-			{!premium && !urlIsExternal && notice.url && <a className="cmplz-task-enable button button-secondary" href={notice.url}>{__("View", "complianz-gdpr")}</a> }
-			{!premium && notice.highlight_field_id && <span className="cmplz-task-enable button button-secondary" onClick={() => handleClick()}>{__("View", "complianz-gdpr")}</span> }
+			{/* Stage H.9: the raw `button button-secondary` task controls → the C-2 secondary button look
+			    (the dead `cmplz-task-enable` styling hook — no CSS rule, no JS/PHP binding, inline onClick —
+			    is dropped). The two `<span onClick>` become real `<button>`s via `ui/Button` (keyboard/role
+			    a11y); the `<a href>` NAVIGATES (internal URL) so it stays an anchor. Markerless Dashboard task
+			    list, so `tw-border-solid` / the link class pins the border-style (Preflight off, B1 — T-052). */}
+			{notice.clear_cache_id && <Button variant="secondary" className="tw-border-solid" onClick={ () => handleClearCache(notice.clear_cache_id ) }>{__("Re-check", "complianz-gdpr")}</Button> }
+			{!premium && !urlIsExternal && notice.url && <a className={secondaryLinkButtonCls} href={notice.url}>{__("View", "complianz-gdpr")}</a> }
+			{!premium && notice.highlight_field_id && <Button variant="secondary" className="tw-border-solid" onClick={() => handleClick()}>{__("View", "complianz-gdpr")}</Button> }
 			{notice.plus_one && <span className='cmplz-plusone tw-inline-block tw-min-w-[15px] tw-h-[18px] tw-rounded-full tw-bg-[#d63638] tw-px-[5px] tw-py-[2px] tw-text-center tw-leading-none tw-text-[length:var(--cmplz-font-size-xs,_0.6875rem)] tw-text-[color:#ffffff]'>1</span>}
 			{notice.dismissible && notice.status!=='completed' &&
 				<div className="cmplz-task-dismiss tw-flex tw-items-center hover:tw-opacity-70">

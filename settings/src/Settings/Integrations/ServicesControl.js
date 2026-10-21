@@ -244,7 +244,7 @@ const ServicesControl = () => {
 			</p>
 			<div className="cmplz-table-header">
 				<div className="cmplz-table-header-controls">
-					<input type="text" placeholder={__("Search", "complianz-gdpr")} value={searchValue} onChange={ ( e ) => setSearchValue(e.target.value) } />
+					<input className="cmplz-datatable-search" type="text" placeholder={__("Search", "complianz-gdpr")} value={searchValue} onChange={ ( e ) => setSearchValue(e.target.value) } />
 				</div>
 			</div>
 			{ (disabled || filteredServices.length===0) && <>

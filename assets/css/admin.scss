@@ -102,9 +102,10 @@
     // (minus the dead .cmplz-radio-buttons__list block). The shared legacy Panel accordion (Panel.js) + its
     // ~9 call sites and the .cmplz-details-row rows (Cookiedatabase/Processors/ThirdParties/Integrations)
     // are still legacy consumers.
-    // modules/wizard/suggested-plugins.scss removed (ADR-005, Stage H.5): relocated VERBATIM to
-    // legacy-globals.scss — InstallPlugin.js + Dashboard/OtherPlugins.js render .cmplz-suggested-plugin* and
-    // button.cmplz-install-plugin; Alert.js renders .cmplz-wscscan-alert.
+    // modules/wizard/suggested-plugins.scss removed (ADR-005, Stage H.5): relocated to legacy-globals.scss —
+    // InstallPlugin.js + Dashboard/OtherPlugins.js render the shared .cmplz-suggested-plugin* card. The nested
+    // button.cmplz-install-plugin rule was dropped at H.9 (both renderers migrated to ui/Button) and the
+    // .cmplz-wscscan-alert selector at H.8 (Alert.js migrated to the C-2 callout).
     // modules/wizard/premium-fields.scss removed (ADR-005, T-045): the `.cmplz-premium` upsell label
     // migrated to tw- utilities in Settings/Premium.js (the accent-subtle pill). No surviving consumer.
     // modules/wizard/documents-menu.scss removed (ADR-005, Stage H.5 Bundle H1): its only rule
