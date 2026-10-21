@@ -145,6 +145,45 @@ One line per finished task; `tasks.md` holds the durable `outcome:` records.
   these remaining bodies are migrated to the C-2 system (new bundles **H6+**, scoped below). Maintainer decision
   2026-10-20: land Part 1 now; defer Part 2. **Bundle D (legacy removal) stays blocked on the marker move.**
 
+## Build log (001) — Stage H.6+, remaining legacy bodies
+
+- 2026-10-21 **Bundle H6 (document-tools screen bodies) done — PR #13** off `001-settings-ui-redesign`
+  (branch `stage-h6-doctools`, wp-env 8888/8889). Migrated the six free-reachable document-tools bodies —
+  `CreateDocuments`, `RecordsOfConsent`(+`ExportRecordsOfConsent`), `DataRequests`(+`ExportDatarequests`),
+  `ProofOfConsent`(+`CreateProofOfConsent`), `ProcessingAgreements`(+`CreateProcessingAgreements`),
+  `DataBreachReports`(+`CreateDataBreachReport`) — off raw wp-admin controls (`button button-default`/
+  `button-primary`, raw `<input>`, native `<select>`) onto the C-2 system. **Zero new tokens.** Mapping:
+  buttons → `ui/Button` (`button-default`→secondary, `button-primary`→primary, the destructive
+  `cmplz-reset-button` Delete→error); download `<a download>` → a shared secondary-look anchor (new
+  `components/ui/downloadLink.js`, mirrors `Button` base+secondary verbatim — a primitive can't be an
+  anchor); CreateDocument title `<input>` → `ui/TextField`; DataRequests status `<select>` → a **styled
+  native select that KEEPS its `aria-label`** (preserves the gated `#tools/data-requests` select-name axe
+  fix — `SelectInput` doesn't plumb aria-label, so a styled native select, not SelectInput, was the
+  axe-safe choice). **Uniform markerless discipline:** every migrated control carries an explicit
+  `tw-border-solid` (under Preflight-off, base.css B1 styles only `[data-cmplz-ui] *`); **no new
+  `data-cmplz-ui` container markers** — Bundle-A's `#complianz-app` token broadening already resolves every
+  `var(--cmplz-*)` markerless, so only the border-style was missing. The two hand-authored class strings
+  (statusSelect, downloadLink) use fallbacks that **== their tokens.css values** (provable no-op).
+  Incidentally fixed a latent borderless state on the already-migrated file-select `Button` in
+  CreateProcessingAgreements (missing `tw-border-solid`). **Untouched on purpose:** the react-data-table
+  chrome (`data-table.css` — search input/empty state/table), DateRange, SelectInput/TextInput region
+  fields, the shared `.cmplz-locked` incomplete-overlay; **Panel.js NOT touched (H7-owned).** **ADR-005:**
+  deleted only the body-specific `.cmplz-create-document` block from `legacy-globals.scss` (sole consumer
+  CreateDocument.js, now reproduced with tw-; proven by a before/after fresh-build `admin.css` diff showing
+  ONLY that removal, LTR+RTL); shared button/table rules (`.cmplz-field-button`, `button.cmplz-reset-button`,
+  `.cmplz-table-header*`, `select{height:20px}`) KEPT for H7/H8. **Re-baseline:** reset-DB (8888) + fresh
+  build; 20 legitimate shots (`wizard-create-documents` + `tools-{data-requests,processing-agreements,
+  data-breach-reports,proof-of-consent}`, ×1440/768 ×admin/admin-rtl); the ~20 other fresh-DB drifts were
+  the known nondeterministic set (banner/settings/wizard-consent/manage-documents — provably
+  source-independent) → reverted. Visual non-blocking (Option B). **Verify:** axe.spec admin (gated
+  proof-of-consent + data-requests) green; smoke.spec admin green; physical-utility (202 files) +
+  token-hygiene green; build passes. Visually confirmed LTR+RTL (bordered buttons, field-styled select,
+  TextField). **Pre-push adversarial review (flow:reviewer, 7 landmines) = PASS, no blocking findings**
+  (fallback==token, SCSS sole-consumer, specificity override, variant mapping, aria-label preservation,
+  no regressions all confirmed). Compiled output restored (ADR-006). **NOT in scope** (still H7/H8 →
+  marker move): adding screens to MIGRATED_SCREENS, the marker move, Bundle D. H6 ∥ H7 ∥ H8 all run off
+  `001-settings-ui-redesign`; the marker move waits on all three.
+
 ## Build log (001) — Phase 5, legacy removal + release (Stage I)
 
 - 2026-10-19 Bundle A (ADR-001 marker move) done — SCOPE REVISED after a finding, maintainer-chosen path = **zero-drift token broadening only** (branch `phase5-marker-move`, worktree, Wave 1). FINDING: the literal marker move (one `data-cmplz-ui` on the app root + drop per-component markers + move the base reset) is NOT zero-drift in the current tree — ADR-001's "by Phase 5 all bodies migrated" precondition does not hold. Two reasons, both proven empirically (live computed-style probe + before/after `#complianz-app` screenshots on :8888): (1) the Phase-3/4 redesigned frame is deliberately MARKERLESS and inherits the legacy `.cmplz` base (`font-size:0.8125rem`=13px, `color:rgba(15,23,42,0.95)`), while base.css B2 root typography is `14px`/`#0f172a` — a marker on the app root flips the whole subtree 13px→14px + alpha, a broad reflow on every screen; (2) ~14 composite field-bodies (Finish/Support/Editor/Debug/SecurityMeasures/WebSiteScan/Translations/documents/documents-menu/processors-thirdparties/PlaceholderPreview/WcagContrastChecker/Import/cookiescan…) were never assigned to a Phase-4 section and are still LEGACY (raw buttons/inputs/svgs the base reset B1/B4/B5 would strip — the T-038/T-052 landmine). Maintainer chose zero-drift token broadening (vs full-move+re-baseline, vs migrate-the-14-bodies-first). IMPLEMENTATION (3 source files): `settings/src/styles/tokens.css` — the semantic `--cmplz-*` tokens are additionally declared on `#complianz-app` (both the main block and the reduced-motion `@media`), a SELECTOR-ONLY declaration (no `data-cmplz-ui` attribute added; base.css B1-B5 + B2 UNCHANGED, still keyed to `[data-cmplz-ui]`; per-component markers RETAINED; isolate zones untouched). Because custom properties inherit, every `var(--cmplz-*, <literal>)` on the still-markerless frame (Page grid, SettingsGroup card, Settings body/footer, Field rows, Help, Premium, SettingsPlaceholder, Icon, GridBlock, dashboard bodies) now resolves to the TOKEN — the deferred ADR-001 "fallbacks auto-upgrade" payoff — pixel-identically (all 35+ fallback literals verified == their token value; B2 NOT broadened so the frame stays 13px and islands stay 14px → no type drift). The full marker move (base-reset move + per-component-marker removal) stays DEFERRED until the ~14 legacy bodies migrate. Pre-push adversarial review (flow:reviewer, 6-axis) confirmed ONE real edge the frame-fallback reasoning missed: the markerless Support `<Textarea>` (premium group, free-rendered dimmed behind an 80% scrim, IN the `tools-support` LTR+RTL baselines) used BARE tokens → zero-drift hardening applied: gave `components/ui/Textarea.js` (4 vars) + `components/ui/Button.js` (focus-visible outline) the same literal fallbacks `TextField` already carries, so the broadening is a provable no-op, not merely sub-threshold. Everything else cleared (isolate zones / legacy SCSS use only `--cmplz-legacy-`; no other markerless bare-var consumer; specificity/RTL fine). PROOF: build:all green; token-hygiene + physical-utility (201 files) + stylelint (full CI list) all green; live check confirms the markerless SettingsGroup card now inherits `--cmplz-border` and renders identical `rgb(226,232,240)` while `#complianz-app` stays 13px markerless and islands stay 14px; `var(--cmplz-*)` resolves to the token (not the literal) on a sampled island in build/index.css. Full reset-DB e2e across all 4 admin projects: ZERO visual drift (admin + admin-rtl, 768+1440), 76 passed / 1 flaky (the known, CSS-independent dialogs focus-return flake, green under `retries:2`); a second (accumulated-DB) visual pass drifted only the two documented nondeterministic shots (banner-general-768, proof-of-consent-768) — `tools-support` zero in both. Compiled output restored (ADR-006). No ADR overturned (ADR-001 end-state unchanged, just staged); the deferral is recorded for Bundle D (legacy removal still waits on the full marker move / the 14 bodies).
