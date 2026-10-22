@@ -32,10 +32,14 @@ const PagePlaceholder = (props) => {
 	}, []);
     return (
         <>
-          <div className="cmplz-header-container">
+          {/* Header chrome migrated from legacy-globals.scss (Bundle D B2): the `.cmplz-header-container`
+              / `.cmplz-settings-header` / logo rules are reproduced as tw- + token-with-literal-fallback
+              and the legacy class hooks dropped (PagePlaceholder is the sole live consumer; Header.js
+              reproduces its own). Logical utilities; max-width uses the legacy grid clamp (grid-gap=20px). */}
+          <div className="tw-bg-[var(--cmplz-surface,_#ffffff)]">
 
-            <div className="cmplz-settings-header">
-              <img className="cmplz-header-logo"
+            <div className="tw-max-w-[clamp(300px,_calc(100%_-_40px),_1600px)] tw-mx-auto tw-flex tw-flex-wrap tw-justify-between tw-min-h-[70px]">
+              <img className="tw-my-auto tw-h-[26px]"
                    src={plugin_url + 'assets/images/cmplz-logo.svg'}
                    alt="Complianz logo"/>
             </div>

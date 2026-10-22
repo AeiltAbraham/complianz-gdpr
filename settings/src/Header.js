@@ -6,9 +6,10 @@ import { clsx } from "./components/ui/cx";
 // Redesigned shell header (T-039, DB-07, ADR-005), rebuilt on `tw-` utilities + the semantic
 // `--cmplz-*` tokens, matching docs/specs/001-settings-ui-redesign/design/shell-preview.html. The
 // legacy header rules left over in assets/css/admin/layout.scss (emptied + deleted here) are
-// reproduced below; the few that a still-legacy consumer keeps using (the error/lock
-// Placeholder/PagePlaceholder.js, migrated at T-041, renders `.cmplz-header-container` /
-// `.cmplz-settings-header` / `.cmplz-header-logo`) were RELOCATED to legacy-globals.scss, not orphaned.
+// reproduced below. The error/lock shell (Placeholder/PagePlaceholder.js) is the only other consumer
+// of the `.cmplz-header-container` / `.cmplz-settings-header` / logo chrome; Bundle D B2 MIGRATED those
+// into PagePlaceholder.js as `tw-` utilities (dropping the legacy class hooks) — so they no longer live
+// in legacy-globals.scss either, and Header no longer shares them with any consumer.
 //
 // The base reset (base.css B1-B5, `[data-cmplz-ui] *`) and the tokens (tokens.css, declared on
 // `:is(#complianz,#complianz-portal) :where([data-cmplz-ui])`) reach Header's elements from the app-root

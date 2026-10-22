@@ -285,7 +285,7 @@ const Service = ( props ) => {
 							</Button>
 						</div>
 						{ ! serviceIsSaved && (
-							<div className="cmplz-comment">
+							<div className="cmplz-comment tw-italic">
 								{ __(
 									'Save service to be able to add cookies',
 									'complianz-gdpr'

@@ -2,10 +2,22 @@
 //
 // Global (unscoped) legacy admin rules, collected here per ADR-005 ("collect the
 // global rules ... in legacy-globals.scss in Phase 2 and delete that file only in
-// Phase 5"). They style every <button> and every WordPress core .button on the
-// Complianz screens, so they must outlive the per-input modules that migrate first.
-// Imported last from admin.scss ("global rules last"), so the cascade order is
+// Phase 5"). Imported last from admin.scss ("global rules last"), so the cascade order is
 // preserved. Add global legacy rules here, never new ones.
+//
+// BUNDLE D B2 (relocation/migration): the ~18 shared "chrome" rules that still had LIVE consumers
+// were re-homed OUT of this file so the teardown agent can delete it. They now live island-scoped in
+// settings/src/styles/components.css (relocations: `.cmplz-icon`/spin/click-animation + the in-button
+// spinner, `.cmplz-input-group`, the `.cmplz-grid`/`.cmplz-grid-item*` family, `.cmplz-legend`/
+// `.cmplz-flex-push-*`, the `div[class^=cmplz-wizard-]` block, `.cmplz-locked`/`-overlay`,
+// `.cmplz-task-status`, `.cmplz-panel__list`, `.cmplz-suggested-plugin*`, `.cmplz-settings-overlay`,
+// `.cmplz-hidden`, the `.cmplz-license` task-tail) or migrated inline into their components
+// (`.cmplz-header-container`→PagePlaceholder, `.cmplz-loading-container`→Statistics,
+// `.cmplz-error-text`→CreateProcessingAgreements, `.cmplz-comment`→PlaceholderPreview/Service,
+// `.cmplz-integrations-placeholder`→DataRequests/ServicesControl). The dead `.cmplz-icon-shortcode` rule
+// was dropped (no consumer). What REMAINS below is the B3 slice (the wp-admin button globals + the raw
+// `.cmplz input` field look + `.cmplz-table-header*` + `#cmplz-scan-progress`) and dead-rule notes —
+// still served by the separately-enqueued admin.css until Bundle D's teardown.
 
 /* reset */
 button {
@@ -88,26 +100,17 @@ a.button, button.button, input.button {
 	}
 }
 
-// Relocated from the deleted modules/inputs/Input.scss (ADR-005, T-030 Phase-2 exit). These are
-// GLOBAL rules (not last-consumed by any single migrated input), so they move here instead of being
-// deleted:
-//   - `.cmplz-input-group`: the flex-column wrapper still carried by the migrated text inputs (T-028),
-//     by RadioGroup and by integrations.scss markup.
-//   - the generic `.cmplz input` field look: still styles every UN-migrated raw <input> in the main
-//     app (DocumentControl url, search boxes, onboarding, ...). The migrated inputs override it with
-//     their `tw-` utilities (1,1,0 > 0,1,1), unchanged by this move.
-// The generic rule is scoped `:where(:not([data-cmplz-isolate] *))` because legacy-globals is imported
-// LAST: without it the relocated rule would move past (and so override) the retained, isolated
-// react-date-range calendar inputs (`.rdrDateDisplayItem input`, equal 0,1,1 specificity, which won by
-// source order while Input.scss sat at its original position). Excluding data-cmplz-isolate subtrees
-// keeps app styling out of the isolate zones (ADR-001); `:where()` adds zero specificity, so the rule
-// stays 0,1,1 and the real (non-isolate) consumers — and their win over wp-admin `forms.css` — are
-// unchanged.
-.cmplz-input-group {
-	display: flex;
-	flex-direction: column;
-	gap: var(--cmplz-legacy-spacing-xs);
-}
+// Relocated from the deleted modules/inputs/Input.scss (ADR-005, T-030 Phase-2 exit). The flex-column
+// wrapper `.cmplz-input-group` was re-homed to components.css (Bundle D B2). The generic `.cmplz input`
+// field look stays here (B3): it still styles every UN-migrated raw <input> in the main app
+// (DocumentControl url, search boxes, onboarding, ...); the migrated inputs override it with their `tw-`
+// utilities (1,1,0 > 0,1,1), unchanged. The generic rule is scoped `:where(:not([data-cmplz-isolate] *))`
+// because legacy-globals is imported LAST: without it the relocated rule would move past (and so override)
+// the retained, isolated react-date-range calendar inputs (`.rdrDateDisplayItem input`, equal 0,1,1
+// specificity, which won by source order while Input.scss sat at its original position). Excluding
+// data-cmplz-isolate subtrees keeps app styling out of the isolate zones (ADR-001); `:where()` adds zero
+// specificity, so the rule stays 0,1,1 and the real (non-isolate) consumers — and their win over wp-admin
+// `forms.css` — are unchanged.
 
 // we don't want the border radius of radio buttons to change.
 .cmplz input:where(:not([data-cmplz-isolate] *)):not([type="radio"]) {
@@ -144,446 +147,12 @@ a.button, button.button, input.button {
 	margin-left: auto;
 }
 
-// Relocated from the emptied grid section of layout.scss (ADR-005, T-038 — the Page.js grid shell
-// migration). Page.js's own `.cmplz-content-area .cmplz-grid` is now restyled onto the redesign tokens
-// with `tw-` utilities (which win on specificity, 1,1,0 > these 0,2,0 rules). These legacy rules are NOT
-// last-consumed by Page.js, so they RELOCATE here (imported last) instead of being deleted — grep shows
-// the still-legacy consumers that keep needing them:
-//   - `.cmplz-grid` (container): rendered unchanged by the error/lock page shell in
-//     Placeholder/PagePlaceholder.js (`cmplz-content-area cmplz-grid cmplz-dashboard …`, migrated at
-//     T-041), and carried as a class hook by Page.js's banner grid (`.cmplz-grid.cmplz-banner`; its
-//     200px save-clearance is now a `tw-` utility, T-050/ADR-008 — CookieBannerPreview.scss is deleted).
-//   - `.cmplz-grid.cmplz-dashboard` (auto-fit variant): the same PagePlaceholder dashboard grid.
-//   - the whole `.cmplz-grid-item*` family: the Phase-4 SCREEN content. The settings-screen frame
-//     (SettingsGroup.js card + Settings.js footer, section 1b / T-046) is now migrated to tw- utilities
-//     (1,1,0) that layer ON TOP of this base on their OWN nodes, so this family STAYS for the still-legacy
-//     GridBlock.js / Dashboard/* and PagePlaceholder.js (which render `.cmplz-grid-item` +
-//     `.cmplz-column-2`/`.cmplz-row-2`). Deleted with the Dashboard section in Phase 4/5.
-// The mixins (`cmplz-block`, `cmplz-inline-block-padding`) resolve from variables.scss (imported first).
-//
-// CASCADE-PRESERVATION (ADR-005; learnings 2026-10-10 / T-030): in layout.scss these rules were
-// imported EARLY (before every module below), so the many retained modules that customise grid items at
-// EQUAL specificity won by source order — e.g. dashboard.scss `.border-to-border .cmplz-grid-item-content
-// { padding: 0 }` (0,2,0) overrode the base `-content` inline padding to make its rows edge-to-edge.
-// legacy-globals is imported LAST, so a verbatim `.cmplz`-scoped copy (0,2,0) would now WIN that tie and
-// silently re-pad border-to-border content (measured: 0 → 25px) and invert every other such override.
-// Wrapping the scope in `:where(.cmplz)` (0 specificity) drops the whole family to one class (0,1,0): it
-// still beats unlayered wp-admin element rules (0,0,1) and the migrated Page.js grid still wins via its
-// `tw-` utilities (1,1,0), but every (0,2,0)+ module override keeps winning exactly as it did when these
-// rules sat first — preserving the cascade rather than the source position.
-:where(.cmplz) {
-	.cmplz-grid {
-		max-width: clamp(300px, calc(100% - var(--cmplz-legacy-grid-gap) * 2), 1600px);
-		margin: 0 auto;
-		display: grid;
-		gap: var(--cmplz-legacy-grid-gap);
-		grid-template-columns: 28ch 1fr 1fr 1fr;
-		margin-top: var(--cmplz-legacy-grid-gap);
-	}
-
-	.cmplz-grid.cmplz-dashboard {
-		grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-	}
-
-	.cmplz-grid-item {
-		@include cmplz-block;
-		transition: all 1s ease;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: flex-start;
-		flex-direction: column;
-		flex-basis: 100%;
-		grid-column: span 1;
-		grid-row: span 1;
-		overflow: hidden;
-
-		&.cmplz-column-2 {
-			grid-column: span 2;
-		}
-
-		&.cmplz-row-2 {
-			grid-row: span 2;
-		}
-
-		&.cmplz-disabled {
-			min-height: 200px; //add min height on disabled so the settings is visible behind the locked div.
-		}
-
-		// `.cmplz-grid-item.no-background` REMOVED (ADR-005, T-048): the only consumer was the dashboard
-		// `other-plugins` block, which now takes the `variant: 'borderless'` key (settings/config/blocks.php ->
-		// cmplz_normalize_blocks -> GridBlock.js maps it to a literal tw- no-bg/border/shadow set). No consumer
-		// remains (JS + settings/config PHP + e2e grepped), so the sub-rule retires with the Dashboard section.
-
-		&.cmplz-column-2 {
-			grid-column: span 2;
-		}
-
-		&.cmplz-row-2 {
-			grid-row: span 2;
-			min-height: 400px;
-		}
-
-		&-header {
-			width: 100%;
-			box-sizing: border-box;
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			min-height: calc(30px + var(--cmplz-legacy-spacing-s) * 2);
-			@include cmplz-inline-block-padding;
-
-			&:empty {
-				display: none;
-			}
-		}
-
-		// `.cmplz-grid-item-title` dropped (ADR-005, T-046): dead rule, no JS consumer (grep-verified).
-
-		&-controls {
-			font-size: var(--cmplz-legacy-fs-200);
-			display: flex;
-			gap: var(--cmplz-legacy-spacing-s);
-		}
-
-		&-content {
-			width: 100%;
-			box-sizing: border-box;
-			@include cmplz-inline-block-padding;
-			flex-grow: 100;
-
-			&:empty {
-				display: none;
-			}
-		}
-
-		&-footer {
-			display: flex;
-			flex-wrap: wrap;
-			align-items: center;
-			justify-content: center;
-			align-self: flex-end;
-			gap: var(--cmplz-legacy-grid-margin);
-			width: 100%;
-			min-height: calc(30px + var(--cmplz-legacy-spacing-s) * 2);
-			box-sizing: border-box;
-			@include cmplz-inline-block-padding;
-
-			.cmplz-legend {
-				display: flex;
-				line-height: var(--cmplz-legacy-fs-100);
-				font-size: var(--cmplz-legacy-fs-100);
-				width: max-content;
-				color: var(--cmplz-legacy-text-color-light);
-				align-items: center;
-				min-width: 0;
-				gap: var(--cmplz-legacy-spacing-xxs);
-				text-decoration: none;
-			}
-
-			&:empty {
-				display: none;
-			}
-		}
-
-		.cmplz-flex-push-right {
-			margin-left: auto;
-		}
-
-		.cmplz-flex-push-left {
-			margin-right: auto;
-		}
-	}
-}
-
-// Relocated from the emptied layout.scss (ADR-005, T-039 — the Header.js shell migrated to `tw-`
-// utilities + `data-cmplz-ui` and dropped these legacy class hooks). The rules the migrated Header no
-// longer needs are the ones the still-legacy error/lock shell keeps using:
-// Placeholder/PagePlaceholder.js (migrated at T-041) renders `.cmplz-header-container` >
-// `.cmplz-settings-header` > `img.cmplz-header-logo` (logo only, no nav), so those three rules RELOCATE
-// here instead of being deleted — relocate, not orphan. The header-left / header-menu / header-right /
-// nav-link / active rules had NO other consumer (grep) and were reproduced in Header.js, so they are
-// gone. Wrapped in `:where(.cmplz)` (0 specificity) like the grid block above, so the relocation keeps
-// the exact cascade it had in layout.scss rather than its former source position. Delete in Phase 5.
-:where(.cmplz) {
-	.cmplz-header-container {
-		background: var(--cmplz-legacy-background-block-color);
-	}
-
-	.cmplz-settings-header {
-		max-width: clamp(300px, calc(100% - var(--cmplz-legacy-grid-gap) * 2), 1600px);
-		margin: 0 auto;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-between;
-		min-height: 70px;
-		box-sizing: border-box;
-
-		img {
-			margin: auto 0;
-			height: 26px;
-		}
-	}
-}
-
-// Relocated from the deleted modules/placeholder.scss (ADR-005, T-041 — the loading placeholders migrated
-// to the Skeleton primitive, which now carries the skeleton look). Only this rule survives relocation: the
-// skeleton row rules (`.cmplz-placeholder` / `.cmplz-placeholder-line` / `-count-*`) and the grid-item
-// shimmer (`.cmplz-page-placeholder .cmplz-grid-item:after`, `.cmplz-grid-item-placeholder`) were
-// last-consumed by the now-migrated Placeholder/PagePlaceholder.js and are reproduced by the Skeleton
-// pulse, so they are deleted. This opacity/filter transition is still used by the STILL-LEGACY Statistics
-// chart (Statistics/Statistics.js renders `<Bar className="cmplz-loading-container …">` and toggles
-// `.cmplz-loading` while the chart data loads) — grep confirms Statistics is its only consumer. No other
-// rule targets these classes, so the verbatim relocation keeps the behavior; it migrates with Statistics in
-// Phase 4. Delete in Phase 5.
-.cmplz-loading-container {
-	transition: opacity 0.2s ease-in-out, filter 0.2s ease-in-out;
-
-	&.cmplz-loading {
-		opacity: 0.3;
-	}
-}
-
-// Relocated from the deleted modules/wizard/fields.scss (ADR-005, T-045 — the wizard field-ROW chrome
-// migrated to tw- utilities on the semantic tokens in Settings/Fields/Field.js + LabelWrapper.js +
-// Premium.js, which win via the `important:` config). These fields.scss rules were NOT last-consumed by the
-// migrated row — each still styles a NON-migrated consumer — so they RELOCATE here (imported last) instead
-// of being deleted. The Field-only row-chrome rules (`.cmplz-label-container`, `.cmplz-required`,
-// `.cmplz-field-wrap` layout + row-type variants, the `.cmplz-error` input ring) are gone (reproduced in
-// JS); `.cmplz-highlight` + its flash keyframes moved to page.css (T-045 review); the two GLOBAL
-// `#complianz`-level rules `.cmplz-error-text` and `.cmplz-comment` (italic) are RELOCATED below — they
-// also style non-Field consumers. The dead rules (`.cmplz-parent-label`,
-// `.cmplz_multicheckbox`, `.cmplz-text-control`, `.components-form-file-upload button`,
-// `input[type=checkbox].indeterminate` — no JS producer, grep-verified) are dropped. Verbatim relocation on
-// the legacy tokens, same `#complianz div[class^="cmplz-wizard-"]` scope. Delete in Phase 5. Consumers:
-//   - `.cmplz-grid-item-content` flex body + `.cmplz-settings-block-intro` padding: DELETED at T-046
-//     (section 1b migrated SettingsGroup.js + SettingsPlaceholder.js, their only consumers, to tw-).
-//   - the @wordpress/components tweaks: CheckboxControl.js / License.js / Password.js (ToggleControl, Flex).
-//   - `.button` row layout + `.cmplz-field-button`/`.cmplz-export`/`.cmplz-import`: the export / import /
-//     records-export / proof-of-consent bodies.
-//   - the `.cmplz-license` task tail: License/License.js.
-#complianz {
-	div[class^="cmplz-wizard-"] {
-		// `.cmplz-create-document` (CreateDocuments/CreateDocument.js) DELETED at Stage H.6: its row +
-		// raw `<input>` migrated to tw- utilities + the ui/TextField primitive (flex row, 10px gap,
-		// 50%/200px field), so this body-specific rule is last-consumed (ADR-005).
-
-		.components-flex {
-			.components-flex-item label {
-				margin: 0;
-			}
-
-			.components-input-control__container {
-				max-width: max-content;
-			}
-		}
-
-		.components-base-control__field {
-			margin-bottom: 0;
-			display: flex;
-			flex-flow: column;
-		}
-
-		.components-toggle-control {
-			.components-base-control__field, .components-flex {
-				display: flex;
-				flex-direction: row-reverse;
-				align-items: center;
-				justify-content: space-between;
-				width: 100%;
-
-				.components-form-toggle {
-					margin-right: 0;
-				}
-			}
-		}
-
-		.components-form-toggle.is-checked .components-form-toggle__track {
-			background-color: var(--cmplz-legacy-green);
-		}
-
-		// The wizard-div `.cmplz-grid-item .cmplz-grid-item-content` flex body + `.cmplz-settings-block-intro`
-		// padding (relocated here at T-045) are DELETED at T-046: their only two consumers — SettingsGroup.js
-		// and Placeholder/SettingsPlaceholder.js (grep-verified) — are both migrated to tw- utilities in
-		// section 1b, so these rules are last-consumed (ADR-005).
-
-		.button {
-			display: flex;
-			align-items: center;
-			flex-direction: row;
-			justify-content: space-between;
-			gap: var(--cmplz-legacy-spacing-s);
-			flex-wrap: wrap;
-		}
-
-		.cmplz-field-button, .cmplz-export, .cmplz-import {
-			display: flex;
-			justify-content: space-between;
-			flex-wrap: wrap;
-
-			&-form {
-				display: flex;
-			}
-		}
-	}
-
-	// Global `#complianz`-level rules (NOT under the wizard div — their original fields.scss scope),
-	// relocated for their NON-Field consumers: `.cmplz-error-text` styles the Ace-editor script-tag warning
-	// (AceEditorControl.js) and the processing-agreements upload error (CreateProcessingAgreements.js);
-	// `.cmplz-comment` italic styles the unsaved-service hint (Service.js) and the safe-mode hint
-	// (PlaceholderPreview.js). Field.js's own error-text is tw-migrated and drops the `.cmplz-error-text`
-	// hook, so the `p` sub-rule never reaches it; its comment keeps `.cmplz-comment` but its tw- classes
-	// (equal specificity, loaded later) win, so the callout stays non-italic.
-	.cmplz-error-text {
-		display: flex;
-		gap: var(--cmplz-legacy-spacing-xxs);
-
-		p {
-			color: var(--cmplz-legacy-red);
-			font-size: var(--cmplz-legacy-fs-200);
-			font-weight: 400;
-			font-style: italic;
-		}
-	}
-
-	.cmplz-comment {
-		font-style: italic;
-	}
-
-	// switch padding to top, to prevent tasks from getting stuck to text field
-	.cmplz-license {
-		.cmplz-processing {
-			opacity: 0.3;
-		}
-
-		.cmplz-task-element {
-			padding-top: var(--cmplz-legacy-spacing-s);
-			padding-bottom: 0;
-		}
-
-		.cmplz-license-field {
-			display: flex;
-		}
-	}
-}
-
-// Relocated from the retired assets/css/admin/modules/wizard.scss (ADR-005, T-046 — the settings-screen
-// frame migrated to tw- utilities). The in-card locked/premium overlay is MULTI-CONSUMER: SettingsGroup.js
-// renders it with tw- utilities (the approved look, NO marker — ADR-001 / learnings 2026-10-11, so its
-// tw- 1,1,0 win on its own nodes), but the still-legacy composite bodies SecurityMeasures.js /
-// CreateProcessingAgreements.js / CreateDataBreachReport.js render their OWN `.cmplz-locked` inside the
-// card and rely on this legacy look. Kept verbatim on the legacy tokens, scoped to the wizard body as
-// before; SettingsGroup's own card provides the positioned (relative) containing block via `tw-relative`.
-// The dead `.cmplz-progress-status` child (no JS consumer, grep-verified) is dropped. Delete in Phase 5.
-.cmplz .cmplz-wizard-settings {
-	.cmplz-locked {
-		position: absolute;
-		z-index: 10;
-		top: 0;
-		left: 0;
-		bottom: 0;
-		right: 0;
-		background: rgba(255, 255, 255, 0.8);
-		border-radius: var(--cmplz-legacy-border-radius);
-
-		.cmplz-locked-overlay {
-			z-index: 1;
-			top: calc(100% - 95px);
-			position: relative;
-			display: flex;
-			align-items: center;
-			gap: var(--cmplz-legacy-spacing-s);
-			background-color: var(--cmplz-legacy-white);
-			@include cmplz-block-padding;
-			border-radius: var(--cmplz-legacy-border-radius-input);
-			margin: var(--cmplz-legacy-spacing-s);
-			box-shadow: var(--cmplz-legacy-box-shadow);
-
-			.cmplz-open {
-				float: left;
-				margin-right: 12px;
-			}
-		}
-	}
-}
-
-// The `.cmplz-cookiebanner-preview-controls` block (relocated here from wizard.scss at T-046) is DELETED
-// (ADR-005, T-050): its last consumer, CookieBannerControls.js, is now migrated to tw- utilities (the
-// approved segmented switcher), and the Menu.js `data-cmplz-isolate="banner-controls"` shield is removed.
-
-// Relocated from the (now deleted) assets/css/admin/modules/progress.scss (ADR-005, T-048 — the Dashboard
-// section). `.cmplz-task-status` is CROSS-SECTION: besides Dashboard/TaskElement.js it styles the status
-// pill in Settings/SettingsGroup.js (cmplz-premium Upgrade pill), Settings/SecurityMeasures (cmplz-open),
-// Settings/ProcessingAgreements/CreateProcessingAgreements (cmplz-warning) and
-// Settings/DataBreachReports/CreateDataBreachReport (cmplz-warning) — none of which migrate in this section —
-// so the rules RELOCATE here (imported last) rather than retire with the dashboard. Copied VERBATIM at the
-// same specificity (0,1,0 base / 0,2,0 variants): nothing else styles `.cmplz-task-status`, so there is no
-// equal-specificity tie to protect with a `:where()` wrap. NOTE: `.cmplz-task-status.cmplz-warning` has NO
-// colour rule today (a pre-existing gap: warning badges fall back to the base pill); preserved as-is — no
-// behaviour change without approval (CLAUDE.md).
-.cmplz-task-status {
-	display: block;
-	min-width: 100px;
-	text-align: center;
-	border-radius: 15px;
-	padding: 4px 8px;
-	font-size: var(--cmplz-legacy-fs-100);
-	font-weight: 500;
-	@media(max-width: $cmplz-legacy-break-m) {
-		min-width: 80px;
-	}
-	@media(max-width: $cmplz-legacy-break-s) {
-		aspect-ratio: 1 / 1;
-		min-width: 10px;
-		height: 16px;
-		border-radius: 100%;
-		text-indent: -9999px; /* sends the text off-screen */
-		white-space: nowrap;
-	}
-
-	&.cmplz-completed, &.cmplz-success {
-		background-color: var(--cmplz-legacy-color-success);
-		color: var(--cmplz-legacy-text-color-white);
-	}
-
-	&.cmplz-open {
-		background-color: var(--cmplz-legacy-color-open);
-	}
-
-	&.cmplz-urgent {
-		background-color: var(--cmplz-legacy-color-error);
-		color: var(--cmplz-legacy-text-color-white);
-	}
-
-	&.cmplz-premium {
-		background-color: var(--cmplz-legacy-blue);
-		color: var(--cmplz-legacy-text-color-white);
-	}
-}
-
-// Relocated from the (now deleted) assets/css/admin/modules/dashboard/dashboard.scss (ADR-005, T-048). The
-// generic `.cmplz-hidden { display:none }` hides preloaded settings fields and is consumed OUTSIDE the
-// dashboard by Settings/Fields/PreloadFields.js and Settings/CookieBannerPreview/CookieBannerPreview.js, so
-// it relocates here instead of retiring with the dashboard module. Verbatim (0,1,0).
-.cmplz-hidden {
-	display: none;
-}
-
-// Relocated from the (now deleted) assets/css/admin/modules/integrations/integrations.scss (ADR-005, T-054,
-// the data-tables section). The module FILE retired with the shared datatables.scss, but these table-chrome
-// rules have SURVIVING consumers OUTSIDE the 7 migrated data-table screens, so they relocate here (the T-045
-// pattern) rather than being deleted: `.cmplz-table-header`/`-controls` (CookieScanControl — Website Scan,
-// Wizard group, still legacy; + the Create/Export sibling forms on the Tools screens), `.cmplz-settings-overlay`
-// /`-message` (Integrations/ScriptCenterControl kept the class as a hook, T-052), and
-// `.cmplz-integrations-placeholder` (the loading skeleton on Services/DataRequests, not redesigned here).
-// Verbatim — top-level, the same specificity the module had (admin.scss does not wrap modules in #complianz).
-.cmplz-integrations-placeholder {
-  height:150px;
-  div {
-	background-color:var(--cmplz-legacy-grey-200);
-	margin:10px 0;
-	height:30px;
-  }
-}
+// Relocated from the (now deleted) modules/integrations/integrations.scss (ADR-005, T-054). The
+// `.cmplz-integrations-placeholder` loading skeleton + the `.cmplz-settings-overlay` premium scrim were
+// re-homed by Bundle D B2 (placeholder → DataRequests/ServicesControl; overlay → components.css). These
+// table-chrome rules stay (B3): `.cmplz-table-header`/`-controls` serve CookieScanControl (Website Scan,
+// still legacy) + the Create/Export sibling forms. Verbatim — top-level, the same specificity the module
+// had (admin.scss does not wrap modules in #complianz).
 .cmplz-table-header {
   display:flex;
 }
@@ -597,51 +166,13 @@ a.button, button.button, input.button {
     margin-top: 10px;
   }
 }
-.cmplz-settings-overlay {
-  z-index:99;
-  display: grid;
-  grid-template-columns: 680px auto;
-  position: absolute;
-  top:0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: rgba(255, 255, 255, 0.8);
 
-  .cmplz-settings-overlay-message{
-	position:absolute;
-	width: calc(100% - 70px);
-	bottom: 0;
-	background-color: #fff;
-	padding: 15px;
-	margin:20px;
-	box-shadow: var(--cmplz-legacy-box-shadow);
-  }
-}
-@media screen and (max-width: 960px) {
-  .cmplz-settings-overlay {
-	right: 0;
-  }
-}
-
-// Relocated from the (now deleted) assets/css/admin/modules/cookiescan.scss (ADR-005, Stage H.5 Bundle H2).
-// The CookieScan body migrated to tw-/tokens, but these rules have SURVIVING consumers OUTSIDE this bundle,
-// so they relocate here (the T-054 pattern) rather than being deleted — preserving the original `#complianz`
-// wrapper so their specificity is unchanged (look-preserving relocation, not a restyle):
-//  - `#cmplz-scan-progress`/`#cmplz-sync-progress` + `.cmplz-progress-bar`/`.cmplz-sync-progress-bar`: both
-//    CookieScan (H2) and CookieDatabaseSyncControl (Stage H7) have now DECOUPLED their bars (own tw- accent
-//    bar, `#cmplz-scan-progress` id dropped), and the migrated Dashboard ProgressBlock never matched it (its
-//    `.cmplz-progress-bar` is not under `#cmplz-scan-progress`). KEPT for the premium `#cmplz-sync-progress`
-//    sync bar sibling; removed in Bundle D.
-//  - `button.button.cmplz-reset-button`: the shared destructive-button restyle; its free consumers
-//    (DataRequests, RecordsOfConsent, ThirdParties, ProofOfConsent, Processors, ProcessingAgreements,
-//    DataBreachReports, Cookiedatabase) have all migrated to `ui/Button variant="error"` (H6 + Stage H7), so
-//    it matches no live free element (it only ever matched raw `button.button`, NOT the class-less ui/Button
-//    — FR-020). KEPT (shared-origin, harmless dead rule); removed in Bundle D.
-// (The `.cmplz-cookiedatabase-controls` sync-chrome rule was DELETED in Stage H7: CookieDatabaseSyncControl
-//  migrated to tw-, keeping the class only as the visual.spec mask hook.)
-// The dead `.cmplz-cookie-scan` block (only a commented Tour.js reference; the field class is the underscore
-// `.cmplz-cookie_scan`) was NOT relocated — deleted as dead.
+// Relocated from the (now deleted) modules/cookiescan.scss (ADR-005, Stage H.5 Bundle H2). KEPT for the
+// premium `#cmplz-sync-progress` sync bar sibling and the shared destructive-button restyle (its free
+// consumers have all migrated to `ui/Button variant="error"`, so `button.button.cmplz-reset-button`
+// matches no live free element — a harmless dead rule). Removed in Bundle D. The in-button spinner rule
+// (`button.button .cmplz-icon.cmplz-icon-loading`) was FOLDED INTO components.css (Bundle D B2) so it
+// survives the eventual delete of the button block above.
 #complianz {
 	#cmplz-scan-progress, #cmplz-sync-progress {
 		background-color: #F1F1F1;
@@ -666,120 +197,17 @@ a.button, button.button, input.button {
 	}
 }
 
-
 // =====================================================================================
-// Relocated in Stage H.5 (shared-SCSS consolidation). These shared modules still have
-// LIVE consumers (grepped across settings/src JS, settings/config PHP, tests/e2e and
-// dynamic className suffixes), so per ADR-005 their rules move here VERBATIM (specificity
-// preserved) rather than being deleted; their files + admin.scss @imports are removed.
-// Delete in Phase 5 / Bundle D with the rest of this file.
-// =====================================================================================
-
-// --- from modules/modal.scss: RETIRED at H.8. Its only LIVE consumer was the NewOnboarding /
-//     websitescan modal, now rebuilt on the Radix `ui/Dialog` primitive (maintainer sign-off
-//     2026-10-21). The only remaining references to `.cmplz-modal*` are the dead, UNIMPORTED
-//     `settings/src/Modal.js` + `settings/src/Modal/Modal.js` (never rendered), so the whole
-//     `.cmplz-modal*` block is deleted here (ADR-005 dead rule). Those dead files are left for a
-//     Bundle-D sweep. Removing these unscoped `.cmplz-modal .button`-style rules also removes one
-//     of the marker-move landmines this stage exists to clear.
-
-// --- from modules/icons.scss (consumer: the shared legacy Icon component, settings/src/
-//     utils/Icon.js — dynamic cmplz-icon / cmplz-icon-<name> / cmplz-<color>; .cmplz-icon-
-//     loading + @keyframes spin drive every name="loading" spinner. The `animation: beat`
-//     ref on .cmplz-click-animation targets a keyframe defined nowhere — a pre-existing
-//     no-op kept verbatim, not introduced here.)
-.cmplz-icon{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  svg{
-    fill: currentColor;
-  }
-  &-loading svg{
-	animation: spin 2s linear infinite;
-  }
-
-  @keyframes spin {
-	0% { transform: rotate(0deg); }
-	100% { transform: rotate(360deg); }
-  }
-
-  &.cmplz-click-animation{
-	animation: beat 0.4s ease-out;
-  }
-}
-
-.cmplz-icon-shortcode{
-  cursor:pointer;
-}
-
-//loaders in buttons
-button.button .cmplz-icon.cmplz-icon-loading {
-  padding-top: 6px;
-  >div {line-height: inherit;}
-}
-
-
-
-
-// --- from modules/errorboundary.scss: RETIRED at H.8. ErrorBoundary.js was migrated to the C-2
-//     system — its only rule (the container padding) is reproduced with a tw- token utility and the
-//     `.cmplz-error-boundary` class dropped — so this orphaned rule is deleted (ADR-005).
-
-// --- from modules/wizard/panel.scss. Stage H7 MODERNIZED the shared Panel accordion
-//     (settings/src/Settings/Panel.js) to a C-2 card carrying its OWN tw- chrome, and migrated the
-//     `.cmplz-details-row` rows across Cookiedatabase/Processors/ThirdParties/Integrations to tw-. So the
-//     item/details/summary chrome + the `.cmplz-details-row*` / `__cookie_list` / `__buttons` rules are
-//     DELETED here (Panel.js reproduces the item chrome and drops the `.cmplz-panel__list__item*` hooks;
-//     each body reproduces its own row layout). Only `.cmplz-panel__list` — the flex-column list wrapper —
-//     is KEPT: it is still rendered by CookieScan (H2) and the H7 list wrappers, and is a visual.spec mask
-//     hook. It is marker-move-safe at (1,1,0) and is removed in Bundle D. (The earlier dead
-//     `.cmplz-radio-buttons__list` block had no consumer anywhere and was already dropped.)
-#complianz {
-  .cmplz-panel__list {
-	display: flex;
-	flex-wrap: wrap;
-	flex-direction: column;
-	gap: var(--cmplz-legacy-spacing-s);
-	margin-top: var(--cmplz-legacy-spacing-s);
-  }
-}
-
-// --- from modules/wizard/suggested-plugins.scss (consumer: Dashboard OtherPlugins.js + InstallPlugin.js
-//     both render the shared .cmplz-suggested-plugin* CARD chrome, so these rules stay. The nested
-//     `button.cmplz-install-plugin` rule was REMOVED at H.9: both its renderers (InstallPlugin.js at H.8,
-//     OtherPlugins.js at H.9) migrated their install/activate control to the C-2 ui/Button primitive and
-//     dropped the class, so it had no surviving consumer — ADR-005. The .cmplz-wscscan-alert selector was
-//     REMOVED at H.8: its only consumer, Alert.js, was migrated to the C-2 warning callout.)
-.cmplz-suggested-plugin {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 20px;
-  background-color: #f9f9f9;
-  padding: 20px;
-  &-group {
-	&-title {
-	  font-size: 14px;
-	  font-weight: 600;
-	}
-	&-desc {
-	  font-size: 12px;
-	  white-space: nowrap;
-	  margin: 4px 0;
-	}
-  }
-  &-desc-long {
-	flex: 1;
-	font-size: 12px;
-	line-height: 1.6;
-	font-weight: 400;
-	min-width: 25ch;
-	margin-right: auto;
-  }
-  &-img {
-	width: 70px;
-	height: 70px;
-	border-radius: 5px;
-  }
-}
+// Dead-rule notes (ADR-005). These shared modules were retired in earlier stages; their
+// rules were deleted (no live consumer) rather than relocated. Kept as notes for the
+// Bundle-D teardown audit:
+//   - modules/modal.scss (H.8): NewOnboarding moved to the Radix ui/Dialog; the dead,
+//     unimported Modal.js / Modal/Modal.js were the only `.cmplz-modal*` references.
+//   - modules/icons.scss (Bundle D B2): the shared `.cmplz-icon`/spin/click-animation family
+//     + the in-button spinner were RELOCATED to components.css; dead `.cmplz-icon-shortcode` dropped.
+//   - modules/errorboundary.scss (H.8): ErrorBoundary.js migrated to a tw- token utility.
+//   - modules/wizard/panel.scss (H7 + Bundle D B2): the Panel card/`.cmplz-details-row*` chrome was
+//     deleted at H7; the surviving `.cmplz-panel__list` list wrapper (also a visual.spec mask hook) was
+//     RELOCATED to components.css by Bundle D B2.
+//   - modules/wizard/suggested-plugins.scss (Bundle D B2): the shared `.cmplz-suggested-plugin*` card
+//     (OtherPlugins + InstallPlugin) was RELOCATED to components.css.

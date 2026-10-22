@@ -20,7 +20,7 @@ const PlaceholderPreview = () => {
 			<div className="cmplz-placeholder-preview tw-flex">
 				<img className="tw-w-[400px] tw-m-auto" alt="placeholder preview" src={url} />
 			</div>
-			{safeModeEnabled && <div className="cmplz-comment">
+			{safeModeEnabled && <div className="cmplz-comment tw-italic">
 				{__("Safe Mode enabled. To manage integrations, disable Safe Mode under Tools - Support.","complianz-gdpr")}
 			</div>}
 		</>
