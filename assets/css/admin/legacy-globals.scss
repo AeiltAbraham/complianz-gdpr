@@ -745,11 +745,12 @@ button.button .cmplz-icon.cmplz-icon-loading {
   }
 }
 
-// --- from modules/wizard/suggested-plugins.scss (consumer: Dashboard OtherPlugins.js renders
-//     .cmplz-suggested-plugin* and button.cmplz-install-plugin. InstallPlugin.js was migrated to the
-//     C-2 system at H.8 but still renders the shared .cmplz-suggested-plugin* CARD chrome, so these
-//     rules stay. The .cmplz-wscscan-alert selector was REMOVED at H.8: its only consumer, Alert.js,
-//     was migrated to the C-2 warning callout, so that chrome is retired — ADR-005.)
+// --- from modules/wizard/suggested-plugins.scss (consumer: Dashboard OtherPlugins.js + InstallPlugin.js
+//     both render the shared .cmplz-suggested-plugin* CARD chrome, so these rules stay. The nested
+//     `button.cmplz-install-plugin` rule was REMOVED at H.9: both its renderers (InstallPlugin.js at H.8,
+//     OtherPlugins.js at H.9) migrated their install/activate control to the C-2 ui/Button primitive and
+//     dropped the class, so it had no surviving consumer — ADR-005. The .cmplz-wscscan-alert selector was
+//     REMOVED at H.8: its only consumer, Alert.js, was migrated to the C-2 warning callout.)
 .cmplz-suggested-plugin {
   display: flex;
   flex-wrap: wrap;
@@ -780,13 +781,5 @@ button.button .cmplz-icon.cmplz-icon-loading {
 	width: 70px;
 	height: 70px;
 	border-radius: 5px;
-  }
-  button.cmplz-install-plugin {
-	display: flex;
-	align-items: center;
-	.cmplz-icon {
-	  margin-left:10px;
-	  margin-top:5px;
-	}
   }
 }

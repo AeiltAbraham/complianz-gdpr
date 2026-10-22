@@ -3,6 +3,7 @@ import Icon from "../../utils/Icon";
 import useFields from "../../Settings/Fields/FieldsData";
 import useProgress from "./ProgressData";
 import {useEffect, useState} from "@wordpress/element";
+import { primaryLinkButtonCls } from "../../components/ui/downloadLink";
 
 const ProgressFooter = () => {
 	const {fields, getFieldValue} = useFields();
@@ -28,7 +29,10 @@ const ProgressFooter = () => {
 
 	return (
 		<>
-			<a href="#wizard" className="button button-primary">{__("Continue Wizard", "complianz-gdpr")}</a>
+			{/* Stage H.9: the raw `button button-primary` anchor → the C-2 primary button look. It
+			    NAVIGATES to the `#wizard` hash, so it MUST stay an `<a href>` (not a `<button>`); the
+			    markerless Dashboard footer needs `tw-border-solid` baked into the class (T-052). */}
+			<a href="#wizard" className={primaryLinkButtonCls}>{__("Continue Wizard", "complianz-gdpr")}</a>
 			<div className="cmplz-legend cmplz-flex-push-right">
 				<Icon name={'circle-check'} color={cookieBlockerColor} size={14} />
 				<span>{__("Cookie Blocker","complianz-gdpr")}</span>
