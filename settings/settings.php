@@ -433,7 +433,7 @@ function cmplz_settings_page() {
 	}
 	?>
 	<div id="complianz" class="cmplz">
-		<div id="complianz-app"></div>
+		<div id="complianz-app" data-cmplz-ui></div>
 		<div id="complianz-portal"><div id="complianz-portal-root" data-cmplz-ui></div></div>
 	</div>
 	<?php

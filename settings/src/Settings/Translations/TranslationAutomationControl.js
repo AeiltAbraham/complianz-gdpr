@@ -44,7 +44,7 @@ const TranslationAutomationControl = (props) => {
 		return (
 			<div className={WRAP}>
 				<p className={ERROR_CALLOUT}>{error}</p>
-				<div data-cmplz-ui>
+				<div>
 					<Button variant="secondary" onClick={handleRetry}>
 						{__('Retry', 'complianz-gdpr')}
 					</Button>

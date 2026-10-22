@@ -8,14 +8,14 @@ import {useEffect, useState} from "@wordpress/element";;
 // (`lockedByUser`). FR-019: BOTH behavioral states are preserved EXACTLY — the <Error> branch (the message
 // + "More information" link) and the three lock messages render and behave identically to before.
 //
-// MARKER DISCIPLINE (learnings 2026-10-11, the T-038 landmine): the header, the grid container and the
-// error/lock message are LEGACY chrome — the header rules relocated to legacy-globals.scss (T-039), the
-// `.cmplz-grid`/`.cmplz-grid-item*` grid relocated there (T-038), and <Error>'s `button button-default`
-// link styled by wp-admin. NONE of them carries `data-cmplz-ui`: the scoped base reset (base.css B1-B5,
-// (1,0,0)) would strip their class-based styling with nothing to restore. The LOADING decoration in the
-// empty grid cells is composed from <Placeholder> (the Skeleton primitive), which self-marks its OWN
-// `data-cmplz-ui` island — so the skeletons get the redesign look while the surrounding chrome stays
-// legacy. The legacy shimmer rule (`.cmplz-page-placeholder .cmplz-grid-item:after`) is deleted from
+// MARKERS: the header and grid container are layout chrome (header rules in legacy-globals.scss, T-039;
+// the `.cmplz-grid`/`.cmplz-grid-item*` grid relocated there, T-038); <Error> is migrated to the C-2 system
+// (Stage H.8: tw- danger callout + a secondary button-styled link, each self-sufficient with
+// `tw-border-solid`). After the ADR-001 MARKER MOVE (Stage H.5 Part 2) the app-root marker covers all of
+// this; the layout chrome has no raw borders/backgrounds the base reset would harm (box-sizing/B5 on the
+// logo img are benign), and the lock message is plain `<p>` text. The LOADING decoration in the empty grid
+// cells is composed from <Placeholder> (the Skeleton primitive). The legacy shimmer rule
+// (`.cmplz-page-placeholder .cmplz-grid-item:after`) is deleted from
 // placeholder.scss, reproduced by the Skeleton pulse; the `cmplz-page-placeholder` hook is dropped with it.
 const PagePlaceholder = (props) => {
     let plugin_url = cmplz_settings.plugin_url;

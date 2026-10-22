@@ -35,8 +35,8 @@ const CreateDocument = (props) => {
 	// C-2 migration (Stage H.6): the legacy `.cmplz-create-document` flex row + raw `<input>` are
 	// reproduced with tw- utilities + the ui/TextField primitive, so the body-specific
 	// `.cmplz-create-document` legacy-globals rule is retired. Markerless, so TextField gets an explicit
-	// `tw-border-solid` for the base-reset border-style (B1) under Preflight-off (T-052); the field tokens
-	// resolve via the Bundle-A #complianz-app broadening. The 10px icon|input|shortcode spacing is one gap.
+	// `tw-border-solid` for self-sufficiency (T-052); the field tokens resolve via the app-root marker
+	// (ADR-001 marker move, H.5 Part 2). The 10px icon|input|shortcode spacing is one gap.
 	return (
 		<div className="cmplz-create-document tw-flex tw-flex-row tw-items-center tw-gap-[10px] tw-py-[10px]">
 			{ isCreated && <Icon name='success' color='green'/>}

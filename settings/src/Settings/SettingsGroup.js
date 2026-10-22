@@ -14,11 +14,13 @@ import { clsx } from "../components/ui/cx";
 // wizard-div `.cmplz-grid-item-content` / `.cmplz-settings-block-intro` relocations onto `tw-` utilities on
 // the semantic `--cmplz-*` tokens WITH LITERAL FALLBACKS, reusing the gate-G3-approved card look
 // (shell-preview.html: surface/border/radius-12/shadow; header padding space-m/space-l + border divider;
-// content body). The card carries NO `data-cmplz-ui` (ADR-001 marker discipline, learnings 2026-10-11): it
-// wraps still-legacy composite bodies (finish/plugins_overview/documents_menu/cookiedatabase_sync/
-// create-documents/cookie_scan), the still-legacy Panel.js accordion, the DOMPurify-sanitized intro HTML,
-// and the `.cmplz-locked` overlay that SecurityMeasures/CreateProcessingAgreements/CreateDataBreachReport
-// also render — a scoped base reset under a marker would strip their legacy styling (the T-038 regression).
+// content body). The card carries no `data-cmplz-ui` of its own — it is a layout container. After the
+// ADR-001 MARKER MOVE (Stage H.5 Part 2) the app-root `#complianz-app[data-cmplz-ui]` marker covers its
+// descendants, which is now SAFE: every body the card wraps (finish/plugins_overview/documents_menu/
+// cookiedatabase_sync/create-documents/cookie_scan, the Panel.js accordion, the `.cmplz-locked` overlay)
+// has been migrated to the C-2 system (H1–H9) and is self-sufficient, so the base reset has nothing legacy
+// to strip. (The settings-block intro's DOMPurify HTML renders plain prose; the Help.js notice body — the
+// one sanitized-HTML surface with embedded code/tables — is folded into the design system in this PR.)
 // The card look comes from the `tw-` utilities (1,1,0 via the `important:` config), which win over the
 // shared legacy-globals `:where(.cmplz) .cmplz-grid-item*` base (0,1,0) that STAYS for Dashboard/
 // PagePlaceholder. The legacy class hooks (cmplz-grid-item, -header, -controls, -content, block-intro,

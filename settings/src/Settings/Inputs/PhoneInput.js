@@ -47,7 +47,7 @@ const PhoneInput = ({
 	};
 
 	return (
-		<div data-cmplz-ui className="cmplz-input-group cmplz-phone-input-group">
+		<div className="cmplz-input-group cmplz-phone-input-group">
 			<TextField
 				type='tel'
 				id={inputId}

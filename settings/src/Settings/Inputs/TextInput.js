@@ -39,7 +39,7 @@ const TextInput = ({
 	};
 
 	return (
-		<div data-cmplz-ui className="cmplz-input-group cmplz-text-input-group">
+		<div className="cmplz-input-group cmplz-text-input-group">
 			<TextField
 				type='text'
 				id={inputId}

@@ -38,17 +38,17 @@ const ScriptCenterControl = () => {
 			<h5>{__("Add a third-party script", 'complianz-gdpr' ) }</h5>
 			{!integrationsLoaded &&  <> <ThirdPartyScript type='add_script' /></>}
 			{integrationsLoaded && scripts.add_script.length>0 && scripts.add_script.map((script, i) => <ThirdPartyScript type='add_script' script={script} key={i} />)}
-			<div data-cmplz-ui className="tw-mt-[var(--cmplz-space-s,_12px)]"><Button variant="secondary" onClick={()=>addScript('add_script')}>{__("Add new","complianz-gdpr")}</Button></div>
+			<div className="tw-mt-[var(--cmplz-space-s,_12px)]"><Button variant="secondary" onClick={()=>addScript('add_script')}>{__("Add new","complianz-gdpr")}</Button></div>
 
 			<h5>{__("Block a script, iframe or plugin", 'complianz-gdpr' ) }</h5>
 			{!integrationsLoaded &&<> <ThirdPartyScript type='block_script' /></>}
 			{integrationsLoaded && scripts.block_script.length>0 && scripts.block_script.map((script, i) => <ThirdPartyScript type='block_script' script={script} key={i} />)}
-			<div data-cmplz-ui className="tw-mt-[var(--cmplz-space-s,_12px)]"><Button variant="secondary" onClick={()=>addScript('block_script')}>{__("Add new","complianz-gdpr")}</Button></div>
+			<div className="tw-mt-[var(--cmplz-space-s,_12px)]"><Button variant="secondary" onClick={()=>addScript('block_script')}>{__("Add new","complianz-gdpr")}</Button></div>
 
 			<h5>{__("Whitelist a script, iframe or plugin\n", 'complianz-gdpr' ) }</h5>
 			{!integrationsLoaded &&<> <ThirdPartyScript type='whitelist_script' /></>}
 			{integrationsLoaded && scripts.whitelist_script.length>0 && scripts.whitelist_script.map((script, i) => <ThirdPartyScript type='whitelist_script' script={script} key={i} />)}
-			<div data-cmplz-ui className="tw-mt-[var(--cmplz-space-s,_12px)]"><Button variant="secondary" onClick={()=>addScript('whitelist_script')}>{__("Add new","complianz-gdpr")}</Button></div>
+			<div className="tw-mt-[var(--cmplz-space-s,_12px)]"><Button variant="secondary" onClick={()=>addScript('whitelist_script')}>{__("Add new","complianz-gdpr")}</Button></div>
 		</>
 	)
 }

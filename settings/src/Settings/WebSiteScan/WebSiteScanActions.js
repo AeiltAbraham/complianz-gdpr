@@ -7,9 +7,10 @@ import { Button } from '../../components/ui/Button';
 // free-edition field config uses it), so this screen is not reachable in the free wp-env e2e. The action bar
 // is the C-2 card-footer pattern: a `--cmplz-surface-sunken` strip with a top `--cmplz-border`, full-bleed to
 // the field-wrap edges as a CONSTANT `-space-l` (NOT the legacy stepped -25px — the field-wrap padding is a
-// constant token, the T-054 lesson). `data-cmplz-ui` marks the footer so the Buttons get the base reset
-// (B1 border-style; the `error` variant's `--cmplz-danger`); `tw-border-t-solid` is explicit since B1 does not
-// style the marked element itself. Buttons map: enable=primary / disable=secondary, activate=primary /
+// constant token, the T-054 lesson). The Buttons get the base reset (B1 border-style; the `error` variant's
+// `--cmplz-danger`) from the app-root `#complianz-app[data-cmplz-ui]` marker (ADR-001 marker move, H.5
+// Part 2 — the former footer `data-cmplz-ui` here is dropped); the top border is set explicitly
+// (`tw-border-t-solid`). Buttons map: enable=primary / disable=secondary, activate=primary /
 // reset=error (the legacy button-danger), as the legacy classes dictated.
 
 const WebSiteScanActions = () => {
@@ -84,7 +85,6 @@ const WebSiteScanActions = () => {
 
 	return (
 		<div
-			data-cmplz-ui
 			className="cmplz-wsc_actions-container tw-flex tw-justify-end tw-items-center tw-gap-[var(--cmplz-space-s,_12px)] tw-mx-[calc(var(--cmplz-space-l,_24px)*-1)] tw-mb-[calc(var(--cmplz-space-l,_24px)*-1)] tw-mt-[var(--cmplz-space-m,_16px)] tw-py-[var(--cmplz-space-s,_12px)] tw-px-[var(--cmplz-space-l,_24px)] tw-border-t tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)] tw-bg-[var(--cmplz-surface-sunken,_#f1f5f9)]"
 		>
 			{ tokenStatus !== 'disabled' && wscStatus !== 'pending' && (

@@ -8,9 +8,10 @@
  * shepherd.css; this is the complete, self-contained theme (no @keyframes dependency). Replaces
  * assets/css/admin/modules/shepherd.scss (deleted this PR, ADR-005).
  *
- * Markerless: the tour renders at document.body with no [data-cmplz-ui] ancestor, so --cmplz-* refs carry
- * LITERAL fallbacks (the literal applies now; auto-upgrades at the Phase-5 marker move). No legacy/
- * responsive-prefixed token NAMES (ADR-004 greps this file whole). Re-themed from the legacy DARK popover
+ * Markerless and OUTSIDE the marker: the tour renders at document.body with no [data-cmplz-ui] ancestor,
+ * so even after the ADR-001 marker move (which marks #complianz-app, not document.body) the --cmplz-* refs
+ * never resolve to a token here — the LITERAL fallbacks are PERMANENT, not a deferred auto-upgrade. No
+ * legacy/responsive-prefixed token NAMES (ADR-004 greps this file whole). Re-themed from the legacy DARK popover
  * (#333 bg / white text) to the C-2 LIGHT surface, consistent with every other dialog/popover — this also
  * FIXES the T-015 .shepherd-footer button-contrast exemption (the WP button link-blue text was 2.25:1 on
  * the #333 ground; on the white surface it clears AA). Footer buttons keep their WP button/button-primary

@@ -49,7 +49,7 @@ const EmailInput = ({
 	};
 
 	return (
-		<div data-cmplz-ui className="cmplz-input-group cmplz-email-input-group">
+		<div className="cmplz-input-group cmplz-email-input-group">
 			<TextField
 				type='email'
 				id={inputId}

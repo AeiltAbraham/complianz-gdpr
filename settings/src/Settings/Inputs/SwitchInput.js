@@ -68,7 +68,7 @@ const SwitchInput = ({
 	const size = typeof className === 'string' && className.includes('cmplz-switch-input-tiny') ? 'tiny' : 'default';
 
 	return (
-		<div data-cmplz-ui className="tw-flex tw-items-center">
+		<div className="tw-flex tw-items-center">
 			<Switch.Root
 				className={clsx(rootBase, rootSize[size])}
 				checked={val}

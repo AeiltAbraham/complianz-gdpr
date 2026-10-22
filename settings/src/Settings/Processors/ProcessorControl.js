@@ -38,7 +38,7 @@ const ProcessorControl = (props) => {
 
 	return (
 		<div className="components-base-control cmplz-processor">
-			<div data-cmplz-ui>
+			<div>
 				<Button variant="secondary" onClick={ () => onAddNewHandler() }>{__("Add new Processors & Service Providers", "complianz-gdpr")}</Button>
 			</div>
 			<div className="cmplz-panel__list">

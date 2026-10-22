@@ -51,7 +51,7 @@ const PasswordInput = ({
 	}
 
 	return (
-		<div data-cmplz-ui className="cmplz-input-group tw-relative">
+		<div className="cmplz-input-group tw-relative">
 			<TextField
 				type={inputType}
 				id={inputId}

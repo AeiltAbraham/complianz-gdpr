@@ -217,10 +217,10 @@ const CookieDatabaseSyncControl = () => {
 			) }
 			{ ! wscLocked && upsellProps && <Alert { ...upsellProps } /> }
 			{ /* `.cmplz-cookiedatabase-controls` is KEPT as the visual.spec mask hook (its legacy SCSS is
-			     deleted; the layout is reproduced with tw- here). `data-cmplz-ui` marks this pure-primitive
-			     row so the Sync `ui/Button` gets base.css B1 (border-style); the Select/Checkbox self-mark. */ }
+			     deleted; the layout is reproduced with tw- here). The Sync `ui/Button` gets base.css B1
+			     (border-style) from the app-root `#complianz-app[data-cmplz-ui]` marker (ADR-001 marker
+			     move, H.5 Part 2). */ }
 			<div
-				data-cmplz-ui
 				className="cmplz-cookiedatabase-controls tw-flex tw-items-center tw-gap-[10px] tw-mb-[10px]"
 			>
 				<Button
@@ -272,7 +272,7 @@ const CookieDatabaseSyncControl = () => {
 					/>
 				) ) }
 			</div>
-			<div data-cmplz-ui className="tw-flex tw-mt-[10px] tw-mb-[10px]">
+			<div className="tw-flex tw-mt-[10px] tw-mb-[10px]">
 				<Button
 					variant="secondary"
 					disabled={ loadingSyncData }

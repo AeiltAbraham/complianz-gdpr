@@ -10,14 +10,12 @@ import { clsx } from "./components/ui/cx";
 // Placeholder/PagePlaceholder.js, migrated at T-041, renders `.cmplz-header-container` /
 // `.cmplz-settings-header` / `.cmplz-header-logo`) were RELOCATED to legacy-globals.scss, not orphaned.
 //
-// `data-cmplz-ui` BELONGS on this root (contrast with the T-038 grid container): Header is a
-// FULLY-MIGRATED leaf subtree — its only descendants are the logo, the section tabs and the
-// Documentation / Go-Pro links, every one restyled with `tw-` utilities. There are no unmigrated
-// bodies under it, so the scoped base (base.css B1-B5, `[data-cmplz-ui] *`) only reaches Header's own
-// elements, which the utilities restore (learnings 2026-10-11: the marker belongs on fully-migrated
-// subtrees only). The marker also makes the tokens (tokens.css, declared on
-// `:is(#complianz,#complianz-portal) :where([data-cmplz-ui])`) resolve directly here — so `var(--cmplz-*)`
-// is used WITHOUT the literal fallback the Page.js frame needs. It moves to the app root in Phase 5 (ADR-001).
+// The base reset (base.css B1-B5, `[data-cmplz-ui] *`) and the tokens (tokens.css, declared on
+// `:is(#complianz,#complianz-portal) :where([data-cmplz-ui])`) reach Header's elements from the app-root
+// `#complianz-app[data-cmplz-ui]` marker (ADR-001 marker move landed in H.5 Part 2 — the former per-root
+// `data-cmplz-ui` here is dropped). Header is a fully-migrated leaf (logo, section tabs, Documentation /
+// Go-Pro links, all restyled with `tw-` utilities), so the reset only hits its own elements, which the
+// utilities restore. Tokens resolve here so `var(--cmplz-*)` is used WITHOUT a literal fallback.
 //
 // C-3: the navigation MODEL is unchanged — same hash routing (`#<id>`), same links/handlers, same
 // per-section active state (now also exposed as `aria-current="page"` for WCAG 2.2 AA). This is a
@@ -25,8 +23,8 @@ import { clsx } from "./components/ui/cx";
 // confirmed; PagePlaceholder carries its own copy). Logical CSS only (ADR-007).
 // Borders use the BLOCK-axis utilities (`border-b*`): the block-end edge does not flip under RTL
 // (ADR-007 governs the INLINE axis, left/right), and it is the standard equivalent of the preview's
-// `border-block-end`. Border STYLE is `solid` from base.css B1 on the marked island's descendants, and
-// set explicitly (`border-solid`) on the container root, which B1 does not reach.
+// `border-block-end`. Border STYLE is `solid` from base.css B1 on the app-root marker's descendants, and
+// also set explicitly (`border-solid`) on the container root for self-sufficiency.
 const CONTAINER = clsx(
 	"tw-bg-[color:var(--cmplz-surface)]",
 	"tw-border-b tw-border-solid tw-border-[color:var(--cmplz-border)]"
@@ -72,7 +70,7 @@ const Header = () => {
 	let menuItems =Object.values(menu);
 	menuItems = menuItems.filter( item => item!==null );
 	return (
-		<div className={CONTAINER} data-cmplz-ui="">
+		<div className={CONTAINER}>
 			<div className={BAR}>
 				<img className={LOGO} src={plugin_url+"assets/images/cmplz-logo.svg"} alt="Complianz logo" />
 				<nav aria-label={__("Sections", "complianz-gdpr")}>

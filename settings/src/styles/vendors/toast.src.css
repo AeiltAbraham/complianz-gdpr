@@ -7,8 +7,9 @@
  * toast.built.css that tailwind.css @imports. Replaces the legacy VERBATIM-VENDORED react-toastify SCSS
  * copy at assets/css/admin/modules/toast/ (deleted this PR, ADR-005) — Path A retires that copy entirely.
  *
- * The <ToastContainer> renders inside #complianz but has no [data-cmplz-ui] ancestor, so --cmplz-* refs
- * here carry LITERAL fallbacks (the literal applies now; auto-upgrades at the Phase-5 marker move). No
+ * The <ToastContainer> renders inside #complianz, under the app-root `#complianz-app[data-cmplz-ui]`
+ * marker (ADR-001 marker move landed, H.5 Part 2), so --cmplz-* refs now resolve to the TOKEN; the
+ * LITERAL fallbacks are retained as a provable no-op (fallback == token value). No
  * legacy/responsive-prefixed token NAMES anywhere (the ADR-004 gate greps this file whole; the upstream
  * import contains none, our overrides use the C-2 tokens). ToastContainer config (Page.js +
  * PagePlaceholder.js): theme="light", bottom-right, hideProgressBar, autoClose 2000 — so only the light

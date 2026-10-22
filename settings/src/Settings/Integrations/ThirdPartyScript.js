@@ -106,7 +106,7 @@ const ThirdPartyScript = (props) => {
 					</div>
 				}
 
-				<div data-cmplz-ui className="tw-flex tw-gap-[var(--cmplz-space-xs,_8px)] tw-mt-[var(--cmplz-space-s,_12px)] tw-pb-[5px]">
+				<div className="tw-flex tw-gap-[var(--cmplz-space-xs,_8px)] tw-mt-[var(--cmplz-space-s,_12px)] tw-pb-[5px]">
 					<Button variant="secondary" disabled={fetching} onClick={ () => onSaveHandler() }>{__("Save", "complianz-gdpr")}</Button>
 					<Button variant="error" disabled={fetching} onClick={ () => onDeleteHandler() }>
 						{__("Delete", "complianz-gdpr")}

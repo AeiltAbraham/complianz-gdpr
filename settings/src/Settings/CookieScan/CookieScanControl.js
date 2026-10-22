@@ -218,11 +218,10 @@ const CookieScanControl = () => {
 			) }
 			{ ! wscLocked && upsellProps && <Alert { ...upsellProps } /> }
 
-			{ /* `data-cmplz-ui` marks this pure-primitive button row so the Buttons get the base reset
-			     (B1 border-style; the `error` variant's `--cmplz-danger`); `.cmplz-table-header` is the
-			     shared, relocated `display:flex` hook (legacy-globals). */ }
+			{ /* The Buttons get the base reset (B1 border-style; the `error` variant's `--cmplz-danger`)
+			     from the app-root `#complianz-app[data-cmplz-ui]` marker (ADR-001 marker move, H.5 Part 2);
+			     `.cmplz-table-header` is the shared, relocated `display:flex` hook (legacy-globals). */ }
 			<div
-				data-cmplz-ui
 				className="cmplz-table-header tw-gap-[var(--cmplz-space-xs,_8px)]"
 			>
 				<Button

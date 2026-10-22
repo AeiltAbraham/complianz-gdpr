@@ -10,14 +10,13 @@ import { clsx } from "../components/ui/cx";
 // rules of assets/css/admin/modules/wizard/menu.scss (the shell's only SCSS consumer — grep-verified) are
 // reproduced here and in MenuItem.js; the file is deleted and its @import dropped from admin.scss.
 //
-// `data-cmplz-ui` sits on this Menu ROOT so the tokens (tokens.css, declared on
-// `:is(#complianz,#complianz-portal) :where([data-cmplz-ui])`) resolve directly and the base reset reaches
-// the migrated menu items — all of which the `tw-` utilities restore (Header/T-039 pattern).
-// `<CookieBannerControls>` (shown only on the banner section) is now migrated to `tw-` utilities too
-// (T-050), so its former `data-cmplz-isolate="banner-controls"` shield is REMOVED: the segmented switcher
-// buttons get their look from `tw-` utilities (specificity 1,1,0 via the `important:` config), which beat
-// the base reset, so they render correctly inside this island. The marker moves to the app root in Phase 5
-// (ADR-001).
+// The tokens (tokens.css, declared on `:is(#complianz,#complianz-portal) :where([data-cmplz-ui])`) resolve
+// and the base reset reaches the migrated menu items from the app-root `#complianz-app[data-cmplz-ui]`
+// marker (ADR-001 marker move landed in H.5 Part 2 — the former per-root `data-cmplz-ui` here is dropped);
+// all the items' looks are restored by `tw-` utilities (Header/T-039 pattern). `<CookieBannerControls>`
+// (shown only on the banner section) is now migrated to `tw-` utilities too (T-050), so its former
+// `data-cmplz-isolate="banner-controls"` shield is REMOVED: the segmented switcher buttons get their look
+// from `tw-` utilities (specificity 1,1,0 via the `important:` config), which beat the base reset.
 //
 // C-3: the navigation MODEL is unchanged — same structure, same per-section sub-menu, same hash routing;
 // only the look changes. The legacy class hooks (`cmplz-wizard-menu`, `-header`, `-items`,
@@ -56,7 +55,7 @@ const PREMIUM_BUTTON = clsx(
 		)
 	}
 	return (
-		<div className={MENU_ROOT} data-cmplz-ui="">
+		<div className={MENU_ROOT}>
 			<div className={MENU_HEADER}>
 				<h1 className={clsx("cmplz-h4", MENU_TITLE)}>{subMenu.title}</h1>
 			</div>

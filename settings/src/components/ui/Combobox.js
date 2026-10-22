@@ -18,8 +18,8 @@
  *  - `onInteractOutside` ignores events inside the anchor, which Radix would otherwise treat as an
  *    outside click, closing the menu as the user types in or clicks the control.
  *  - The listbox renders through Radix's Popover Portal into the PHP portal host
- *    (`getPortalContainer`) and carries `data-cmplz-ui` so the scoped base and tokens reach it; it
- *    is NOT an isolated zone (ADR-001).
+ *    (`getPortalContainer` → `#complianz-portal-root[data-cmplz-ui]`), whose marker gives the scoped
+ *    base and tokens; it is NOT an isolated zone (ADR-001).
  *
  * Props: controlled single `value` (an option object `{ value, label }`, or a one-element array for
  * the initial value per ADR-003), `onChange(option)`, async `loadOptions(search) => Promise<opts>`
@@ -257,7 +257,6 @@ const Combobox = forwardRef(
 				>
 					<PopoverPrimitive.Content
 						forceMount
-						data-cmplz-ui=""
 						align="start"
 						sideOffset={ 4 }
 						onOpenAutoFocus={ ( event ) => event.preventDefault() }

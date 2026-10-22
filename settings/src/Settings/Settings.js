@@ -17,10 +17,11 @@ import { clsx } from '../components/ui/cx';
 // assets/css/admin/modules/wizard.scss + wizard/notice.scss onto `tw-` utilities on the semantic `--cmplz-*`
 // tokens WITH LITERAL FALLBACKS, reusing the gate-G3-approved sticky-footer look (shell-preview.html: footer
 // bar bg = the literal #f8fafc, Save = accent-strong/text-on-accent primary, Back = tertiary, scroll-progress
-// track = --cmplz-border / fill = --cmplz-accent, footer-container z = --cmplz-z-sticky). NO `data-cmplz-ui`
-// on the body or help sidebar (ADR-001 marker discipline): the body wraps every still-legacy composite body +
-// the Panel.js accordion, and the help sidebar renders DOMPurify-sanitized notice HTML — a scoped base reset
-// would strip their legacy styling. Look comes from the `tw-` utilities (1,1,0 via the `important:` config).
+// track = --cmplz-border / fill = --cmplz-accent, footer-container z = --cmplz-z-sticky). The body and help
+// sidebar carry no `data-cmplz-ui` of their own — they are layout containers. After the ADR-001 MARKER MOVE
+// (Stage H.5 Part 2) the app-root marker covers them safely: every composite body + the Panel.js accordion
+// is migrated (H1–H9), and the help sidebar's sanitized notice HTML is folded into the design system
+// (Help.js, this PR). Look comes from the `tw-` utilities (1,1,0 via the `important:` config).
 // Legacy class hooks are kept. Logical utilities only (ADR-007). The footer buttons drop the WP-core
 // `button`/`button-primary` classes (FR-020, matching components/ui/Button) and are fully tw-styled, so the
 // relocated legacy `.button{display:flex}` rule (legacy-globals) no longer reaches them (its inline-block

@@ -235,7 +235,7 @@ const CookieDetails = (cookie) => {
 					<a className="tw-mt-[var(--cmplz-space-s,_12px)] tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]" href={cdbLink} target="_blank" rel="noopener noreferrer">{__( "View cookie on cookiedatabase.org", "complianz-gdpr" )}</a>
 				</div>
 			}
-			<div data-cmplz-ui className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs,_8px)] tw-mt-[var(--cmplz-space-s,_12px)] tw-pb-[5px]">
+			<div className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs,_8px)] tw-mt-[var(--cmplz-space-s,_12px)] tw-pb-[5px]">
 				<Button variant="secondary" disabled={saving} onClick={ ( e ) => onSaveHandler(cookie.ID) }>{__("Save", "complianz-gdpr")}</Button>
 				<Button variant={cookie.deleted==1 ? "secondary" : "error"} onClick={ ( e ) => onDeleteHandler(cookie.ID) }>
 					{cookie.deleted==1 && __("Restore", "complianz-gdpr")}

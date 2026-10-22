@@ -10,12 +10,12 @@ import { clsx } from "../../components/ui/cx";
 // Field-row chrome (T-045, DB-07/DB-08). Migrated off assets/css/admin/modules/wizard/fields.scss
 // (`.cmplz-field-wrap`, the row-direction field-type variants, `.cmplz-error-text`, `.cmplz-comment`,
 // `.cmplz-highlight`) onto `tw-` utilities on the semantic `--cmplz-*` tokens with LITERAL FALLBACKS. The
-// row wrapper carries NO `data-cmplz-ui` (marker discipline, learnings 2026-10-11): it can still wrap
-// unmigrated composite bodies (finish/plugins_overview/documents_menu/cookiedatabase_sync/create-documents/
-// cookie_scan) and DocumentControl's raw url <input>, so a marker would strip their legacy styling via the
-// scoped base reset. The row look comes from `tw-` utilities (specificity 1,1,0 via the `important:` config),
-// not the marker. The card frame (SettingsGroup grid-item-content) is section 1b and stays legacy, so its
-// layout relocates to legacy-globals.scss unchanged and the row keeps its own inline padding. Legacy class
+// row wrapper carries no `data-cmplz-ui` of its own — it is a layout container. After the ADR-001 MARKER
+// MOVE (Stage H.5 Part 2) the app-root marker covers the composite bodies it wraps (finish/plugins_overview/
+// documents_menu/cookiedatabase_sync/create-documents/cookie_scan, DocumentControl's url field), which is
+// now safe because all of them are migrated to the C-2 system (H1–H9). The row look comes from `tw-`
+// utilities (specificity 1,1,0 via the `important:` config). The card frame (SettingsGroup) relocated its
+// grid-item layout to legacy-globals.scss and the row keeps its own inline padding. Legacy class
 // hooks (`cmplz-field-wrap`, `cmplz-<type>`, `cmplz-highlight`, `cmplz-error`, `cmplz-comment`) are kept.
 // §4 state design: the invalid ring now lives on the TextField/Textarea primitives (`invalid` prop driven
 // by the error path), not a wrapper->descendant selector; the save-highlight is a `--cmplz-success-surface`

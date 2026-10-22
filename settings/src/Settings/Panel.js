@@ -11,9 +11,10 @@ import { clsx } from "../components/ui/cx";
  * grid + chevron + open/close rotation are kept. Self-sufficient: the chrome lives here as tw- utilities
  * (scoped by the `important:#complianz` config, so it applies with or without the marker), dropping the
  * legacy `.cmplz-panel__list__item*` SCSS hooks, so the component survives Bundle D's deletion of
- * legacy-globals. `tw-border-solid` is explicit so the border never depends on base.css B1 once the
- * marker move lands (the T-052 landmine). The item root is deliberately NOT marked `data-cmplz-ui`: it
- * wraps arbitrary `props.details` body content that may still be legacy in other bundles (T-038).
+ * legacy-globals. `tw-border-solid` is explicit so the border never depends on base.css B1 (the T-052
+ * landmine). The item root carries no `data-cmplz-ui` of its own — after the
+ * marker move (Stage H.5 Part 2) the app-root marker covers `props.details`, safe now that every detail
+ * body (Cookiedatabase/Integrations/Processors/ThirdParties/…) is migrated (H7/H9).
  *
  * `tone` (default | nested | deleted) is a complete-literal class map (ADR-013, no tailwind-merge) so the
  * surface colour never collides: `Cookie` passes `nested`/`deleted` to reproduce the legacy white /
