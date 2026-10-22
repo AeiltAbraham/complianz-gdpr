@@ -80,14 +80,16 @@ const Statistics = () => {
 			},
 		},
 	};
-	const loadingClass = statisticsLoading ? 'cmplz-loading' : '';
+	// Loading dim migrated from legacy-globals.scss `.cmplz-loading-container`/`.cmplz-loading` (Bundle D
+	// B2): the opacity/filter transition + the 0.3 loading opacity become tw- utilities on the chart.
+	const loadingClass = statisticsLoading ? 'tw-opacity-30' : '';
 	return (
 		 <>
 			 {consentTypes.length>1 && <select value={consentType} onChange={(e) => setConsentType(e.target.value)}>
 				 {consentTypes.map((type, i) =>
 					 <option key={i} value={type.id} >{type.label}</option>)}
 			 </select>}
-			 {data && Bar && <Bar className={`cmplz-loading-container ${loadingClass}`} options={options} data={data} />}
+			 {data && Bar && <Bar className={`tw-[transition:opacity_0.2s_ease-in-out,_filter_0.2s_ease-in-out] ${loadingClass}`} options={options} data={data} />}
 		 </>
 	);
 };

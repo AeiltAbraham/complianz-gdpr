@@ -1,5 +1,9 @@
 @import './tokens.css';
 @import './base.css';
+/* Bundle D B2: shared legacy "chrome" rules re-homed out of assets/css/admin/legacy-globals.scss, island-
+ * scoped to `[data-cmplz-ui]` so the later teardown agent can delete the legacy stylesheet. Imported AFTER
+ * base.css (postcss-import inlines it) and before `@tailwind utilities`, preserving the legacy cascade. */
+@import './components.css';
 /* ADR-008 banner-preview fidelity (T-050): pinned legacy typography + relocated positioning for the
  * data-cmplz-isolate="preview" zone. Imported AFTER base.css (postcss-import inlines it) so the zone-root
  * pin sits after the base reset; its (1,1,0) scope keeps it robust regardless of order. */

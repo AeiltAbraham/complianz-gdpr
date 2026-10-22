@@ -26,8 +26,10 @@ const statusSelectCls =
 const progressComponent = () => {
 	return (
 		<div>
-			<div className="cmplz-integrations-placeholder">
-				<div></div><div></div><div></div><div></div><div></div><div></div>
+			{/* Loading skeleton migrated from legacy-globals.scss `.cmplz-integrations-placeholder`
+			    (Bundle D B2): 150px container, six grey (#f7f7f7) 30px bars with 10px block margins. */}
+			<div className="tw-h-[150px]">
+				<div className="tw-bg-[#f7f7f7] tw-my-[10px] tw-h-[30px]"></div><div className="tw-bg-[#f7f7f7] tw-my-[10px] tw-h-[30px]"></div><div className="tw-bg-[#f7f7f7] tw-my-[10px] tw-h-[30px]"></div><div className="tw-bg-[#f7f7f7] tw-my-[10px] tw-h-[30px]"></div><div className="tw-bg-[#f7f7f7] tw-my-[10px] tw-h-[30px]"></div><div className="tw-bg-[#f7f7f7] tw-my-[10px] tw-h-[30px]"></div>
 			</div>
 		</div>
 	)

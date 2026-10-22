@@ -205,8 +205,12 @@ const CreateProcessingAgreements = () => {
 						</div>
 					</div>
 					{uploadError &&
-						<div className="cmplz-error-text" style={{display: uploadError ? 'block' : 'none'}}>
-							<p>{errorNotice}</p>
+						// Danger inline notice — mirrors AceEditorControl.js:54, reproducing the legacy global
+						// `.cmplz-error-text` look with tw- utilities and dropping the legacy class hook (Bundle D
+						// B2: the global rule is removed from legacy-globals, Field.js already dropped the hook).
+						<div className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-2xs,_4px)] tw-mb-[var(--cmplz-space-2xs,_4px)]">
+							<Icon name={'error'} size={13} color={'red'} />
+							<p className="tw-m-0 tw-text-[color:var(--cmplz-danger,_#d7263d)]">{errorNotice}</p>
 						</div>
 					}
 				</>

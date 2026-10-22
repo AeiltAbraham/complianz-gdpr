@@ -1,0 +1,445 @@
+/* components.css — shared legacy "chrome" rules, re-homed into the redesign entry CSS (Bundle D B2).
+ *
+ * WHY THIS FILE EXISTS
+ * The ADR-001 marker move (Stage H.5 Part 2) put one `data-cmplz-ui` on `#complianz-app`, so base.css
+ * (reset/typography/button-reset) and tokens.css now cover the whole app. But the marker move killed ZERO
+ * of the shared legacy "chrome" rules that still live in assets/css/admin/legacy-globals.scss and are served
+ * by the separately-enqueued admin.css (handle `complianz-admin`). Bundle D removes that legacy stylesheet;
+ * this file re-homes the chrome rules that still have LIVE consumers so the later teardown agent can delete
+ * legacy-globals.scss. It is the scoped-component sibling of base.css/tokens.css/page.css (ADR-001).
+ *
+ * SCOPING — every selector is island-scoped to `[data-cmplz-ui]` (as tokens.css/base.css are), so it reaches
+ * the whole app + the portal exactly where the marker lives. Two guard forms, chosen to PRESERVE each rule's
+ * ORIGINAL effective specificity (so no cascade tie flips vs today — the relocations must be zero-drift):
+ *   Form A  `:is(#complianz, #complianz-portal) :where([data-cmplz-ui])`           -> contributes (1,0,0)
+ *           for rules that were `#complianz`-scoped (they need the ID to keep beating wp-components etc.).
+ *   Form B  `:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui])` -> contributes (0,0,0)
+ *           for rules that were class-scoped (`.cmplz` / `:where(.cmplz)` / top-level). Zero ID keeps them
+ *           BELOW the important-scoped `tw-` utilities (1,1,0) on migrated consumers (SettingsGroup lock,
+ *           GridBlock card), which win by source order exactly as they do today — a (1,0,0) raise would let
+ *           these legacy rules beat those tw- utilities and drift the migrated screens.
+ * components.css is imported after base.css and BEFORE `@tailwind utilities`, and index.css is enqueued
+ * AFTER admin.css (the `cmplz-settings` handle depends on `complianz-admin`), so source order vs the
+ * remaining admin.css modules AND vs the tw- utilities is identical to when these rules sat last in
+ * admin.css. Net cascade: unchanged.
+ *
+ * TOKEN HYGIENE (ADR-004 / T-018) — this tree is grepped for the renamed legacy token-name prefixes, so the
+ * legacy custom properties the originals referenced are reproduced as CONCRETE LITERALS of their
+ * assets/css/variables.scss values, or as a semantic `var(--cmplz-*, <literal>)` ONLY where the token value
+ * is IDENTICAL to the legacy literal (a provable no-op). No legacy token name appears, not even in comments.
+ *
+ * RTL (ADR-007) — these rules move from admin.css (which ships a gulp rtlcss RTL variant that mirrors their
+ * physical props) into index.css, the SINGLE redesign stylesheet with NO rtlcss pass. So every directional
+ * property is written LOGICAL here; that reproduces the current rtlcss-mirrored RTL behaviour (zero-drift
+ * LTR and RTL). `width`/`height` stay physical (the stylelint `csstools/use-logical` exception).
+ *
+ * Delete this file's rules with legacy-globals.scss in the Bundle D teardown; until then they are the
+ * canonical home (the legacy-globals copies are removed by B2).
+ */
+
+/* ============================================================================================
+ * icons.scss family (consumer: the shared legacy Icon component, settings/src/utils/Icon.js —
+ * dynamic `cmplz-icon` / `cmplz-icon-<name>`; `.cmplz-icon-loading` + `@keyframes spin` drive every
+ * name="loading" spinner). The in-button spinner rule is FOLDED IN here so it survives the B3 delete of
+ * the legacy-globals button block. The dead `.cmplz-icon-shortcode` rule (no JS/PHP/dynamic consumer,
+ * grep-verified) is NOT relocated — dropped (ADR-005). `animation: beat` targets a keyframe defined
+ * nowhere upstream — a pre-existing no-op, kept verbatim. Form B (was top-level, (0,N,0)). */
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-icon svg {
+  fill: currentColor;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-icon-loading svg {
+  animation: spin 2s linear infinite;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-icon.cmplz-click-animation {
+  animation: beat 0.4s ease-out;
+}
+/* loaders in wp-admin buttons (folded from the legacy-globals cookiescan block so it outlives B3). */
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) button.button .cmplz-icon.cmplz-icon-loading {
+  padding-block-start: 6px;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) button.button .cmplz-icon.cmplz-icon-loading > div {
+  line-height: inherit;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ============================================================================================
+ * Input.scss wrapper (consumer: the migrated text inputs (T-028), RadioGroup, Urls, integrations markup).
+ * gap = legacy spacing-xs (10px). Form B (was top-level). */
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ============================================================================================
+ * layout.scss grid family (consumers: the still-legacy PagePlaceholder.js error/lock shell, GridBlock.js /
+ * Dashboard/* which layer tw- card utilities ON TOP of this base on their own nodes, and Page.js's banner
+ * grid hook). Relocated from `:where(.cmplz) { ... }` (zero ID) -> Form B keeps that zero ID so the
+ * migrated tw- card utilities (1,1,0) keep winning by source order. The redundant per-element
+ * `box-sizing: border-box` is DROPPED (base.css B1 sets it app-wide). The legacy mixins are expanded to
+ * literals: cmplz-block = white surface + the legacy block shadow + 12px radius; cmplz-inline-block-padding
+ * = responsive inline padding 25/20/15px at 1280/1080. Legacy grid-gap/grid-margin = 20px/15px. */
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid {
+  max-width: clamp(300px, calc(100% - 20px * 2), 1600px);
+  margin-inline: auto;
+  margin-block-start: 20px;
+  margin-block-end: 0;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 28ch 1fr 1fr 1fr;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid.cmplz-dashboard {
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item {
+  background: var(--cmplz-surface, #fff);
+  box-shadow: rgba(0, 0, 0, 0.1) 0 4px 6px -1px, rgba(0, 0, 0, 0.06) 0 2px 4px -1px;
+  border-radius: var(--cmplz-radius, 12px);
+  transition: all 1s ease;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  flex-direction: column;
+  flex-basis: 100%;
+  grid-column: span 1;
+  grid-row: span 1;
+  overflow: hidden;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item.cmplz-column-2 {
+  grid-column: span 2;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item.cmplz-row-2 {
+  grid-row: span 2;
+  min-height: 400px;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item.cmplz-disabled {
+  min-height: 200px;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: calc(30px + 15px * 2);
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-header:empty {
+  display: none;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-controls {
+  font-size: 0.75rem;
+  display: flex;
+  gap: 15px;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-content {
+  width: 100%;
+  flex-grow: 100;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-content:empty {
+  display: none;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-end;
+  gap: 15px;
+  width: 100%;
+  min-height: calc(30px + 15px * 2);
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-footer:empty {
+  display: none;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-footer .cmplz-legend {
+  display: flex;
+  line-height: 0.6875rem;
+  font-size: 0.6875rem;
+  width: max-content;
+  color: rgba(15, 23, 42, 0.85);
+  align-items: center;
+  min-width: 0;
+  gap: 5px;
+  text-decoration: none;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item .cmplz-flex-push-right {
+  margin-inline-start: auto;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item .cmplz-flex-push-left {
+  margin-inline-end: auto;
+}
+/* cmplz-inline-block-padding: responsive inline padding on the grid-item header/content/footer. */
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-header,
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-content,
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-footer {
+  padding-inline: 25px;
+}
+@media screen and (max-width: 1280px) {
+  :where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-header,
+  :where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-content,
+  :where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-footer {
+    padding-inline: 20px;
+  }
+}
+@media screen and (max-width: 1080px) {
+  :where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-header,
+  :where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-content,
+  :where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-grid-item-footer {
+    padding-inline: 15px;
+  }
+}
+
+/* ============================================================================================
+ * fields.scss wizard-div @wordpress/components tweaks (consumers: CheckboxControl.js / Password.js /
+ * License.js — ToggleControl / Flex / base-control; wp-components CSS is still enqueued as the admin.css
+ * dependency, so these overrides must keep the ID specificity to beat it). Form A preserves the original
+ * `#complianz`-level (1,...). The `.button`/`.cmplz-field-button`/`.cmplz-export`/`.cmplz-import` row layout
+ * serves the export / import / records-export / proof-of-consent bodies. Toggle-on track green = legacy
+ * green (#2e8a37; NOT the C-2 success token — zero-drift literal). gap = legacy spacing-s (15px). */
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) div[class^="cmplz-wizard-"] .components-flex .components-flex-item label {
+  margin: 0;
+}
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) div[class^="cmplz-wizard-"] .components-flex .components-input-control__container {
+  max-width: max-content;
+}
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) div[class^="cmplz-wizard-"] .components-base-control__field {
+  margin-block-end: 0;
+  display: flex;
+  flex-flow: column;
+}
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) div[class^="cmplz-wizard-"] .components-toggle-control .components-base-control__field,
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) div[class^="cmplz-wizard-"] .components-toggle-control .components-flex {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) div[class^="cmplz-wizard-"] .components-toggle-control .components-base-control__field .components-form-toggle,
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) div[class^="cmplz-wizard-"] .components-toggle-control .components-flex .components-form-toggle {
+  margin-inline-end: 0;
+}
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) div[class^="cmplz-wizard-"] .components-form-toggle.is-checked .components-form-toggle__track {
+  background-color: #2e8a37;
+}
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) div[class^="cmplz-wizard-"] .button {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) div[class^="cmplz-wizard-"] .cmplz-field-button,
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) div[class^="cmplz-wizard-"] .cmplz-export,
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) div[class^="cmplz-wizard-"] .cmplz-import {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) div[class^="cmplz-wizard-"] .cmplz-field-button-form,
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) div[class^="cmplz-wizard-"] .cmplz-export-form,
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) div[class^="cmplz-wizard-"] .cmplz-import-form {
+  display: flex;
+}
+
+/* ============================================================================================
+ * wizard.scss in-card locked/premium overlay (MULTI-CONSUMER: SettingsGroup.js renders it with tw- — the
+ * approved look, which keeps winning — but the still-legacy composite bodies SecurityMeasures.js /
+ * CreateProcessingAgreements.js / CreateDataBreachReport.js render their OWN `.cmplz-locked` and rely on
+ * this legacy look). RELOCATED VERBATIM (NOT migrated to the C-2 scrim — out of scope). Form B (was
+ * `.cmplz`-scoped, zero ID) so SettingsGroup's tw- lock (1,1,0) still wins. Legacy border-radius 12px =
+ * --cmplz-radius; radius-input = 5px; white = --cmplz-surface; spacing-s = 15px; cmplz-block-padding =
+ * responsive 20/25 -> 10/15 -> 5/10. */
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-wizard-settings .cmplz-locked {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: var(--cmplz-radius, 12px);
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-wizard-settings .cmplz-locked .cmplz-locked-overlay {
+  z-index: 1;
+  inset-block-start: calc(100% - 95px);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background-color: var(--cmplz-surface, #fff);
+  padding-block: 20px;
+  padding-inline: 25px;
+  border-radius: 5px;
+  margin: 15px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 4px 6px -1px, rgba(0, 0, 0, 0.06) 0 2px 4px -1px;
+}
+@media screen and (max-width: 1280px) {
+  :where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-wizard-settings .cmplz-locked .cmplz-locked-overlay {
+    padding-block: 10px;
+    padding-inline: 15px;
+  }
+}
+@media screen and (max-width: 1080px) {
+  :where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-wizard-settings .cmplz-locked .cmplz-locked-overlay {
+    padding-block: 5px;
+    padding-inline: 10px;
+  }
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-wizard-settings .cmplz-locked .cmplz-locked-overlay .cmplz-open {
+  float: inline-start;
+  margin-inline-end: 12px;
+}
+
+/* ============================================================================================
+ * progress.scss status pill (CROSS-SECTION: Dashboard/TaskElement.js + the SettingsGroup Upgrade pill +
+ * the SecurityMeasures / CreateProcessingAgreements / CreateDataBreachReport `cmplz-warning` incomplete
+ * badges). Form B (was top-level). Breakpoints = legacy break-m/break-s (1280/1080). Colours: legacy green
+ * (#2e8a37) / yellow (#f4bf3e) stay literal (no matching token); red = --cmplz-danger, blue = --cmplz-accent
+ * (identical values). `.cmplz-warning` has NO colour rule (a pre-existing gap — warning badges fall back to
+ * the base pill); preserved as-is (no behaviour change without approval). */
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-task-status {
+  display: block;
+  min-width: 100px;
+  text-align: center;
+  border-radius: 15px;
+  padding-block: 4px;
+  padding-inline: 8px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+@media (max-width: 1280px) {
+  :where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-task-status {
+    min-width: 80px;
+  }
+}
+@media (max-width: 1080px) {
+  :where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-task-status {
+    aspect-ratio: 1 / 1;
+    min-width: 10px;
+    height: 16px;
+    border-radius: 100%;
+    text-indent: -9999px;
+    white-space: nowrap;
+  }
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-task-status.cmplz-completed,
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-task-status.cmplz-success {
+  background-color: #2e8a37;
+  color: rgba(255, 255, 255, 0.95);
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-task-status.cmplz-open {
+  background-color: #f4bf3e;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-task-status.cmplz-urgent {
+  background-color: var(--cmplz-danger, #d7263d);
+  color: rgba(255, 255, 255, 0.95);
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-task-status.cmplz-premium {
+  background-color: var(--cmplz-accent, #009fff);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* ============================================================================================
+ * wizard/panel.scss list wrapper (consumers: CookieScanControl + the H7 Panel list wrappers across
+ * Cookiedatabase/Processors/ThirdParties/Integrations/PluginsOverview; also a visual.spec mask hook).
+ * Form A preserves its original `#complianz` (1,1,0). gap / margin-top = legacy spacing-s (15px). */
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) .cmplz-panel__list {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 15px;
+  margin-block-start: 15px;
+}
+
+/* ============================================================================================
+ * wizard/suggested-plugins.scss card (consumers: Dashboard OtherPlugins.js + InstallPlugin.js). The
+ * originals already use literals (no legacy tokens). Form B (was top-level). */
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-suggested-plugin {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  background-color: #f9f9f9;
+  padding: 20px;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-suggested-plugin-group-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-suggested-plugin-group-desc {
+  font-size: 12px;
+  white-space: nowrap;
+  margin-block: 4px;
+  margin-inline: 0;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-suggested-plugin-desc-long {
+  flex: 1;
+  font-size: 12px;
+  line-height: 1.6;
+  font-weight: 400;
+  min-width: 25ch;
+  margin-inline-end: auto;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-suggested-plugin-img {
+  width: 70px;
+  height: 70px;
+  border-radius: 5px;
+}
+
+/* ============================================================================================
+ * integrations.scss overlay/placeholder (consumers: the premium-settings scrim on
+ * Integrations/Services/ScriptCenter/Plugins + RecordsOfConsent). `.cmplz-integrations-placeholder` is
+ * MIGRATED into its components (DatarequestsControl.js + ServicesControl.js) — not here. Form B (was
+ * top-level). The `@media (max-width: 960px)` re-set of the inline-end edge matches no project breakpoint
+ * and is a no-op over the `inset: 0` base; kept verbatim. */
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-settings-overlay {
+  z-index: 99;
+  display: grid;
+  grid-template-columns: 680px auto;
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8);
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-settings-overlay .cmplz-settings-overlay-message {
+  position: absolute;
+  width: calc(100% - 70px);
+  inset-block-end: 0;
+  background-color: var(--cmplz-surface, #fff);
+  padding: 15px;
+  margin: 20px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 4px 6px -1px, rgba(0, 0, 0, 0.06) 0 2px 4px -1px;
+}
+@media screen and (max-width: 960px) {
+  :where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-settings-overlay {
+    inset-inline-end: 0;
+  }
+}
+
+/* ============================================================================================
+ * dashboard.scss generic hide utility (JUDGMENT #3). `.cmplz-hidden` is toggled at runtime
+ * (CookieBannerPreview.js:313,320 via classList) on the banner-preview link `<a>`s inside
+ * `#cmplz-cookiebanner-container`, which the preview injects DIRECTLY into the admin DOM (no iframe / no
+ * shadow root, per ADR-008) inside `#complianz-app[data-cmplz-ui]` (within the data-cmplz-isolate="preview"
+ * zone). It is therefore UNDER #complianz -> island-scoped relocation (NOT a detached/iframe doc). NO
+ * data-cmplz-isolate exclusion: the toggle must reach into the preview zone, matching the former unscoped
+ * rule's reach. Also consumed by Settings/Fields/PreloadFields.js in the main app. Form B (was top-level). */
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-hidden {
+  display: none;
+}
+
+/* ============================================================================================
+ * fields.scss `.cmplz-license` task-tail (consumer: Settings/License/License.js). The field-flex and the
+ * processing-dim are inlined as tw- in License.js; only the shared-child TaskElement padding stays a scoped
+ * rule here so it applies ONLY inside `.cmplz-license` (Dashboard TaskElement unaffected). Form A preserves
+ * the original `#complianz .cmplz-license` (1,2,0) so it keeps overriding TaskElement's own padding.
+ * padding-top = legacy spacing-s (15px). */
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui]) .cmplz-license .cmplz-task-element {
+  padding-block-start: 15px;
+  padding-block-end: 0;
+}

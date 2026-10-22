@@ -72,13 +72,15 @@ jobs:
         run: node settings/scripts/check-physical-utilities.js
       - name: Stylelint on settings/src/styles
         # Enforces logical properties (ADR-007, stylelint-use-logical) on the HAND-WRITTEN entry CSS:
-        # tokens.css, base.css, page.css and vendors/preview.css only — NOT tailwind.css, whose @tailwind
-        # directives stylelint cannot parse. preview.css (T-050, ADR-008) must be gated here so its relocated
-        # positioning stays logical and the one documented [dir="rtl"] translateX exception carries its
-        # stylelint-disable (ADR-007 §27). The config is settings/.stylelintrc.json; run from settings/ so the
-        # config, the binary and the plugin all resolve there. Gating now (T-020 removed the continue-on-error).
+        # tokens.css, base.css, components.css, page.css and vendors/preview.css only — NOT tailwind.css, whose
+        # @tailwind directives stylelint cannot parse. preview.css (T-050, ADR-008) must be gated here so its
+        # relocated positioning stays logical and the one documented [dir="rtl"] translateX exception carries its
+        # stylelint-disable (ADR-007 §27). components.css (Bundle D B2) holds the re-homed shared legacy chrome
+        # rules, written logical so they mirror in RTL without a gulp rtlcss pass. The config is
+        # settings/.stylelintrc.json; run from settings/ so the config, the binary and the plugin all resolve
+        # there. Gating now (T-020 removed the continue-on-error).
         working-directory: settings
-        run: npx --no-install stylelint src/styles/tokens.css src/styles/base.css src/styles/page.css src/styles/vendors/preview.css src/styles/vendors/data-table.css src/styles/vendors/date-range.src.css src/styles/vendors/date-range-chrome.css src/styles/vendors/toast.src.css src/styles/vendors/shepherd.css
+        run: npx --no-install stylelint src/styles/tokens.css src/styles/base.css src/styles/components.css src/styles/page.css src/styles/vendors/preview.css src/styles/vendors/data-table.css src/styles/vendors/date-range.src.css src/styles/vendors/date-range-chrome.css src/styles/vendors/toast.src.css src/styles/vendors/shepherd.css
 
   e2e:
     name: Admin e2e suite (fresh WordPress)
