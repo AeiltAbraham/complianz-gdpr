@@ -122,7 +122,7 @@ const BorderInput = ({ label, id, value, onChange, required, defaultValue, disab
 	}
 
 	return (
-		<div data-cmplz-ui style={rootStyle}>
+		<div style={rootStyle}>
 			{
 				Object.keys(sides).map((key, i) => {
 					const side = sides[key];

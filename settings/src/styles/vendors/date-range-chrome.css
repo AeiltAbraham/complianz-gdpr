@@ -12,8 +12,9 @@
  * screens (T-056 review finding). Hand-scoping here with the same :is(#complianz,#complianz-portal)
  * page scope as tokens.css restores the chrome.
  *
- * Markerless chrome (ADR-001): var(--cmplz-*, literal) carries the literal fallback now and auto-upgrades
- * at the Phase-5 marker move. All declarations are direction-symmetric (no physical start/end props), so
+ * ADR-001: the trigger chrome renders under the app-root `#complianz-app[data-cmplz-ui]` marker (marker
+ * move landed, H.5 Part 2), so var(--cmplz-*, literal) resolves to the TOKEN; the literal fallback is kept
+ * as a provable no-op. All declarations are direction-symmetric (no physical start/end props), so
  * this file needs no RTL pass. Ported from the deleted assets/css/admin/modules/date-range.scss:5-33. */
 
 :is(#complianz, #complianz-portal) #cmplz-date-range-picker-container {

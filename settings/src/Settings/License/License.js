@@ -51,16 +51,16 @@ const License = (props) => {
 	let processingClass = processing ? 'cmplz-processing' : '';
 	/*
 	 * Migrated to the C-2 system (Stage H.8). The raw `<input>` + `button button-default` (the
-	 * marker-move landmines) become the `ui/TextField` (type password) + `ui/Button` primitives. The
-	 * `.cmplz-license-field` flex row is MARKED `data-cmplz-ui` — a pure-primitive row (input + button
-	 * only) — so both primitives get the base reset (B1 border-style; the `--cmplz-*` tokens) regardless
-	 * of the still-deferred app-root marker move. The `.cmplz-license .cmplz-license-field` (flex),
+	 * marker-move landmines) become the `ui/TextField` (type password) + `ui/Button` primitives. Both
+	 * primitives get the base reset (B1 border-style; the `--cmplz-*` tokens) from the app-root
+	 * `#complianz-app[data-cmplz-ui]` marker (ADR-001 marker move, H.5 Part 2 — the former per-row
+	 * `data-cmplz-ui` here is dropped). The `.cmplz-license .cmplz-license-field` (flex),
 	 * `.cmplz-processing` (dim) and `.cmplz-task-element` (notice padding) rules in legacy-globals stay:
 	 * `cmplz-license` is auto-applied by Field.js (`cmplz-` + field.type) and TaskElement is shared.
 	 */
 	return (
 		<div className="components-base-control">
-			<div className="cmplz-license-field" data-cmplz-ui>
+			<div className="cmplz-license-field">
 				<TextField
 					type="password"
 					id={field.id}

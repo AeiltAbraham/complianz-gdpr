@@ -8,25 +8,29 @@ import useProgress from "../../Dashboard/Progress/ProgressData";
 import { Button as UIButton } from "../../components/ui/Button";
 
 // Look-preserving migration of the Button field onto the Button primitive (T-025/T-030, ADR-002/005).
-// The `action` type renders the primitive <button> with `data-cmplz-ui` on it, so the semantic
-// --cmplz-* tokens and the scoped base reach it as its own island, alongside the unchanged
+// The `action` type renders the primitive <button>; the semantic --cmplz-* tokens and the scoped base
+// reach it from the app-root `#complianz-app[data-cmplz-ui]` marker (ADR-001 marker move, H.5 Part 2 —
+// the former per-element `data-cmplz-ui` here is dropped), alongside the unchanged
 // AreYouSureModal confirm flow (T-026). The field's `style` prop maps 1:1 to the primitive's
 // `variant` (primary/secondary/tertiary/error == the deleted legacy `.button--*` set). Props and
-// behaviour are unchanged (FR-019): the field's own `type` prop ('action'|'link') is a behaviour
-// selector, not an HTML button type, so it is never forwarded to the primitive (the primitive keeps
-// its default HTML type `button`).
+// behaviour are unchanged (FR-019): the field's own `type` prop ('action') is a behaviour selector,
+// not an HTML button type, so it is never forwarded to the primitive (the primitive keeps its default
+// HTML type `button`). An action button that navigates does so via `field.url` in clickHandler, not a
+// separate anchor render.
 //
-// The `link` type still renders an <a> — the primitive is a <button> and cannot be an anchor — and
-// keeps the legacy `button cmplz-button button--*` classes, still styled by the surviving
-// legacy-globals.scss (deleted only in Phase 5, ADR-005), so the link look is unchanged. No consumer
-// passes type='link' today, but the contract is preserved.
+// REMOVED at the ADR-001 marker move (Stage H.5 Part 2, 2026-10-22): a dead `type === 'link'` branch
+// that rendered a raw `<a class="button cmplz-button button--*">` leaning on the unscoped legacy-globals
+// `a.button` (0,1,1). Field.js never passes a `type` prop to this component (only `action` via
+// customProps — Field.js:245-254), so `type` always defaulted to 'action' and the anchor was
+// unreachable. It was also a latent landmine: once the base reset reaches the whole app (this move),
+// B1's `border-width:0` at (1,0,0) would defeat `a.button` and the anchor would render borderless. The
+// live link-button affordance is the H.9 `secondaryLinkButtonCls` anchor (components/ui/Button links),
+// not this field. Deleted so it cannot be re-armed.
 const Button = ({
 	type = 'action',
 	style = 'tertiary',
 	label,
 	onClick,
-	href = '',
-	target = '',
 	disabled,
 	action,
 	field,
@@ -97,7 +101,6 @@ const Button = ({
 				</AreYouSureModal>
 
 				<UIButton
-					data-cmplz-ui
 					variant={style}
 					onClick={clickHandler}
 					disabled={disabled}
@@ -107,17 +110,6 @@ const Button = ({
 			</>
 
 
-		)
-	}
-	if (type === 'link') {
-		return (
-			<a
-				className={`button cmplz-button button--${style} button-${type}`}
-				href={href}
-				target={target}
-				>
-				{content}
-			</a>
 		)
 	}
 }

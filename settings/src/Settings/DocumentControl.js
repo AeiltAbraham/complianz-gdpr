@@ -143,7 +143,7 @@ const DocumentControl = ({id, value, options, defaultValue, disabled}) => {
 				</div>
 			}
 			{ value==='url' && pageUrlLoaded &&
-				<div data-cmplz-ui>
+				<div>
 					<TextField type="text" value={pageUrl} onChange={onChangeUrlHandler} placeholder="https://domain.com/your-policy" />
 				</div>
 			}

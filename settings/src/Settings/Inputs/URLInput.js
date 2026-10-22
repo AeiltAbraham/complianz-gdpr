@@ -47,7 +47,7 @@ const URLInput = ({
 	};
 
 	return (
-		<div data-cmplz-ui className="cmplz-input-group cmplz-url-input-group">
+		<div className="cmplz-input-group cmplz-url-input-group">
 			<TextField
 				type='url'
 				id={inputId}

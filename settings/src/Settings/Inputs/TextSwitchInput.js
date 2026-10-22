@@ -36,7 +36,7 @@ const TextSwitchInput = ({
 	}
 
 	return (
-		<div data-cmplz-ui className="tw-grid tw-grid-cols-[1fr_auto] tw-content-center tw-gap-[var(--cmplz-space-xs)]">
+		<div className="tw-grid tw-grid-cols-[1fr_auto] tw-content-center tw-gap-[var(--cmplz-space-xs)]">
 			<TextInput
 				value={value['text']}
 				onChange={onTextChange}

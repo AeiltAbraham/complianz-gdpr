@@ -8,8 +8,9 @@
  *
  * Replaces assets/css/admin/modules/datatables.scss + DataRequests/requests.scss (deleted this PR,
  * ADR-005 last consumer). Ported onto the C-2 tokens (zero new tokens). The `.rdt_*` markup lives in the
- * MARKERLESS field-wrap (Field.js), so `var(--cmplz-*)` does not resolve on it — every token ref carries
- * a LITERAL FALLBACK (the literal applies now; auto-upgrades at the Phase-5 marker move). No legacy or
+ * field-wrap (Field.js), now under the app-root `#complianz-app[data-cmplz-ui]` marker (ADR-001 marker
+ * move landed, H.5 Part 2), so `var(--cmplz-*)` resolves to the TOKEN; each ref keeps its LITERAL
+ * FALLBACK as a provable no-op (fallback == token value). No legacy or
  * responsive-prefixed token NAMES anywhere (the ADR-004 gate greps this file whole, comments included —
  * learnings 2026-10-14); the legacy sources are cited by file:line + concrete literals instead.
  * Scoped to the 7 react-data-table field-wrap classes under the app id.

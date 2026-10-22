@@ -5,10 +5,10 @@
  * in-app `#wizard` hash link): `ui/Button` renders a `<button>` and cannot be an anchor (the T-030
  * "primitive can't be an anchor" note), and turning a navigating link into a `<button>` would lose its
  * href (Stage H.9 rule). These constants mirror `ui/Button`'s `base` + the matching variant verbatim so
- * the anchor looks identical, PLUS an explicit `tw-border-solid`: the links render in MARKERLESS chrome
- * (the document-tools export rows and the still-legacy Dashboard GridBlock), so the base-reset
- * border-style (base.css B1, Preflight-off) never reaches them — the T-052 landmine — while the literal
- * variant colours resolve via the Bundle-A `#complianz-app` token broadening.
+ * the anchor looks identical, PLUS an explicit `tw-border-solid`: the links render in chrome without their
+ * own marker (the document-tools export rows and the Dashboard GridBlock), so `tw-border-solid` keeps the
+ * border-style self-sufficient under Preflight-off (the T-052 landmine); after the ADR-001 marker move
+ * (H.5 Part 2) the app-root marker resolves the variant colour tokens.
  *
  * `secondaryLinkButtonCls` == the legacy `button button-default`/`button-secondary` look (white fill, blue
  * text/border); `primaryLinkButtonCls` == `button button-primary` (blue fill, white text). `downloadButtonCls`

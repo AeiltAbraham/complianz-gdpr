@@ -30,7 +30,7 @@ const ThirdPartyControl = (props) => {
 
 	return (
 		<div className="components-base-control cmplz-thirdparty">
-			<div data-cmplz-ui>
+			<div>
 				<Button variant="secondary" onClick={ () => onAddNewHandler() }>{__("Add new Third Party", "complianz-gdpr")}</Button>
 			</div>
 			<div className="cmplz-panel__list">

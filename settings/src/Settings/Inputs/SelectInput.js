@@ -81,7 +81,7 @@ const SelectInput = ({
 		}
 	}
 	return (
-		<div data-cmplz-ui className="cmplz-select-group tw-flex tw-flex-col tw-gap-[var(--cmplz-space-xs)]" key={label}>
+		<div className="cmplz-select-group tw-flex tw-flex-col tw-gap-[var(--cmplz-space-xs)]" key={label}>
 			<Select.Root
 				//ref={innerRef}
 				value={value}
@@ -98,7 +98,6 @@ const SelectInput = ({
 				</Select.Trigger>
 				<Select.Portal container={getPortalContainer()}>
 					<Select.Content
-						data-cmplz-ui
 						className={contentCls}
 						position="popper"
 					>

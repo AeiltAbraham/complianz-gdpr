@@ -64,7 +64,7 @@ const Urls = (props) => {
 				}
 			</label>
 			{ urls.map( ([index, url], i)=>
-				<div key={i} data-cmplz-ui className="cmplz-scriptcenter-url tw-flex tw-items-center tw-pb-[10px] [&_.cmplz-input-group]:tw-grow [&_.cmplz-input-group]:tw-me-[10px]">
+				<div key={i} className="cmplz-scriptcenter-url tw-flex tw-items-center tw-pb-[10px] [&_.cmplz-input-group]:tw-grow [&_.cmplz-input-group]:tw-me-[10px]">
 					<TextInput
 						disabled={fetching}
 						value={url ? url : ''}

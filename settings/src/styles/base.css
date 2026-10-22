@@ -5,11 +5,11 @@
   box-sizing: border-box; border-width: 0; border-style: solid; border-color: currentColor;
 }
 /* B2 — root typography on every scoped UI island (OPTION A).
- * Re-scoped from `#complianz-app-root[data-cmplz-ui], #complianz-portal-root[data-cmplz-ui]` to the
- * same island selector tokens.css uses, so it reaches every migrated island now and the shell once it
- * carries the marker (T-038+); the old selector keyed B2 to #complianz-app-root, which no phase before
- * Phase 5 renders (the marker MOVE is deferred, ADR-001), so in the main app B2 matched nothing — the
- * same latent token/island bug the token-scope fix solved (learnings 2026-10-10). No early marker move.
+ * Scoped to the same `[data-cmplz-ui]` island selector tokens.css uses. After the ADR-001 MARKER MOVE
+ * (Stage H.5 Part 2, 2026-10-22) the single app-root marker `#complianz-app[data-cmplz-ui]` is one such
+ * island, so B2 now reaches the WHOLE main app (and the portal island): the redesigned frame and every
+ * now-migrated composite body flip from the legacy `.cmplz` 13px base to this 14px root typography — the
+ * intended design-system payoff that was deferred while bodies were still legacy (re-baselined here).
  * color uses the live --cmplz-text token (co-declared on this exact selector in tokens.css, so it always
  * resolves) instead of the former hardcoded #1e1e1e (C-2 redesign; drift re-baselined at T-043). */
 :is(#complianz, #complianz-portal) :where([data-cmplz-ui]) {

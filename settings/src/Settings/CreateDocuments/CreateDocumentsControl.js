@@ -65,9 +65,9 @@ const CreateDocumentsControl = () => {
 			{requiredPages.length>0 &&
 				<div>
 					{ /* C-2 migration (Stage H.6): legacy `button button-default` -> secondary Button.
-					   Markerless row, so `tw-border-solid` supplies the base-reset border-style (B1) that a
-					   data-cmplz-ui ancestor would otherwise give under Preflight-off (T-052); the variant
-					   colours + the icon gap resolve via the Bundle-A #complianz-app token broadening. */ }
+					   `tw-border-solid` pins the base-reset border-style (B1) for self-sufficiency under
+					   Preflight-off (T-052); after the ADR-001 marker move (H.5 Part 2) the app-root marker
+					   resolves the variant colours + icon-gap tokens. */ }
 					<Button
 						variant="secondary"
 						className="tw-border-solid tw-gap-[var(--cmplz-space-xs,_8px)]"

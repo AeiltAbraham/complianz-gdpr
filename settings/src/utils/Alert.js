@@ -8,12 +8,12 @@ import useFields from '../Settings/Fields/FieldsData';
  * legacy-globals.scss at H.5 from suggested-plugins.scss) is retired here — Alert was its only consumer
  * — and the block is rebuilt as the approved C-2 warning callout: a warning-tinted card
  * (`--cmplz-warning-surface` on a `--cmplz-warning` border), the same pattern WebSiteScanStatus uses
- * (WSC_ALERT_CLS). It is MARKERLESS (rendered in the still-legacy CookieScan / Integrations /
+ * (WSC_ALERT_CLS). It carries no marker of its own (rendered in the CookieScan / Integrations /
  * CookieDatabaseSync bodies), so every colour/space is a `var(--cmplz-*, <literal>)` whose fallback
- * equals the token value (resolves now via the `#complianz-app` token broadening, auto-upgrades at the
- * marker move), the border-style is pinned with `tw-border-solid` (Preflight is off — base reset B1 is
- * not in scope markerless; the T-052 landmine), and the CTA button/anchor each carry `tw-border-solid`
- * so they render bordered without a marker.
+ * equals the token value; after the ADR-001 marker move (H.5 Part 2) the app-root marker resolves these
+ * to the token (the fallback is a no-op). The border-style is pinned with `tw-border-solid` for
+ * self-sufficiency (Preflight is off; the T-052 landmine), and the CTA button/anchor each carry
+ * `tw-border-solid` too.
  *
  * Props:
  *   title      {string}   - Bold heading text

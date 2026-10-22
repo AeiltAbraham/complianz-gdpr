@@ -93,7 +93,7 @@ const CheckboxGroup = ({ indeterminate, label, value, id, onChange, required, di
 	}
 
 	return (
-		<div data-cmplz-ui className="cmplz-checkbox-group tw-flex tw-flex-col tw-gap-[var(--cmplz-space-xs)]">
+		<div className="cmplz-checkbox-group tw-flex tw-flex-col tw-gap-[var(--cmplz-space-xs)]">
 			{Object.entries(options).map(([key, optionLabel], i) => {
 				const optionDisabled = allDisabled || (Array.isArray(disabled) && disabled.includes(key));
 				return (

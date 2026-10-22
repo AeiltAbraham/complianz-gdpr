@@ -105,7 +105,7 @@ const ThirdPartyElement = (props) => {
 					<label className={rowLabelCls}>{__("Data", "complianz-gdpr")}</label>
 					<TextInput onChange={ ( value ) => setData(value) } placeholder={__("Data", "complianz-gdpr")} name="data" value={data} />
 				</div>
-				<div data-cmplz-ui className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs,_8px)] tw-mt-[var(--cmplz-space-s,_12px)] tw-pb-[5px]">
+				<div className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs,_8px)] tw-mt-[var(--cmplz-space-s,_12px)] tw-pb-[5px]">
 					<Button variant="error" onClick={ ( e ) => onDeleteHandler(e) }>{__("Delete", "complianz-gdpr")}</Button>
 				</div>
 			</>

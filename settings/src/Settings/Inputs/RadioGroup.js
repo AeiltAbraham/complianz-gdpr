@@ -22,7 +22,6 @@ const RadioGroup = ({ label, id, value, onChange, required, defaultValue, disabl
 	return (
 		<RadioGroupRadix.Root
 			disabled={disabled && !Array.isArray(disabled)}
-			data-cmplz-ui
 			className="tw-flex tw-flex-col tw-gap-[var(--cmplz-space-xs)]"
 			value={value}
 			aria-label={label}

@@ -22,16 +22,15 @@ import { clsx } from "./components/ui/cx";
 // (imported last) so the still-legacy consumers keep them (PagePlaceholder's error/lock grid, the
 // banner `.cmplz-grid` margin, and all Phase-4 screen content) — relocate, not orphan.
 //
-// NO `data-cmplz-ui` on this container (it would be wrong here): the grid WRAPS unmigrated Phase-4
-// screen bodies, and the scoped base (base.css B1–B5, `[data-cmplz-ui] *`, specificity (1,0,0)) would
-// then reach every legacy button/input/svg under it and strip its class-based styling (≤(0,N,0)) with
-// no `tw-` utilities to restore it. The marker belongs on fully-migrated subtrees only (the migrated
-// primitives inside keep their OWN `data-cmplz-ui`; Header/Menu get theirs in T-039/T-040); it moves to
-// the app root in Phase 5 (ADR-001) once all bodies are migrated. tw- utilities still apply (scoped by
-// `important: :is(#complianz,#complianz-portal)`, not the marker), so the frame gets the redesign look.
-// Frame spacing references `--cmplz-space-l` with a `24px` fallback (= the token's value): no ancestor
-// island defines the token for this container today, so it resolves to 24px now and auto-upgrades to the
-// token when the Phase-5 marker move lands on the app root.
+// This grid container carries no `data-cmplz-ui` of its own — it is just a layout wrapper. The ADR-001
+// MARKER MOVE has landed (Stage H.5 Part 2): the single marker now sits on the app root
+// `#complianz-app[data-cmplz-ui]`, an ancestor of this grid, so the scoped base (base.css B1–B5,
+// `[data-cmplz-ui] *`, specificity (1,0,0)) reaches everything under the grid. That is now SAFE because
+// every former Phase-4 screen body has been migrated to the C-2 system (H1–H9) — the earlier hazard (the
+// reset stripping legacy buttons/inputs/svgs with no `tw-` utilities to restore them) no longer exists.
+// tw- utilities apply as before (scoped by `important: :is(#complianz,#complianz-portal)`), so the frame
+// keeps its redesign look. Frame spacing references `--cmplz-space-l` with a `24px` fallback (= the
+// token's value); it now resolves to the TOKEN via the app-root island (the fallback is a provable no-op).
 //
 // DOM structure, the `cmplz-content-area cmplz-grid cmplz-<section>` class hooks and routing unchanged
 // (C-3): the classes still drive the retained Phase-4 modules (CookieBannerPreview's

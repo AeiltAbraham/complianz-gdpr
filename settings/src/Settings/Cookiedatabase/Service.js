@@ -218,7 +218,6 @@ const ServiceDetails = ( service ) => {
 				</div>
 			) }
 			<div
-				data-cmplz-ui
 				className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs,_8px)] tw-mt-[var(--cmplz-space-s,_12px)] tw-pb-[5px]"
 			>
 				<Button
@@ -267,7 +266,7 @@ const Service = ( props ) => {
 				) }
 				{ ! isUnknownService && (
 					<div className="tw-mt-[var(--cmplz-space-s,_12px)]">
-						<div data-cmplz-ui className="tw-flex">
+						<div className="tw-flex">
 							<Button
 								variant="secondary"
 								disabled={ adding || ! serviceIsSaved }

@@ -125,7 +125,7 @@ const ProcessorElement = (props) => {
 						</div>
 					}
 				</div>
-				<div data-cmplz-ui className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs,_8px)] tw-mt-[var(--cmplz-space-s,_12px)] tw-pb-[5px]">
+				<div className="tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs,_8px)] tw-mt-[var(--cmplz-space-s,_12px)] tw-pb-[5px]">
 					<Button variant="error" onClick={ ( e ) => onDeleteHandler(e) }>{__("Delete", "complianz-gdpr")}</Button>
 				</div>
 			</>

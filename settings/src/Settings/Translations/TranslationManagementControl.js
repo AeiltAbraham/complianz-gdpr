@@ -5,8 +5,8 @@ import {UseTranslationsData} from "./useTranslationsData";
 import { Button } from "../../components/ui/Button";
 
 // Migrated off Translations.scss (ADR-005, Stage H.5) onto `tw-` utilities on the semantic C-2 tokens
-// with literal fallbacks (markerless chrome, so they resolve now and auto-upgrade at the Phase-5 marker
-// move). Cards = the C-2 surface/border/radius; the status table drops the wp-admin `wp-list-table`
+// with literal fallbacks; after the ADR-001 marker move (H.5 Part 2) the app-root marker resolves the
+// tokens (the fallbacks are a no-op). Cards = the C-2 surface/border/radius; the status table drops the wp-admin `wp-list-table`
 // classes (FR-020) for a token-styled table. Status text keeps the AA-passing green/red; the former
 // low-contrast yellow warning text (constitution §5) becomes the default readable text colour, the
 // status still carried by its ⚠/⏳ glyph. Zero new tokens.
@@ -102,7 +102,7 @@ const TranslationManagementControl = () => {
 		return (
 			<div className={WRAP}>
 				<p className={ERROR_CALLOUT}>{error}</p>
-				<div data-cmplz-ui>
+				<div>
 					<Button variant="secondary" onClick={handleRetry}>
 						{__('Retry', 'complianz-gdpr')}
 					</Button>
@@ -161,7 +161,7 @@ const TranslationManagementControl = () => {
 			)}
 
 			{/* Check Now Button */}
-			<div data-cmplz-ui className="tw-mb-[var(--cmplz-space-l,_24px)] tw-text-center">
+			<div className="tw-mb-[var(--cmplz-space-l,_24px)] tw-text-center">
 				<Button
 					variant="primary"
 					onClick={async () => {

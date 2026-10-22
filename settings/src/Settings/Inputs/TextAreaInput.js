@@ -51,7 +51,7 @@ const TextAreaInput = ({
 		}
 	}, [value]);
 	return (
-		<div data-cmplz-ui className="cmplz-input-group">
+		<div className="cmplz-input-group">
 			<Textarea
 				ref={textareaRef}
 				id={inputId}

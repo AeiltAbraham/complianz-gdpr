@@ -28,9 +28,9 @@ const base = clsx(
 	// LITERAL FALLBACKS on every token ref (== the token value) so this primitive is look-identical
 	// whether it renders inside a `data-cmplz-ui` island (TextAreaInput) OR markerless (Support.js renders
 	// a standalone <Textarea> with no marker ancestor) — matching TextField's discipline. Without them the
-	// markerless Support textarea resolved these to invalid-at-computed-value; the Phase-5 token broadening
-	// (tokens.css now declares on #complianz-app) would otherwise change its computed colour/fill/border.
-	// With the fallback == token, both the broadening and a future marker move are a genuine no-op here.
+	// markerless Support textarea resolved these to invalid-at-computed-value; after the ADR-001 marker move
+	// (H.5 Part 2) the app-root marker resolves the tokens here too. With the fallback == token, the marker
+	// move is a genuine no-op for this primitive.
 	'tw-p-[8px] tw-text-[0.8125rem] tw-text-[color:var(--cmplz-text,_#0f172a)]',
 	'tw-border tw-rounded-[4px]',
 	'tw-bg-[var(--cmplz-field-surface,_#ffffff)] tw-outline-none',

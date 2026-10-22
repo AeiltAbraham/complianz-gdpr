@@ -62,13 +62,12 @@ const Editor = ( { id, value, onChange } ) => {
 	};
 
 	return (
-		// `data-cmplz-ui` marks this container so the migrated primitives (toggle Button + HTML Textarea)
-		// get the scoped base reset (B1 border-style under Preflight-off, T-052). The CKEditor below sits in
-		// its own `data-cmplz-isolate="ckeditor"` zone, which the base reset explicitly EXCLUDES even under a
-		// `[data-cmplz-ui]` ancestor (base.css `:not([data-cmplz-isolate] *)`), so the retained widget is
-		// untouched — safe to mark this container (no unmigrated raw bodies live outside the isolate zone).
+		// The migrated primitives (toggle Button + HTML Textarea) get the scoped base reset (B1 border-style
+		// under Preflight-off, T-052) from the app-root `#complianz-app[data-cmplz-ui]` marker (ADR-001
+		// marker move, H.5 Part 2). The CKEditor below sits in its own `data-cmplz-isolate="ckeditor"` zone,
+		// which the base reset explicitly EXCLUDES even under a `[data-cmplz-ui]` ancestor
+		// (base.css `:not([data-cmplz-isolate] *)`), so the retained widget is untouched.
 		<div
-			data-cmplz-ui
 			className="cmplz-editor tw-flex tw-flex-col tw-gap-[var(--cmplz-space-xs,_8px)] tw-items-start"
 		>
 			<Button variant="secondary" onClick={ ( e ) => toggleView() }>

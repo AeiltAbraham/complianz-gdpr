@@ -39,11 +39,12 @@ var dynamicComponents = {
 // keys (the cmplz_normalize_blocks() output, settings/config/blocks.php) via COMPLETE-LITERAL `tw-` class
 // maps (ADR-013; hand-written, no concatenation, no cva) and layers the redesign card chrome on the
 // semantic `--cmplz-*` tokens WITH LITERAL FALLBACKS, matching design/dashboard-preview.html. The block is
-// MARKERLESS (no data-cmplz-ui, ADR-001 marker discipline): its bodies wrap wp-admin `button button-*`,
-// DOMPurify-sanitized task HTML and plugin install/activate buttons, so a scoped base reset under a marker
-// would strip them. The `tw-` utilities win via the `important: :is(#complianz,#complianz-portal)` scope
-// (1,1,0) over the shared legacy-globals `.cmplz-grid-item*` base (0,1,0) that STAYS for PagePlaceholder/
-// SettingsPlaceholder (removed in Phase 5). The cmplz-grid-item + cmplz-<id> hooks (C-3) are kept.
+// MARKERLESS (no data-cmplz-ui of its own): after the ADR-001 MARKER MOVE (Stage H.5 Part 2) the app-root
+// marker covers its bodies (the dashboard blocks + OtherPlugins install/activate controls + task HTML),
+// which is safe because they are all migrated to the C-2 system (T-048 / H.9) and self-sufficient. The
+// `tw-` utilities win via the `important: :is(#complianz,#complianz-portal)` scope (1,1,0) over the shared
+// legacy-globals `.cmplz-grid-item*` base (0,1,0) that STAYS for PagePlaceholder/SettingsPlaceholder
+// (removed in Phase 5). The cmplz-grid-item + cmplz-<id> hooks (C-3) are kept.
 // Logical utilities only (ADR-007); border STYLE is set explicitly (markerless, so base.css B1 does not apply).
 const CARD_SHADOW = "tw-shadow-[var(--cmplz-shadow,_0_1px_3px_0_rgba(15,23,42,0.10),_0_1px_2px_-1px_rgba(15,23,42,0.06))]";
 const CARD_SURFACE = clsx(

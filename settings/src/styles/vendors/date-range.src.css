@@ -11,8 +11,10 @@
  * (#cmplz-date-range-picker-*) is NOT here — those selectors sit at/above the zone boundary and would become
  * dead descendant selectors; they live hand-scoped in date-range-chrome.css (T-056 review finding).
  *
- * The .rdr* markup renders in the markerless isolate zone, so --cmplz-* refs here carry LITERAL fallbacks
- * (the literal applies now; auto-upgrades at the Phase-5 marker move). No legacy or responsive-prefixed token
+ * The .rdr* calendar portals into the #complianz-portal-root island and renders in the date-range isolate
+ * zone, which the base RESET excludes but custom properties still inherit through — so --cmplz-* refs
+ * resolve to the TOKEN from that portal-root island (one of the two remaining markers after the ADR-001
+ * marker move, H.5 Part 2); the LITERAL fallbacks are kept as a provable no-op. No legacy or responsive-prefixed token
  * NAMES anywhere (the ADR-004 gate greps this file whole, comments included — learnings 2026-10-14; the
  * upstream imports contain none, our overrides use the C-2 tokens). Legacy source refs:
  * assets/css/admin/modules/date-range.scss :41 (date-display fill), :60/:450 (date-input/preset text — now

@@ -8,9 +8,10 @@ import CheckboxGroup from "../Inputs/CheckboxGroup";
 
 // C-2 field look for the native status <select> (Stage H.6). A styled native <select> — not SelectInput —
 // keeps the element's own `aria-label` (the gated #tools/data-requests axe select-name fix, axe.js) and its
-// native interaction; SelectInput does not plumb aria-label. Markerless, so `tw-border-solid` supplies the
-// base-reset border-style (B1) under Preflight-off; tokens carry literal fallbacks (resolve now, auto-upgrade
-// at the marker move). Mirrors the migrated .cmplz-datatable-search field look in data-table.css.
+// native interaction; SelectInput does not plumb aria-label. `tw-border-solid` pins the border-style
+// explicitly (Preflight-off, self-sufficient); after the ADR-001 marker move (H.5 Part 2) the app-root
+// marker resolves the tokens, with the literal fallbacks kept as a no-op. Mirrors the migrated
+// .cmplz-datatable-search field look in data-table.css.
 // `tw-h-auto` + `tw-mt-[space-s]` override the retained shared legacy `.cmplz-table-header-controls select`
 // rule (`height:20px; margin-top:10px`, legacy-globals.scss) — the `important:` scope boosts these tw-
 // utilities to (1,1,0), beating that (0,2,1) rule — so the select is a full field, top-aligned with the
