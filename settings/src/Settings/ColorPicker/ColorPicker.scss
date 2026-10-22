@@ -7,7 +7,7 @@
 	  margin-right: 10px;
 	  background-color: transparent;
 	  border-radius: 6px;
-	  border: 1px solid var(--cmplz-legacy-grey-400);
+	  border: 1px solid #c6c6c6; /* inlined neutral grey; decoupled from the legacy variables.scss for Bundle D (ColorPicker is isolate-zoned, so the literal keeps it zero-drift) */
 	  min-width: 140px;
 	  font-size: 13px;
 	}
@@ -27,7 +27,7 @@
 		border-radius: 50%;
 		width: 20px;
 		height: 20px;
-		border: 1px solid var(--cmplz-legacy-grey-300);
+		border: 1px solid #ededed; /* inlined neutral grey; decoupled from the legacy variables.scss for Bundle D */
 	  }
 	}
   
