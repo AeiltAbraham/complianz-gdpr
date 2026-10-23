@@ -14,6 +14,10 @@
  * resolves) instead of the former hardcoded #1e1e1e (C-2 redesign; drift re-baselined at T-043). */
 :is(#complianz, #complianz-portal) :where([data-cmplz-ui]) {
   font-size: 14px; line-height: 1.5; color: var(--cmplz-text); -webkit-font-smoothing: antialiased;
+  /* Bundle D: reproduce the dropped legacy `.cmplz { font-variant-numeric: tabular-nums }` root rule
+   * (base.scss, inherited to every digit in the app). B2 is the island root, so declaring it here
+   * restores app-wide tabular figures by inheritance (zero-drift). */
+  font-variant-numeric: tabular-nums;
 }
 /* B3 — form controls inherit font (Preflight replacement) */
 :is(#complianz, #complianz-portal) :where([data-cmplz-ui] :is(button,input,select,textarea,optgroup):not([data-cmplz-isolate] *):not([data-cmplz-isolate])) {

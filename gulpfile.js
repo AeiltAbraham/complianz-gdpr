@@ -1,5 +1,4 @@
 const gulp = require('gulp');
-const rtlcss = require('gulp-rtlcss');
 const concat = require('gulp-concat');
 const cssbeautify = require('gulp-cssbeautify');
 const cssuglify = require('gulp-uglifycss');
@@ -16,8 +15,8 @@ function defaultTask(cb) {
 	gulp.watch('./assets/css/document.scss', { ignoreInitial: false }, buildCssDocument);
 	// Watch for changes in 'document-grid.scss' and run 'buildCssDocumentGrid' task
 	gulp.watch('./assets/css/document-grid.scss', { ignoreInitial: false }, buildCssDocumentGrid);
-	// Watch for changes in 'admin.scss' and run 'buildCssAdmin' task
-	gulp.watch('./assets/css/admin.scss', { ignoreInitial: false }, buildCssAdmin);
+	// Watch for changes in 'premium.scss' and run 'buildCssPremium' task
+	gulp.watch('./assets/css/premium.scss', { ignoreInitial: false }, buildCssPremium);
 	// Watch for changes in 'cookieblocker.scss' and run 'buildCssCookieblocker' task
 	gulp.watch('./assets/css/cookieblocker.scss', { ignoreInitial: false }, buildCssCookieblocker);
 	// Watch for changes in JavaScript files in the 'cookiebanner/js' directory and run 'buildJsCookiebanner' task
@@ -61,8 +60,7 @@ function buildCssAll(cb) {
 	return gulp.series(
 		buildCssDocument,
 		buildCssDocumentGrid,
-		buildCssAdmin,
-		buildCssAdminRtlExpanded,
+		buildCssPremium,
 		buildCssCookieblocker,
 	)(cb);
 }
@@ -99,41 +97,25 @@ function buildCssDocumentGrid() {
 exports['build:css:document-grid'] = buildCssDocumentGrid;
 
 /**
- * Builds the Admin CSS by compiling SCSS to CSS, beautifying, minifying, and generating RTL CSS.
+ * Builds the slim premium block CSS by compiling SCSS to CSS, beautifying, minifying.
  *
+ * Bundle D retired the full legacy admin CSS target (buildCssAdmin / buildCssAdminRtlExpanded). What
+ * remains is assets/css/premium.scss — the three #complianz-scoped premium `cmplz_blocks` module styles
+ * (bullets / new-features / other-plugins), compiled to assets/css/premium.css + premium.min.css and
+ * enqueued under the `complianz-premium` handle (class-admin.php). No RTL variant is emitted: the three
+ * modules carry no directional properties, so an rtlcss pass is a no-op (unlike the former admin.css,
+ * whose layout had many directional props).
  */
-function buildCssAdmin() {
-	return 	gulp.src('./assets/css/admin.scss')
+function buildCssPremium() {
+	return 	gulp.src('./assets/css/premium.scss')
 		.pipe(sass(({outputStyle: 'expanded'})).on('error', sass.logError))
 		.pipe(cssbeautify()) // Beautify the CSS
 		.pipe(gulp.dest('./assets/css'))
 		.pipe(cssuglify()) // Minify the CSS
-		.pipe(concat('admin.min.css'))
-		.pipe(gulp.dest('./assets/css'))
-		.pipe(rtlcss())
-		.pipe(gulp.dest('./assets/css/rtl'));
+		.pipe(concat('premium.min.css'))
+		.pipe(gulp.dest('./assets/css'));
 }
-
-/**
- * Builds the NON-minified RTL admin CSS (assets/css/rtl/admin.css).
- *
- * buildCssAdmin above only emits the MINIFIED RTL file (assets/css/rtl/admin.min.css). But the admin
- * enqueue (class-admin.php enqueue_assets) requests the non-minified assets/css/rtl/admin.css whenever
- * SCRIPT_DEBUG is on — which it is on every wp-env dev/test site, and on debug production sites —
- * mirroring the non-minified assets/css/admin.css shipped for LTR. Without this file the RTL admin gets
- * the dir=rtl flow but NO admin stylesheet, so the dashboard grid and layout collapse (RTL-parity bug,
- * constitution §6). This step is additive: it writes only rtl/admin.css and leaves admin.css,
- * admin.min.css and rtl/admin.min.css byte-identical.
- */
-function buildCssAdminRtlExpanded() {
-	return 	gulp.src('./assets/css/admin.scss')
-		.pipe(sass(({outputStyle: 'expanded'})).on('error', sass.logError))
-		.pipe(cssbeautify()) // Beautify the CSS
-		.pipe(rtlcss())
-		.pipe(gulp.dest('./assets/css/rtl'));
-}
-
-exports['build:css:admin'] = gulp.series(buildCssAdmin, buildCssAdminRtlExpanded);
+exports['build:css:premium'] = buildCssPremium;
 
 /**
  * Builds the Cookieblocker CSS by compiling SCSS to CSS, beautifying, minifying.

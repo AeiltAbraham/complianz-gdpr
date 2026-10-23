@@ -9,7 +9,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "build:all": "gulp build:css:admin && npm --prefix settings run build",
+    "build:all": "gulp build:css:premium && npm --prefix settings run build",
     "e2e": "playwright test --config tests/e2e/playwright.config.js"
   },
   "devDependencies": {
