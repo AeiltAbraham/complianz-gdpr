@@ -1,0 +1,222 @@
+@charset "UTF-8";
+/**
+ * premium.scss — the slim, self-contained stylesheet for the premium `cmplz_blocks` dashboard modules
+ * (Bundle D teardown, maintainer decision 2026-10-22 "option a").
+ *
+ * WHY THIS FILE EXISTS
+ * Bundle D removes the legacy admin stylesheet (`assets/css/admin.scss` -> `admin.css`, handle
+ * `complianz-admin`): de-enqueued, its gulp target retired, its compiled output and `variables.scss`
+ * deleted. Three `#complianz`-scoped module styles have no C-2 replacement and `admin.css` was their only
+ * delivery vehicle: `premium/bullets.scss`, `premium/new-features.scss`, `premium/other-plugins.scss`.
+ * They back premium dashboard blocks registered via the `cmplz_blocks` filter (design/dashboard.md:28,
+ * blocks.php) AND the free-edition Dashboard "Other plugins" block (OtherPlugins.js renders
+ * `.cmplz-other-plugins-container`). So they are compiled here into a dedicated slim stylesheet, built by
+ * its own gulp target (`build:css:premium`) and enqueued under its own handle (`complianz-premium`) on
+ * Complianz admin pages — delivering them to both free and premium consumers exactly as admin.css did.
+ *
+ * SELF-CONTAINED TOKENS (so `variables.scss` can be FULLY deleted in this bundle)
+ * The three modules reference a handful of `--cmplz-legacy-*` custom properties and two `$cmplz-legacy-*`
+ * breakpoint SCSS variables that used to live in `variables.scss`. They are inlined below as their concrete
+ * literal values (the exact values `variables.scss` resolved to), so nothing depends on `variables.scss`
+ * any more. The `--cmplz-legacy-` prefix is RETAINED (rather than renamed) so the three module sources stay
+ * byte-identical — this keeps the compiled output provably identical to what admin.css emitted (zero drift)
+ * and matches the premium repo's own copies. The ADR-004 / T-018 token-hygiene gate scopes the
+ * `--cmplz-legacy-` ban to `settings/src/components|styles` (the redesign's own code); `assets/css/` is not
+ * in that scope, and these names are not the banned `--rsp-`/`$rsp-` form, so the gate is satisfied.
+ */
+/* Breakpoints used by new-features.scss (referenced as SCSS variables in its @media queries). */
+/* The custom properties the three modules reference, inlined from the deleted variables.scss. */
+:root {
+    --cmplz-legacy-black: #333;
+    --cmplz-legacy-blue: #009fff;
+    --cmplz-legacy-brand-primary: #1E73BE;
+    --cmplz-legacy-green: #2e8a37;
+    --cmplz-legacy-pink: #E35899;
+    --cmplz-legacy-red: #D7263D;
+    --cmplz-legacy-yellow: #f4bf3e;
+    --cmplz-legacy-grey-300: #ededed;
+    --cmplz-legacy-spacing-xxs: 5px;
+    --cmplz-legacy-spacing-xs: 10px;
+    --cmplz-legacy-fs-300: 0.8125rem;
+    --cmplz-legacy-text-color-light: rgba(15, 23, 42, 0.85);
+}
+
+#complianz .cmplz-bullet {
+    height: 13px;
+    width: 13px;
+    flex: 0 0 13px;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: var(--cmplz-legacy-grey-300);
+}
+
+#complianz .cmplz-bullet.rsp-yellow {
+    background-color: var(--cmplz-legacy-yellow);
+}
+
+#complianz .cmplz-bullet.rsp-blue {
+    background-color: var(--cmplz-legacy-blue);
+}
+
+#complianz .cmplz-bullet.rsp-pink {
+    background-color: var(--cmplz-legacy-pink);
+}
+
+#complianz .cmplz-bullet.rsp-red, #complianz .cmplz-bullet.cmplz-bullet-error {
+    background-color: var(--cmplz-legacy-red);
+}
+
+#complianz .cmplz-bullet.rsp-green, #complianz .cmplz-bullet.cmplz-bullet-success {
+    background-color: var(--cmplz-legacy-green);
+}
+
+#complianz .cmplz-bullet.rsp-blue-yellow {
+    background: var(--cmplz-legacy-blue);
+    background: linear-gradient(77deg, rgb(41, 182, 246) 0%, rgb(41, 182, 246) 30%, rgb(244, 191, 62) 70%, rgb(244, 191, 62) 100%);
+    animation: gradient 2s ease infinite;
+    background-size: 200% 200%;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+#complianz .cmplz-new-features-block .cmplz-grid-item-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#complianz .cmplz-new-features {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--cmplz-legacy-spacing-xs);
+}
+
+@media only screen and (max-width: 1599px) and (min-width: 1280px) {
+    #complianz .cmplz-new-features {
+        gap: var(--cmplz-legacy-spacing-xxs);
+    }
+}
+
+#complianz .cmplz-new-feature {
+    width: 100%;
+    color: var(--cmplz-legacy-text-color-light);
+    display: flex;
+    align-items: flex-start;
+    min-width: 0;
+    gap: var(--cmplz-legacy-spacing-xs);
+    text-decoration: none;
+}
+
+#complianz .cmplz-new-feature .cmplz-icon {
+    margin-top: 2px;
+}
+
+#complianz .cmplz-new-feature .cmplz-new-feature-desc p {
+    font-size: var(--cmplz-legacy-fs-300);
+}
+
+#complianz .cmplz-other-plugins .cmplz-placeholder {
+    background-color: transparent;
+}
+
+#complianz .cmplz-other-plugins .rsp-logo img {
+    height: 20px;
+}
+
+#complianz .cmplz-other-plugins-container {
+    display: flex !important;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    font-size: var(--cmplz-legacy-fs-300);
+    line-height: 1.7;
+    gap: var(--cmplz-legacy-spacing-xxs);
+}
+
+@media screen and (max-width: 992px) {
+    #complianz .cmplz-other-plugins-container {
+        flex-direction: row;
+        overflow: hidden;
+    }
+}
+
+#complianz .cmplz-other-plugins-container .cmplz-other-plugins-element {
+    width: 100%;
+    display: flex;
+    align-content: space-between;
+    justify-content: space-between;
+    gap: 10px;
+    --cmplz-legacy-other-plugins-color: var(---cmplz-legacy-brand-primary);
+}
+
+#complianz .cmplz-other-plugins-container .cmplz-other-plugins-element.cmplz-zip-recipes {
+    --cmplz-legacy-other-plugins-color: var(--cmplz-legacy-pink);
+}
+
+#complianz .cmplz-other-plugins-container .cmplz-other-plugins-element.cmplz-burst-statistics {
+    --cmplz-legacy-other-plugins-color: var(--cmplz-legacy-green);
+}
+
+#complianz .cmplz-other-plugins-container .cmplz-other-plugins-element.cmplz-complianz-gdpr {
+    --cmplz-legacy-other-plugins-color: var(--cmplz-legacy-blue);
+}
+
+#complianz .cmplz-other-plugins-container .cmplz-other-plugins-element.cmplz-complianz-terms-conditions {
+    --cmplz-legacy-other-plugins-color: var(--cmplz-legacy-black);
+}
+
+#complianz .cmplz-other-plugins-container .cmplz-other-plugins-element.cmplz-really-simple-ssl {
+    --cmplz-legacy-other-plugins-color: var(--cmplz-legacy-yellow);
+}
+
+#complianz .cmplz-other-plugins-container .cmplz-other-plugins-element a {
+    width: max-content;
+    color: var(--cmplz-legacy-text-color-light);
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: var(--cmplz-legacy-spacing-xs);
+    text-decoration: none;
+}
+
+#complianz .cmplz-other-plugins-container .cmplz-other-plugins-element a:hover {
+    color: var(--cmplz-legacy-other-plugins-color);
+    text-decoration: underline;
+}
+
+#complianz .cmplz-other-plugins-container .cmplz-other-plugins-element a:hover .cmplz-bullet {
+    background-color: var(--cmplz-legacy-other-plugins-color);
+}
+
+#complianz .cmplz-other-plugins-container .cmplz-other-plugins-element a:hover .cmplz-other-plugins-content {
+    text-decoration: underline;
+}
+
+#complianz .cmplz-other-plugins-container .cmplz-other-plugins-element .cmplz-bullet {
+    transition: background-color 0.3s ease;
+    background-color: var(--cmplz-legacy-other-plugins-color);
+}
+
+#complianz .cmplz-other-plugins-container .cmplz-other-plugins-element .cmplz-other-plugins-content {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#complianz .cmplz-other-plugins-container .cmplz-other-plugins-element .cmplz-other-plugin-status {
+    min-width: fit-content;
+}

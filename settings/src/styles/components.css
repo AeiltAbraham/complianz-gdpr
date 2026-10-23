@@ -443,3 +443,134 @@
   padding-block-start: 15px;
   padding-block-end: 0;
 }
+
+/* ============================================================================================
+ * BUNDLE D TEARDOWN relocations. The three sections below are re-homed from the legacy admin
+ * stylesheet (`assets/css/admin.scss` + `assets/css/admin/*`) as Bundle D removes that stylesheet's
+ * delivery (the `complianz-admin` handle is de-enqueued and the gulp admin target retired). They still
+ * have LIVE consumers and their styling source was admin.css alone, so they move here (index.css) under
+ * the same island-scoping + literal-value + logical-property discipline as the B2 relocations above. */
+
+/* --------------------------------------------------------------------------------------------
+ * base.scss element typography (was `.cmplz h1..h6 / p / a`, (0,1,1)). The ADR-001 marker move (PR #17)
+ * put `[data-cmplz-ui]` on `#complianz-app`, so base.css B2 now sets the 14px ROOT typography on the app —
+ * but B2 only sets font-size/line-height/color on the island ELEMENT (inherited); these per-ELEMENT legacy
+ * rules win over that inherited value on every RAW `<h1..h6>`/`<p>`/`<a>` the still-legacy bodies render
+ * (e.g. DataBreachConclusion `<h3>`, ScriptCenter `<h5>`, ErrorBoundary `<h3>`, SinglePrivacyStatement
+ * `<h1>`). SPECIFICITY (review fix): keep `[data-cmplz-ui]` OUTSIDE `:where()` so it contributes (0,1,0);
+ * with the `:where(#id,#id)` scope at 0 and the element at (0,0,1) the total is (0,1,1) — the EXACT original
+ * `.cmplz h1..h6` specificity (neither Form B's (0,0,1), which would lose to equal-or-higher wp rules, nor
+ * Form A's ID-level (1,0,1)). Migrated elements carry tw- font utilities (1,1,0) which still win. NO isolate
+ * exclusion — base.scss reached into isolate zones (`.cmplz` wraps them), so this matches that reach
+ * (zero-drift). The dead `.cmplz-h0`/`.cmplz-h1..6`/`.cmplz-small-text`/`.cmplz-notice-hook-element`
+ * utility classes (0 JS/PHP consumers, grep-verified) are DROPPED (ADR-005). The `.cmplz` ROOT font/color
+ * is NOT relocated: B2 supersedes it on the marker by design (the intended 13->14px flip, PR #17); the root
+ * `font-variant-numeric: tabular-nums` IS reproduced on B2 in base.css. Colours are the legacy base.scss
+ * text-color literal rgba(15,23,42,0.95) (NOT the redesign text token #0f172a). Sizes are the legacy fs-*. */
+:where(#complianz, #complianz-portal) [data-cmplz-ui] h1,
+:where(#complianz, #complianz-portal) [data-cmplz-ui] h2,
+:where(#complianz, #complianz-portal) [data-cmplz-ui] h3,
+:where(#complianz, #complianz-portal) [data-cmplz-ui] h4,
+:where(#complianz, #complianz-portal) [data-cmplz-ui] h5,
+:where(#complianz, #complianz-portal) [data-cmplz-ui] h6 {
+  color: rgba(15, 23, 42, 0.95);
+  line-height: 1.5;
+}
+:where(#complianz, #complianz-portal) [data-cmplz-ui] h1 {
+  font-size: 1.5rem;
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: 0.025rem;
+}
+:where(#complianz, #complianz-portal) [data-cmplz-ui] h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.025rem;
+}
+:where(#complianz, #complianz-portal) [data-cmplz-ui] h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.0125rem;
+}
+:where(#complianz, #complianz-portal) [data-cmplz-ui] h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.0125rem;
+}
+:where(#complianz, #complianz-portal) [data-cmplz-ui] h5 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+:where(#complianz, #complianz-portal) [data-cmplz-ui] h6 {
+  font-size: 0.8125rem;
+  letter-spacing: 0.1px;
+}
+:where(#complianz, #complianz-portal) [data-cmplz-ui] p {
+  color: rgba(15, 23, 42, 0.95);
+  font-weight: 400;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+:where(#complianz, #complianz-portal) [data-cmplz-ui] a {
+  font-size: 0.8125rem;
+}
+
+/* --------------------------------------------------------------------------------------------
+ * legacy-globals.scss generic input look (was `.cmplz input:where(:not([data-cmplz-isolate] *))...`,
+ * class-scoped at (0,1,1)). RELOCATED (maintainer sign-off 2026-10-23): the only residual visible raw
+ * input is Password.js's `.components-text-control__input`, which layers this over wp-components; the
+ * orphaned BorderRadius/Width controls are dead, `.cmplz-datatable-search` is styled by data-table.css at
+ * (1,1,0), and the file-pickers are `tw-sr-only`. DELETE risked a T-038/T-052-style app-wide input break,
+ * so the conservative zero-drift RELOCATE was chosen (a later confirmed-dead check can remove it).
+ * SPECIFICITY (review fix): `[data-cmplz-ui]` is kept OUTSIDE `:where()` so the base rule is exactly
+ * (0,1,1) — the EXACT original `.cmplz input:where(...)` specificity. This matters here MORE than for the
+ * headings: at (0,1,1) it ties WordPress `forms.css` (`input[type=...]` = (0,1,1)) and wins by source order
+ * (index.css loads after forms.css — reproducing admin.css's old source-order win) AND beats wp-components
+ * `.components-text-control__input` (0,1,0), so Password.js keeps the complianz look. The earlier Form-B
+ * (0,0,1) would have LOST to both — a real drift the review caught. Migrated inputs' tw- utilities (1,1,0)
+ * still win. The `:not([data-cmplz-isolate] *)` exclusion is preserved VERBATIM (kept this off the retained
+ * react-date-range calendar inputs, T-030). Literals: border-radius-xs 5px; input-border-color grey-400
+ * #c6c6c6; padding spacing-xxs/xs 5px/10px; fs-300 0.8125rem; text-color-light rgba(15,23,42,0.85);
+ * white #fff; focus dark-blue #1e73be; disabled grey-200 #f7f7f7 / grey-400 #c6c6c6. */
+:where(#complianz, #complianz-portal) [data-cmplz-ui] input:where(:not([data-cmplz-isolate] *)):not([type="radio"]) {
+  border-radius: 5px;
+}
+:where(#complianz, #complianz-portal) [data-cmplz-ui] input:where(:not([data-cmplz-isolate] *)) {
+  border: 1px solid #c6c6c6;
+  padding: 5px 10px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: rgba(15, 23, 42, 0.85);
+  background-color: #fff;
+  outline: none;
+}
+:where(#complianz, #complianz-portal) [data-cmplz-ui] input:where(:not([data-cmplz-isolate] *)):focus {
+  border-color: #1e73be;
+  box-shadow: 0 0 0 2px #1e73be;
+}
+:where(#complianz, #complianz-portal) [data-cmplz-ui] input:where(:not([data-cmplz-isolate] *)):disabled {
+  background-color: #f7f7f7;
+  color: #c6c6c6;
+}
+
+/* --------------------------------------------------------------------------------------------
+ * legacy-globals.scss table-header row (was top-level `.cmplz-table-header` / `-controls` / ` select`).
+ * RELOCATE: ~12 live consumers across the document-tools bodies (RecordsOfConsent/DataRequests/
+ * ProofOfConsent/ProcessingAgreements/DataBreachReports export+list rows), CookieScanControl (Website Scan,
+ * the shared flex hook), and Integrations (ServicesControl/PluginsControl). Form B (was zero-ID, top-level).
+ * `margin-left:auto` -> logical `margin-inline-start:auto` (ADR-007: index.css has no rtlcss pass, so this
+ * reproduces admin.css's rtlcss-mirrored RTL). `.cmplz-table-header-controls select` height/margin-top kept
+ * (DatarequestsControl.js layers `tw-h-auto`/`tw-mt-` on top where it needs to override). */
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-table-header {
+  display: flex;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-table-header-controls {
+  display: flex;
+  margin-inline-start: auto;
+  gap: 20px;
+}
+:where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-table-header-controls select {
+  height: 20px;
+  margin-block-start: 10px;
+}

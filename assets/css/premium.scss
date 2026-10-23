@@ -1,0 +1,53 @@
+/**
+ * premium.scss — the slim, self-contained stylesheet for the premium `cmplz_blocks` dashboard modules
+ * (Bundle D teardown, maintainer decision 2026-10-22 "option a").
+ *
+ * WHY THIS FILE EXISTS
+ * Bundle D removes the legacy admin stylesheet (`assets/css/admin.scss` -> `admin.css`, handle
+ * `complianz-admin`): de-enqueued, its gulp target retired, its compiled output and `variables.scss`
+ * deleted. Three `#complianz`-scoped module styles have no C-2 replacement and `admin.css` was their only
+ * delivery vehicle: `premium/bullets.scss`, `premium/new-features.scss`, `premium/other-plugins.scss`.
+ * They back premium dashboard blocks registered via the `cmplz_blocks` filter (design/dashboard.md:28,
+ * blocks.php) AND the free-edition Dashboard "Other plugins" block (OtherPlugins.js renders
+ * `.cmplz-other-plugins-container`). So they are compiled here into a dedicated slim stylesheet, built by
+ * its own gulp target (`build:css:premium`) and enqueued under its own handle (`complianz-premium`) on
+ * Complianz admin pages — delivering them to both free and premium consumers exactly as admin.css did.
+ *
+ * SELF-CONTAINED TOKENS (so `variables.scss` can be FULLY deleted in this bundle)
+ * The three modules reference a handful of `--cmplz-legacy-*` custom properties and two `$cmplz-legacy-*`
+ * breakpoint SCSS variables that used to live in `variables.scss`. They are inlined below as their concrete
+ * literal values (the exact values `variables.scss` resolved to), so nothing depends on `variables.scss`
+ * any more. The `--cmplz-legacy-` prefix is RETAINED (rather than renamed) so the three module sources stay
+ * byte-identical — this keeps the compiled output provably identical to what admin.css emitted (zero drift)
+ * and matches the premium repo's own copies. The ADR-004 / T-018 token-hygiene gate scopes the
+ * `--cmplz-legacy-` ban to `settings/src/components|styles` (the redesign's own code); `assets/css/` is not
+ * in that scope, and these names are not the banned `--rsp-`/`$rsp-` form, so the gate is satisfied.
+ */
+
+/* Breakpoints used by new-features.scss (referenced as SCSS variables in its @media queries). */
+$cmplz-legacy-break-m: 1280px;
+$cmplz-legacy-break-xxl: 1599px;
+
+/* The custom properties the three modules reference, inlined from the deleted variables.scss. */
+:root {
+	--cmplz-legacy-black: #333;
+	--cmplz-legacy-blue: #009fff;
+	--cmplz-legacy-brand-primary: #1E73BE;
+	--cmplz-legacy-green: #2e8a37;
+	--cmplz-legacy-pink: #E35899;
+	--cmplz-legacy-red: #D7263D;
+	--cmplz-legacy-yellow: #f4bf3e;
+
+	--cmplz-legacy-grey-300: #ededed;
+
+	--cmplz-legacy-spacing-xxs: 5px;
+	--cmplz-legacy-spacing-xs: 10px;
+
+	--cmplz-legacy-fs-300: 0.8125rem;
+
+	--cmplz-legacy-text-color-light: rgba(15, 23, 42, 0.85);
+}
+
+@import 'premium/bullets.scss';
+@import 'premium/new-features.scss';
+@import 'premium/other-plugins.scss';

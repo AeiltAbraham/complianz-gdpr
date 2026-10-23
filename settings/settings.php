@@ -409,13 +409,16 @@ function cmplz_add_option_menu() {
 			if ( ! file_exists( $css_path ) ) {
 				return;
 			}
-			// Load after the legacy admin stylesheet while that handle still exists (Phase 5
-			// retires it); guarded so a missing handle does not drop the enqueue.
-			$deps = wp_style_is( 'complianz-admin', 'registered' ) ? array( 'complianz-admin' ) : array();
+			// Depend on WordPress's `wp-components` stylesheet. Bundle D retired the legacy admin
+			// stylesheet (`complianz-admin`, de-enqueued in class-admin.php), which used to be this
+			// entry's dependency AND the sole thing that pulled in `wp-components`. The still-legacy
+			// ToggleControl (CheckboxControl.js, the `checkbox` field type) and Password.js render raw
+			// `.components-*` markup whose base look comes from `wp-components` (the redesign does not
+			// reproduce it), so this entry declares `wp-components` directly to keep that base loaded.
 			wp_enqueue_style(
 				'cmplz-settings',
 				plugins_url( 'build/index.css', __FILE__ ),
-				$deps,
+				array( 'wp-components' ),
 				filemtime( $css_path )
 			);
 		}

@@ -203,19 +203,28 @@ if ( ! class_exists( 'cmplz_admin' ) ) {
 		}
 
 		/**
-		 * Enqueue some assets
+		 * Enqueue the slim premium block stylesheet on Complianz admin pages.
 		 *
-		 * @param $hook
+		 * Bundle D retired the legacy admin stylesheet (`complianz-admin` / admin.css). The three
+		 * `#complianz`-scoped module styles that had no C-2 replacement (bullets / new-features /
+		 * other-plugins — premium `cmplz_blocks` dashboard blocks, plus the free Dashboard "Other
+		 * plugins" block) were compiled into the dedicated, self-contained `assets/css/premium.css`
+		 * (handle `complianz-premium`), which this method delivers with the same page breadth admin.css
+		 * had. `file_exists` guards an unbuilt checkout so `filemtime()` never warns on a missing file.
+		 *
+		 * @param string $hook The current admin page hook suffix.
 		 */
 		public function enqueue_assets( $hook ) {
 			if ( strpos( $hook, 'complianz' ) === false ) {
 				return;
 			}
 			$min  = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-			$rtl  = is_rtl() ? 'rtl/' : '';
-			$url  = trailingslashit( CMPLZ_URL ) . "assets/css/{$rtl}admin{$min}.css";
-			$path = trailingslashit( CMPLZ_PATH ) . "assets/css/{$rtl}admin{$min}.css";
-			wp_enqueue_style( 'complianz-admin', $url, array( 'wp-components' ), filemtime( $path ) );
+			$path = trailingslashit( CMPLZ_PATH ) . "assets/css/premium{$min}.css";
+			if ( ! file_exists( $path ) ) {
+				return;
+			}
+			$url = trailingslashit( CMPLZ_URL ) . "assets/css/premium{$min}.css";
+			wp_enqueue_style( 'complianz-premium', $url, array(), filemtime( $path ) );
 		}
 
 		/**
