@@ -50,7 +50,10 @@ const SUB_BASE = clsx(
 const SUB_INACTIVE = "tw-text-[color:var(--cmplz-text-muted)]";
 const SUB_ACTIVE = clsx(
 	"cmplz-active",
-	"tw-text-[color:var(--cmplz-accent-strong)] tw-font-semibold"
+	// SC-05 (REL-1): --cmplz-accent-strong (#1e73be) on the light menu surface is ~4.48:1 (below AA for
+	// this 13px semibold text). --cmplz-accent-on-subtle (#17608f, the interactive-text-on-light-tint
+	// token, matching MAIN_ACTIVE) clears AA (~6:1). Existing token, no new token.
+	"tw-text-[color:var(--cmplz-accent-on-subtle,_#17608f)] tw-font-semibold"
 );
 const ITEM_HOVER = "hover:tw-bg-[color:var(--cmplz-surface)]";
 const SUBMENU_ITEMS = clsx(

@@ -20,9 +20,12 @@ const ThirdPartyScript = (props) => {
 	const { setScript, fetching, saveScript, deleteScript } = useIntegrations();
 	const script = props.script;
 	const checkboxControl = (script) => {
+		// Non-empty accessible name for the toggle (axe button-name): the Script Center renders this
+		// switch with no visible label, so name it by its purpose + the script name when present.
+		const enableLabel = `${ __( 'Enable', 'complianz-gdpr' ) } ${ script.name || '' }`.trim();
 		return (
 			<>
-				<SwitchInput className={"cmplz-switch-input-tiny"} onChange={ ( value ) =>  onChangeEnabledHandler(value, 'enable') } value={script.enable}/>
+				<SwitchInput label={enableLabel} className={"cmplz-switch-input-tiny"} onChange={ ( value ) =>  onChangeEnabledHandler(value, 'enable') } value={script.enable}/>
 			</>
 		)
 	}

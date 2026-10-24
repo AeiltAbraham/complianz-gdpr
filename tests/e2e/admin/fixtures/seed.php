@@ -72,10 +72,57 @@ function cmplz_e2e_seed() {
 	cmplz_e2e_seed_cookies_services( $seed_time );
 	cmplz_e2e_seed_documents();
 	cmplz_e2e_seed_banner();
+	cmplz_e2e_seed_proof_of_consent( $seed_time );
 
 	if ( defined( 'WP_CLI' ) && WP_CLI ) {
 		WP_CLI::log( 'cmplz-e2e: fixture seeded.' );
 	}
+}
+
+/**
+ * Pin the Proof of Consent snapshot list to a single fixed-date record (REL-1 determinism).
+ *
+ * The screen (#tools/proof-of-consent) lists the snapshot PDFs on disk under
+ * cmplz_upload_dir('snapshots'); each row's Document column is the filename and its Date column is
+ * date_i18n(date_format, filemtime(file)). The plugin bakes time() into both the filename and the
+ * mtime of every generated snapshot, so left to the live code the list grows with the calendar and
+ * the baseline drifts every run. Generation itself is suppressed for the whole e2e environment by
+ * CMPLZ_SKIP_SNAPSHOT_GENERATION (tests/e2e/mu-plugins/cmplz-e2e-stubs.php); this function provides
+ * the deterministic CONTENT: it clears any accumulated/stray PDFs and writes exactly one fixture
+ * whose filename and mtime are both FIXED, so the screen renders one stable row
+ * (eu / Opt-in / January 1, 2024) regardless of the wall-clock date. Idempotent (clears then writes
+ * the same file). TEST-ONLY.
+ *
+ * @param int $seed_time Fixed Unix timestamp used for the fixture's mtime (and Date column).
+ *
+ * @return void
+ */
+function cmplz_e2e_seed_proof_of_consent( $seed_time ) {
+	if ( ! function_exists( 'cmplz_upload_dir' ) ) {
+		return;
+	}
+	$dir = cmplz_upload_dir( 'snapshots' );
+	if ( ! is_string( $dir ) || '' === $dir ) {
+		return;
+	}
+	wp_mkdir_p( $dir );
+
+	// Clear any snapshot PDFs (today-dated ones left by a prior run / armed generation) so the
+	// fixture below is the only row the screen can show.
+	foreach ( (array) glob( trailingslashit( $dir ) . '*.pdf' ) as $existing ) {
+		if ( is_file( $existing ) ) {
+			wp_delete_file( $existing );
+		}
+	}
+
+	// A fixed, NON-date-derived filename (so it never varies by site name or wall clock); the two
+	// chars before '-proof-of-consent' are the region the screen parses out (eu -> Opt-in here).
+	$file = trailingslashit( $dir ) . 'complianz-e2e-fixture-eu-proof-of-consent-January-1-2024.pdf';
+	// Minimal well-formed PDF header; the list only reads the filename/region/mtime, not content.
+	file_put_contents( $file, "%PDF-1.4\n%% Complianz e2e fixture snapshot.\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+	// Pin the mtime: the screen's Date column is date_i18n(date_format, filemtime(file)), so a fixed
+	// mtime is what makes the Date deterministic. WP_Filesystem offers no simpler mtime set here.
+	touch( $file, $seed_time ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_touch
 }
 
 /**

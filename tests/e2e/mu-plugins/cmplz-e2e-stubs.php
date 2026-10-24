@@ -24,6 +24,19 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// Suppress proof-of-consent snapshot generation in e2e (REL-1 determinism). The plugin stamps
+// every snapshot PDF with time() in both its filename and its mtime, and the daily cron
+// (cron/cron.php: cmplz_every_day_hook -> generate_cookie_policy_snapshot) regenerates one
+// whenever cmplz_generate_new_cookiepolicy_snapshot is armed — which activation, wizard
+// completion AND any banner save set (cookiebanner/class-cookiebanner.php; isolation.spec.js:154
+// saves the banner mid-suite). That made tools-proof-of-consent-* grow with the calendar and
+// drift every run. The plugin's own escape hatch (proof-of-consent/class-proof-of-consent.php:223)
+// hard-returns before any generation when this constant is true, so defining it here — loaded on
+// every web request and CLI invocation, unlike a seed-time update_option() that a later banner save
+// would undo — guarantees NO snapshot is ever generated. The seed (fixtures/seed.php) then writes a
+// single fixed-date fixture PDF so the screen shows one deterministic row. TEST-ONLY.
+defined( 'CMPLZ_SKIP_SNAPSHOT_GENERATION' ) || define( 'CMPLZ_SKIP_SNAPSHOT_GENERATION', true );
+
 /**
  * Option name the mu-plugin appends every non-stubbed outbound URL to.
  *

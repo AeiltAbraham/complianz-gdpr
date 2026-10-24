@@ -63,7 +63,7 @@ const TaskElement = ({notice, index}) => {
 			{notice.plus_one && <span className='cmplz-plusone tw-inline-block tw-min-w-[15px] tw-h-[18px] tw-rounded-full tw-bg-[#d63638] tw-px-[5px] tw-py-[2px] tw-text-center tw-leading-none tw-text-[length:var(--cmplz-font-size-xs,_0.6875rem)] tw-text-[color:#ffffff]'>1</span>}
 			{notice.dismissible && notice.status!=='completed' &&
 				<div className="cmplz-task-dismiss tw-flex tw-items-center hover:tw-opacity-70">
-					<button type='button' className="tw-cursor-pointer tw-border-0 tw-bg-transparent tw-p-[4px] tw-leading-none" onClick={(e) => dismissNotice(notice.id) }>
+					<button type='button' aria-label={__('Dismiss', 'complianz-gdpr')} className="tw-cursor-pointer tw-border-0 tw-bg-transparent tw-p-[4px] tw-leading-none" onClick={(e) => dismissNotice(notice.id) }>
 						<Icon name='times' size={12} />
 					</button>
 				</div>

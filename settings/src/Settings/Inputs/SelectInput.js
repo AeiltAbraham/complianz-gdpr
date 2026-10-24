@@ -90,7 +90,7 @@ const SelectInput = ({
 				required={required}
 				disabled={disabled && !Array.isArray(disabled)}
 			>
-				<Select.Trigger className={triggerCls}>
+				<Select.Trigger className={triggerCls} aria-label={label || __('Select an option', 'complianz-gdpr')}>
 					<Select.Value/>
 					<span className="tw-mt-[2px] tw-mb-[-2px] tw-flex">
 						<Icon name={'chevron-down'}/>

@@ -125,6 +125,33 @@ async function waitForStableHeight( page, selector, { samples = 4, interval = 40
 	}
 }
 
+// Poll an element-COUNT until it stops changing for a few consecutive samples. Unlike the
+// aggregate-height settle above, this is immune to the async Notifications help sidebar's height:
+// at <1080px (the 768 shot) that sidebar stacks into its own full-width row BELOW the form
+// (Settings.js: `tw-col-span-4 md:tw-col-span-2`), so its late-loading, non-deterministic
+// `helpNotices` height is ADDED to the `#complianz` box and an aggregate-height settle can read a
+// coincidentally-equal total between cascade steps — the stubborn banner-general-768 flake. The
+// field-row count, by contrast, changes ONLY when the real nondeterministic thing changes: the
+// `consent_type`-gated conditional row (`use_categories`, "Categories") mounting/unmounting during
+// the CookieBannerPreview `setChangedField('consent_type', …)` re-fetch cascade.
+async function waitForStableCount( page, selector, { samples = 8, interval = 500, timeout = 30_000 } = {} ) {
+	const start = Date.now();
+	let last = -1;
+	let stable = 0;
+	while ( Date.now() - start < timeout ) {
+		const n = await page.locator( selector ).count().catch( () => -1 );
+		if ( n >= 0 && n === last ) {
+			if ( ++stable >= samples ) {
+				return;
+			}
+		} else {
+			stable = 0;
+			last = n;
+		}
+		await page.waitForTimeout( interval );
+	}
+}
+
 // Keyed on the stable menu section id (`banner`), never a localized title, so it is RTL-safe for T-013.
 async function settleAndHideBannerPreview( page, info, appSelector ) {
 	if ( info.section === 'banner' ) {
@@ -135,14 +162,19 @@ async function settleAndHideBannerPreview( page, info, appSelector ) {
 			.catch( () => {} );
 		// The consent_type sync that fires AFTER the preview appears re-fetches the fields over REST
 		// (even with consent_type seeded, setChangedField still runs the cascade), which briefly drops
-		// and re-adds the conditional "Categories" row. We gate on that settling with THREE real signals,
-		// not a fixed delay: (1) network idle so any in-flight /fields/get finishes; (2) the form height
-		// holds steady; (3) network idle again and the height STILL holds — this second pass catches a
-		// late re-fetch that fired just after the first height settled (the ~8% 768 flake). The preview
-		// itself is hidden below, so the racy banner-link render never reaches these shots.
+		// and re-adds the conditional "Categories" row (`use_categories`). We gate on that settling with
+		// real signals, not a fixed delay: (1) network idle so any in-flight /fields/get finishes; (2) the
+		// FIELD-ROW COUNT holds steady — the direct signal for the mount/unmount, immune to the async help
+		// sidebar height that at 768 stacks below the form and made the old aggregate-#complianz-height
+		// settle unreliable (REL-1: the residual banner-general-768 flake); (3) network idle again and the
+		// count STILL holds — a second pass catches a late re-fetch that fired just after the first settle.
+		// A final height settle absorbs any non-row reflow. The preview itself is hidden below, so the racy
+		// banner-link render never reaches these shots.
+		const fieldRows = `${ appSelector } [data-testid^="field-"]`;
 		await page.waitForLoadState( 'networkidle', { timeout: 10_000 } ).catch( () => {} );
-		await waitForStableHeight( page, appSelector, { samples: 8, interval: 500, timeout: 30_000 } );
+		await waitForStableCount( page, fieldRows, { samples: 8, interval: 500, timeout: 30_000 } );
 		await page.waitForLoadState( 'networkidle', { timeout: 10_000 } ).catch( () => {} );
+		await waitForStableCount( page, fieldRows, { samples: 8, interval: 500, timeout: 30_000 } );
 		await waitForStableHeight( page, appSelector, { samples: 8, interval: 500, timeout: 30_000 } );
 	}
 	await page

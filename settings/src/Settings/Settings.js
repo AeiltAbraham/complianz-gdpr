@@ -300,9 +300,17 @@ const Settings = () => {
 							{/*This will be shown only if current step is not the last one*/}
 							{selectedSubMenuItem !== menuItems[menuItems.length - 1].id &&
 								<>
-									{saveButtonsRequired() &&
-										<a disabled={nextButtonDisabled}
-											 className={primaryBtn} href={continueLink}
+									{/* `disabled` is invalid on <a> (it stays focusable/clickable, and the 60%
+									    opacity dim then failed AA on an ENABLED control — axe color-contrast).
+									    Render the navigating anchor only when ENABLED; a genuine <button disabled>
+									    when disabled (inert + axe-exempt, same opacity-60 look via [&[disabled]]). */}
+									{saveButtonsRequired() && nextButtonDisabled &&
+										<button type="button" disabled className={primaryBtn}>
+											{__('Save and Continue', 'complianz-gdpr')}
+										</button>
+									}
+									{saveButtonsRequired() && !nextButtonDisabled &&
+										<a className={primaryBtn} href={continueLink}
 											 onClick={(e) => {
 												 saveData(false, false)
 												 // smooth scroll to top
@@ -324,9 +332,14 @@ const Settings = () => {
 							}
 
 							{selectedMainMenuItem === 'wizard' && selectedSubMenuItem ===
-								menuItems[menuItems.length - 1].id &&
-								<a disabled={nextButtonDisabled || saving || finishDisabled }
-									 className={primaryBtn} href="#"
+								menuItems[menuItems.length - 1].id && ( nextButtonDisabled || saving || finishDisabled ) &&
+								<button type="button" disabled className={primaryBtn}>
+									{__('Finish', 'complianz-gdpr')}
+								</button>
+							}
+							{selectedMainMenuItem === 'wizard' && selectedSubMenuItem ===
+								menuItems[menuItems.length - 1].id && ! ( nextButtonDisabled || saving || finishDisabled ) &&
+								<a className={primaryBtn} href="#"
 									 onClick={(e) => finish(e)}>
 									{__('Finish', 'complianz-gdpr')}
 								</a>

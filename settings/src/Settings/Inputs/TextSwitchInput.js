@@ -11,7 +11,8 @@ const TextSwitchInput = ({
 	label,
 	value,
 	onChange,
-	placeholder = ''
+	placeholder = '',
+	id
 }) => {
 	const [textDisabled, setTextDisabled] = useState(false);
 
@@ -38,6 +39,7 @@ const TextSwitchInput = ({
 	return (
 		<div className="tw-grid tw-grid-cols-[1fr_auto] tw-content-center tw-gap-[var(--cmplz-space-xs)]">
 			<TextInput
+				id={id}
 				value={value['text']}
 				onChange={onTextChange}
 				placeholder={placeholder}
