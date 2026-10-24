@@ -144,13 +144,14 @@ test( 'Finish step renders its completion summary and the Finish control', async
 		app.getByText( 'The following required fields have not been completed:', { exact: false } )
 	).toBeVisible( { timeout: 30_000 } );
 
-	// Two "Finish" links exist: the sidebar menu item (href="#wizard/finish") and the footer action
-	// (href="#"); the footer one is last in the DOM (menu renders before the content).
-	const footerFinish = app.getByRole( 'link', { name: 'Finish', exact: true } ).last();
+	// The sidebar menu item (role=link, href="#wizard/finish") and the footer action both read "Finish".
+	// With required questions outstanding (the seed's intentionally-incomplete state) the footer Finish
+	// renders as a genuine <button disabled> — the SC-05 a11y fix, since `disabled` is invalid on <a>
+	// (it would stay focusable/clickable); when the wizard is completable it is instead an <a href="#">.
+	// The pure seed cannot complete the wizard, so characterise the real disabled-button state.
+	const footerFinish = app.getByRole( 'button', { name: 'Finish', exact: true } ).last();
 	await expect( footerFinish ).toBeVisible();
-	// TODAY, with required questions outstanding, the footer Finish is disabled (Settings.js) — the
-	// wizard cannot be completed from the pure seed. Characterise that real state.
-	await expect( footerFinish ).toHaveAttribute( 'disabled', '' );
+	await expect( footerFinish ).toBeDisabled();
 } );
 
 test( 'the seeded wizard has its legal documents generated', async ( { page } ) => {
