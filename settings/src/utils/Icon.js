@@ -489,7 +489,7 @@ const IconHtml = React.forwardRef(function IconHtml(props, ref){
 	if (name === 'loading') {
 		renderedIcon =
 				<svg xmlns="http://www.w3.org/2000/svg"
-					 focusable="false" role="img"
+					 aria-hidden="true" focusable="false" role="img"
 					 viewBox="0 0 512 512"
 					 height={size}>
 					<path fill={iconColors[color]}
@@ -501,7 +501,7 @@ const IconHtml = React.forwardRef(function IconHtml(props, ref){
 	if (name === 'linked') {
 		renderedIcon =
 				<svg xmlns="http://www.w3.org/2000/svg"
-					 focusable="false" role="img"
+					 aria-hidden="true" focusable="false" role="img"
 					 viewBox="0 0 640 512"
 					 height={size}>
 					<path fill={iconColors[color]}
@@ -513,7 +513,7 @@ const IconHtml = React.forwardRef(function IconHtml(props, ref){
 	if (name === 'unlinked') {
 		renderedIcon =
 				<svg xmlns="http://www.w3.org/2000/svg"
-					 focusable="false" role="img"
+					 aria-hidden="true" focusable="false" role="img"
 					 viewBox="0 0 640 512"
 					 height={size}>
 					<path fill={iconColors[color]}

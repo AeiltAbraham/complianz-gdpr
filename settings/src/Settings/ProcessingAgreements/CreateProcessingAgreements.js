@@ -147,6 +147,7 @@ const CreateProcessingAgreements = () => {
 								  required={true} type={'select'}/>
 
 					<SelectInput
+						label={__("Region","complianz-gdpr")}
 						innerRef={scrollAnchor}
 						disabled={updating}
 						onChange={ ( fieldValue ) => setRegion(fieldValue) }

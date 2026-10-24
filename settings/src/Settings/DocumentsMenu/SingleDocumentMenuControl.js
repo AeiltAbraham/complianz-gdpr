@@ -26,7 +26,8 @@ const SingleDocumentMenuControl = (props) => {
 	return (
 		<div className="tw-grid tw-grid-cols-2 tw-items-center tw-gap-[var(--cmplz-space-s,_12px)] tw-my-[var(--cmplz-space-xs,_8px)]">
 			<div className="tw-text-[0.8125rem] tw-text-[color:var(--cmplz-text,_#0f172a)]">{props.document.title}</div>
-			<select value={props.document.menu_id} onChange={(e) => onChangeHandler(e)} className={SELECT_CLS}>
+			<select value={props.document.menu_id} onChange={(e) => onChangeHandler(e)} className={SELECT_CLS}
+				aria-label={props.document.title ? __("Menu for %s", "complianz-gdpr").replace("%s", props.document.title) : __("Select a menu", "complianz-gdpr")}>
 				<option value={-1} key={-1}>{__("Select a menu","complianz-gdpr")}</option>
 				{menu.map( (menuItem, i)=> <option key={i} value={menuItem.id}>{menuItem.label}</option> )}
 			</select>

@@ -134,6 +134,7 @@ const CreateDataBreachReport = ({label, field}) => {
 								  required={true} type={'select'}/>
 
 					<SelectInput innerRef={scrollAnchor}
+								 label={__("Region","complianz-gdpr")}
 								 disabled={updating}
 								 onChange={ ( fieldValue ) => setRegion(fieldValue) }
 								 options={ regions }

@@ -57,6 +57,23 @@ test( 'axe accessibility over every screen (recorded; gated only on migrated scr
 			// Make sure the screen's real content is in before analysing (not a loading placeholder).
 			await expectContentLoaded( page, info ).catch( () => {} );
 
+			// Let async per-screen data settle so axe scans the LOADED screen, not a transient loading
+			// flash. Some screens briefly render a loading state that is not representative of the settled
+			// UI and that WCAG does not require to meet AA — e.g. the install-plugin card's disabled
+			// "Checking status" button (tools/security), the cookiedatabase-sync placeholder panels
+			// (wizard/cookie-descriptions), or a SelectInput before its value arrives. Mirrors visual.spec's
+			// settle (networkidle); the gate assertion below is unchanged.
+			await page.waitForLoadState( 'networkidle', { timeout: 10_000 } ).catch( () => {} );
+			// The install-plugin status button shows a transient disabled "Checking status" until its REST
+			// call resolves; wait it out so the settled (enabled) control is scanned. The locator matches
+			// nothing on screens without such a button, so `detached` resolves immediately there.
+			await page
+				.locator( APP )
+				.getByRole( 'button', { name: /Checking status/i } )
+				.first()
+				.waitFor( { state: 'detached', timeout: 10_000 } )
+				.catch( () => {} );
+
 			// #tools/data-requests gates the react-date-range calendar, whose .rdr* nodes exist ONLY while the
 			// Radix popover is open — open it so the ariaLabels + AA-contrast fixes are actually analysed (T-056);
 			// without this the gate would be vacuous (closed calendar = no .rdr* nodes to check).

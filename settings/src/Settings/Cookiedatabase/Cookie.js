@@ -274,7 +274,9 @@ const Cookie = ({cookie, id}) => {
 	} else if (cookie.isMembersOnly) {
 		comment = " | "+__( 'Logged in users only, ignored', 'complianz-gdpr' );
 	}
-	let description = cookie.name
+	// Guarantee a non-empty accessible name for the Panel summary (axe summary-name): a brand-new,
+	// unnamed cookie has an empty cookie.name, which would leave the <summary> without a name.
+	let description = cookie.name ? cookie.name : __( 'New Cookie', 'complianz-gdpr' )
 	return (
 		<>
 			<Panel id={id}  summary={description} comment={comment} icons={Icons()} details={CookieDetails(cookie)} tone={cookie.deleted ? 'deleted' : 'nested'}/>

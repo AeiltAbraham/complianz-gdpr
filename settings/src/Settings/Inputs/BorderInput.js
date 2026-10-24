@@ -133,6 +133,7 @@ const BorderInput = ({ label, id, value, onChange, required, defaultValue, disab
 								className={clsx(inputBase, i === 0 ? 'tw-rounded-s-[5px] tw-rounded-e-none' : 'tw-rounded-none')}
 								style={{ gridArea: 'input' + (i + 1) }}
 								type="number"
+								aria-label={side}
 								onChange={(e) => handleChange(e.target.value, key)}
 								value={sideValue}
 							/>
@@ -141,15 +142,15 @@ const BorderInput = ({ label, id, value, onChange, required, defaultValue, disab
 					)
 				})
 			}
-			{link && <button type="button" className={clsx(linkButtonBase, 'tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)]')} style={{ gridArea: 'button' }} onClick={() => setLink(!link)}>
+			{link && <button type="button" aria-label={__('Unlink values', 'complianz-gdpr')} className={clsx(linkButtonBase, 'tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)]')} style={{ gridArea: 'button' }} onClick={() => setLink(!link)}>
 				<Icon name={'linked'} size={16} tooltip={__('Unlink values', 'complianz-gdpr')} />
 			</button> }
-			{!link && <button type="button" className={clsx(linkButtonBase, 'tw-bg-[var(--cmplz-field-surface)]')} style={{ gridArea: 'button' }} onClick={() => setLink(!link)}>
+			{!link && <button type="button" aria-label={__('Link values together', 'complianz-gdpr')} className={clsx(linkButtonBase, 'tw-bg-[var(--cmplz-field-surface)]')} style={{ gridArea: 'button' }} onClick={() => setLink(!link)}>
 				<Icon name={'unlinked'} size={16} tooltip={__('Link values together', 'complianz-gdpr')} />
 			</button> }
 			{units.length > 1 && (
 				<div className={unitWrapCls}>
-					<select className={unitSelectCls} style={unitSelectStyle} value={unit} onChange={(e) => handleUnitChange(e.target.value)}>
+					<select className={unitSelectCls} style={unitSelectStyle} aria-label={__('Unit', 'complianz-gdpr')} value={unit} onChange={(e) => handleUnitChange(e.target.value)}>
 						{units.map((unitItem, i) => {
 							return <option key={i} value={unitItem}>{unitItem}</option>
 						}

@@ -39,7 +39,7 @@ const ToolsHeader = () => {
 			</h3>
 			<div className="cmplz-grid-item-controls">
 				{consentStatisticsEnabled && consentTypesOptions && consentTypesOptions.length>1 &&
-					<SelectInput canBeEmpty={false} value ={consentType} onChange={(value) => setConsentType(value)} options={consentTypesOptions} />}
+					<SelectInput label={__('Consent type', 'complianz-gdpr')} canBeEmpty={false} value ={consentType} onChange={(value) => setConsentType(value)} options={consentTypesOptions} />}
 			</div>
 		</>
 

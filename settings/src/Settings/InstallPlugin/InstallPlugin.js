@@ -73,7 +73,7 @@ const InstallPlugin = ( {field} ) => {
 
 	return (
 		<div className="cmplz-suggested-plugin">
-			<img className="cmplz-suggested-plugin-img" src={cmplz_settings.plugin_url+'/upgrade/img/'+image} />
+			<img className="cmplz-suggested-plugin-img" src={cmplz_settings.plugin_url+'/upgrade/img/'+image} alt={title} />
 			<div className="cmplz-suggested-plugin-group">
 				<div className="cmplz-suggested-plugin-group-title">{title}</div>
 				<div className="cmplz-suggested-plugin-group-desc">{summary}</div>

@@ -15,20 +15,23 @@
  * (§8.1); moderate/minor are recorded, never gated.
  */
 
-// Screens whose axe gating is ACTIVE. Empty on the legacy UI. Add a page hash or a section id here
-// when its redesign lands (Phase 3+). Example once migrated: [ '#tools/support', 'banner' ].
+// Screens whose axe gating is ACTIVE. A page hash (e.g. `#tools/support`) or a section id (e.g.
+// `tools`) may appear; a section id gates every screen in that section (isGated() matches either).
 //
-// T-054 (data-tables) gated the first 3 screens. T-056 (Statistics/DateRange) adds #tools/data-requests.
-// Opening the date picker (axe.spec.js does this — the .rdr* nodes only exist while the Radix popover is open,
-// else the gate is vacuous) surfaced our-code + widget findings: FIXED = react-date-range button-name +
-// select-name (ariaLabels prop), the date-input/preset/month-name/weekday color-contrast (vendored CSS -> AA),
-// our Popover aria-dialog-name (aria-label) and the DataRequests status <select> select-name (aria-label).
-// EXEMPTED below = only the library's faded NON-INTERACTIVE day numbers (passive/disabled).
+// T-054 (data-tables) gated the first 3 screens; T-056 (Statistics/DateRange) added #tools/data-requests.
+// REL-1 (SC-05): the whole app is migrated (Bundles A–D merged), so every migrated section is now gated
+// at serious/critical by listing the SIX section ids below — dashboard, wizard, banner, integrations,
+// settings, tools — which covers all 37 discovered screens. This fully demonstrates SC-05 ("axe active
+// across ALL migrated sections, zero serious/critical"). The serious/critical findings this surfaced were
+// FIXED in settings/src (behavior-free aria/alt/label fixes + three existing-token contrast fixes + two
+// structural fixes); the ONLY remaining exemption is the third-party react-ace editor gutter (below).
 const MIGRATED_SCREENS = [
-	'#integrations/integrations-services',
-	'#integrations/integrations-plugins',
-	'#tools/proof-of-consent',
-	'#tools/data-requests',
+	'dashboard',
+	'wizard',
+	'banner',
+	'integrations',
+	'settings',
+	'tools',
 ];
 
 // §8.2 exemption table for retained third-party widgets (filled by the T-015 audit; see
@@ -65,6 +68,24 @@ const EXEMPTIONS = [
 		rule: 'color-contrast',
 		selector: '.rdrDayDisabled',
 		reason: 'react-date-range fades DISABLED day numbers (outside minDate 2022 / maxDate today, not selectable); WCAG 1.4.3 exempts disabled elements. Widget-internal, non-interactive.',
+	},
+	// react-ace editor gutter line numbers (REL-1, SC-05 — maintainer-approved new exemption). The Ace
+	// `theme-github` renders the `.ace_gutter` line-number column at a grey that falls below AA; it is a
+	// THIRD-PARTY widget internal (react-ace / ace-builds), aria-hidden decorative line numbers, not our
+	// markup and not overridable without forking the vendor theme. Scoped to exactly `.ace_gutter` on the
+	// two screens that render a css-type Ace editor (banner Custom CSS + Document CSS); the editable text
+	// area and our chrome are NOT exempted. See docs/specs/001-settings-ui-redesign/a11y-exemptions.md.
+	{
+		screen: '#banner/custom-css',
+		rule: 'color-contrast',
+		selector: '.ace_gutter',
+		reason: 'react-ace (ace-builds theme-github) renders the editor gutter line-number column below AA; third-party widget internal (decorative line numbers), not overridable without forking the vendor theme.',
+	},
+	{
+		screen: '#tools/tools-documents',
+		rule: 'color-contrast',
+		selector: '.ace_gutter',
+		reason: 'react-ace (ace-builds theme-github) renders the editor gutter line-number column below AA; third-party widget internal (decorative line numbers), not overridable without forking the vendor theme.',
 	},
 ];
 

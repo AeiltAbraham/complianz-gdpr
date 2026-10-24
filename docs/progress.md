@@ -186,4 +186,42 @@ One line per finished task; `tasks.md` holds the durable `outcome:` records.
 
 ## Build log (001) — Phase 5, legacy removal + release (Stage I)
 
+- 2026-10-24 **REL-1 (test-determinism + SC-05 axe-gate expansion) done** — PR to `001-settings-ui-redesign`
+  (branch `release-rel1-determinism-axe`, worktree, wp-env 8906/8907). Lands BEFORE the Bundle E
+  re-baseline (REL-2) so that single final re-baseline captures the final state. **TASK 1 (determinism):**
+  the two run-to-run-drifting baselines are now deterministic (PROVEN by two consecutive reset-DB runs →
+  byte-identical shots). `tools-proof-of-consent` grew with the calendar because the plugin stamps `time()`
+  into each snapshot PDF's filename + mtime and the daily cron regenerates one whenever
+  `cmplz_generate_new_cookiepolicy_snapshot` is armed (activation/wizard/**any banner save** —
+  `isolation.spec.js:154` saves the banner mid-suite) → FIX: the e2e mu-plugin defines the plugin's own
+  `CMPLZ_SKIP_SNAPSHOT_GENERATION` escape hatch (every request/CLI, so a mid-suite banner save can't re-arm
+  it) + `fixtures/seed.php` clears the snapshots dir and writes ONE fixed-date fixture PDF
+  (`…-eu-proof-of-consent-January-1-2024.pdf`, mtime pinned to `$seed_time`) → one stable row
+  (eu/Opt-in/January 1, 2024). `banner-general-768` was a <1080px layout-shift flake (the help sidebar
+  stacks below the form; the old settle polled aggregate `#complianz` height) → FIX: `visual.spec.js` banner
+  settle now waits on **field-row COUNT** stability (`[data-testid^="field-"]`), the direct signal for the
+  `use_categories` conditional-row mount/unmount, immune to the async sidebar height. Re-baselined ONLY these
+  2 screens (proof-of-consent 1440+768, banner-general 768) × admin+admin-rtl; all other screens deferred to
+  the Bundle E single re-baseline. **TASK 2 (SC-05):** `MIGRATED_SCREENS` now lists the SIX section ids
+  (dashboard/wizard/banner/integrations/settings/tools) → **all 37 migrated screens gated** at
+  serious/critical; `axe.spec.js` GREEN across all (zero un-exempted). Maintainer decision 2026-10-24:
+  **FULL SC-05, do it all**. Fixes: ~15 behavior-free attribute fixes (Icon aria-hidden; SelectInput/BorderInput/
+  Statistics/DocumentsMenu/ThirdPartyScript/TextSwitchInput names; Install/OtherPlugins alt; dashboard
+  link/button names; Service/Cookie Panel summary; SwitchInput strict-boolean `aria-checked`); 3 existing-token
+  contrast fixes (premium badge `--cmplz-accent` #009fff→`--cmplz-accent-strong`; wizard menu active-step
+  →`--cmplz-accent-on-subtle`; "Not installed" yellow badge→`--cmplz-text`); 2 structural fixes (footer
+  Save&Continue/Finish `<a disabled>`→enabled `<a>` / disabled `<button>`; Panel interactive icons moved OUT
+  of `<summary>` **and outside `<details>`** so they survive collapse — a pre-push review caught that placing
+  them inside a collapsed `<details>` hid them via `content-visibility:hidden`). `axe.spec.js` now settles
+  async state (networkidle + waits out the install-plugin "Checking status" transient) so it scans the loaded
+  screen, not a loading flash (assertion unchanged). **ONE new scoped exemption** (maintainer-approved): the
+  third-party react-ace `.ace_gutter` line-number contrast on `#banner/custom-css` + `#tools/tools-documents`
+  (`EXEMPTIONS` + `a11y-exemptions.md`, §8.2 table reconciled to mirror the live code). **PROOF:** build:all
+  green; axe 37/37 gated green; token-hygiene + physical-utility (201) + stylelint (full CI list) green;
+  determinism 2× reset-DB byte-identical. Pre-push adversarial review (flow:reviewer, 5-dim) — 1 real
+  regression (collapsed-Panel icons) fixed, all else clean. Compiled output restored (ADR-006). Rendering
+  changes (badges, menu colour, footer control, Panel icon position) are intentional and captured by the
+  Bundle E (REL-2) re-baseline, deliberately NOT re-baselined here. **NEXT: Bundle E (REL-2)** — the single
+  final re-baseline (a11y + determinism changes now settled).
+
 - 2026-10-19 Bundle A (ADR-001 marker move) done — SCOPE REVISED after a finding, maintainer-chosen path = **zero-drift token broadening only** (branch `phase5-marker-move`, worktree, Wave 1). FINDING: the literal marker move (one `data-cmplz-ui` on the app root + drop per-component markers + move the base reset) is NOT zero-drift in the current tree — ADR-001's "by Phase 5 all bodies migrated" precondition does not hold. Two reasons, both proven empirically (live computed-style probe + before/after `#complianz-app` screenshots on :8888): (1) the Phase-3/4 redesigned frame is deliberately MARKERLESS and inherits the legacy `.cmplz` base (`font-size:0.8125rem`=13px, `color:rgba(15,23,42,0.95)`), while base.css B2 root typography is `14px`/`#0f172a` — a marker on the app root flips the whole subtree 13px→14px + alpha, a broad reflow on every screen; (2) ~14 composite field-bodies (Finish/Support/Editor/Debug/SecurityMeasures/WebSiteScan/Translations/documents/documents-menu/processors-thirdparties/PlaceholderPreview/WcagContrastChecker/Import/cookiescan…) were never assigned to a Phase-4 section and are still LEGACY (raw buttons/inputs/svgs the base reset B1/B4/B5 would strip — the T-038/T-052 landmine). Maintainer chose zero-drift token broadening (vs full-move+re-baseline, vs migrate-the-14-bodies-first). IMPLEMENTATION (3 source files): `settings/src/styles/tokens.css` — the semantic `--cmplz-*` tokens are additionally declared on `#complianz-app` (both the main block and the reduced-motion `@media`), a SELECTOR-ONLY declaration (no `data-cmplz-ui` attribute added; base.css B1-B5 + B2 UNCHANGED, still keyed to `[data-cmplz-ui]`; per-component markers RETAINED; isolate zones untouched). Because custom properties inherit, every `var(--cmplz-*, <literal>)` on the still-markerless frame (Page grid, SettingsGroup card, Settings body/footer, Field rows, Help, Premium, SettingsPlaceholder, Icon, GridBlock, dashboard bodies) now resolves to the TOKEN — the deferred ADR-001 "fallbacks auto-upgrade" payoff — pixel-identically (all 35+ fallback literals verified == their token value; B2 NOT broadened so the frame stays 13px and islands stay 14px → no type drift). The full marker move (base-reset move + per-component-marker removal) stays DEFERRED until the ~14 legacy bodies migrate. Pre-push adversarial review (flow:reviewer, 6-axis) confirmed ONE real edge the frame-fallback reasoning missed: the markerless Support `<Textarea>` (premium group, free-rendered dimmed behind an 80% scrim, IN the `tools-support` LTR+RTL baselines) used BARE tokens → zero-drift hardening applied: gave `components/ui/Textarea.js` (4 vars) + `components/ui/Button.js` (focus-visible outline) the same literal fallbacks `TextField` already carries, so the broadening is a provable no-op, not merely sub-threshold. Everything else cleared (isolate zones / legacy SCSS use only `--cmplz-legacy-`; no other markerless bare-var consumer; specificity/RTL fine). PROOF: build:all green; token-hygiene + physical-utility (201 files) + stylelint (full CI list) all green; live check confirms the markerless SettingsGroup card now inherits `--cmplz-border` and renders identical `rgb(226,232,240)` while `#complianz-app` stays 13px markerless and islands stay 14px; `var(--cmplz-*)` resolves to the token (not the literal) on a sampled island in build/index.css. Full reset-DB e2e across all 4 admin projects: ZERO visual drift (admin + admin-rtl, 768+1440), 76 passed / 1 flaky (the known, CSS-independent dialogs focus-return flake, green under `retries:2`); a second (accumulated-DB) visual pass drifted only the two documented nondeterministic shots (banner-general-768, proof-of-consent-768) — `tools-support` zero in both. Compiled output restored (ADR-006). No ADR overturned (ADR-001 end-state unchanged, just staged); the deferral is recorded for Bundle D (legacy removal still waits on the full marker move / the 14 bodies).

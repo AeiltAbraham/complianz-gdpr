@@ -48,12 +48,17 @@ const SwitchInput = ({
 }) => {
 	const {getField} = useFields();
 
-	let val = value;
-	//if value is "0" or "1", convert to boolean
-	//cookiebanner values can be "0" or "1", because of the way they're loaded,
-	// but the switch needs a boolean
-	if ( value === '0' || value === '1') {
-		val = value === '1';
+	//cookiebanner values can be "0" or "1", because of the way they're loaded, and some fields pass a
+	//number (1) or leave it unset, but Radix needs a strict BOOLEAN for `checked`: a non-boolean leaks
+	//into aria-checked as "1"/"not-set" (invalid ARIA value -> axe aria-valid-attr-value). Normalize to
+	//a boolean while preserving the exact checked state ("0" stays unchecked even though it is truthy).
+	let val;
+	if ( value === '0' ) {
+		val = false;
+	} else if ( value === '1' ) {
+		val = true;
+	} else {
+		val = !! value;
 	}
 	const onChangeHandler = (value) => {
 		//if this is a banner setting, prevent a 'false' value, because it would trigger a default to be set on the false value

@@ -353,7 +353,7 @@ const Service = ( props ) => {
 		<>
 			<Panel
 				id={ props.id }
-				summary={ props.name }
+				summary={ props.name ? props.name : serviceName }
 				icons={ Icons() }
 				details={ Details() }
 			/>

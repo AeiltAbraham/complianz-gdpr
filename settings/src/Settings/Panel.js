@@ -45,7 +45,7 @@ const Panel = ( props ) => {
 
 	return (
 		<div
-			className={ clsx( 'cmplz-panel__list__item tw-w-full', toneMargin[ toneKey ] ) }
+			className={ clsx( 'cmplz-panel__list__item tw-w-full tw-relative', toneMargin[ toneKey ] ) }
 			style={ props.style ? props.style : {} }
 		>
 			<details
@@ -74,9 +74,6 @@ const Panel = ( props ) => {
 					<div className="tw-text-[color:var(--cmplz-text-muted)] tw-text-[length:var(--cmplz-font-size-xs,_0.6875rem)]">
 						{ props.comment }
 					</div>
-					<div className="[grid-column:-2] tw-relative tw-flex tw-items-center tw-gap-[var(--cmplz-space-2xs,_4px)]">
-						{ props.icons }
-					</div>
 					<span
 						className={ clsx(
 							'[grid-column:-1] tw-flex tw-transition-transform tw-duration-[250ms] tw-ease-in-out',
@@ -90,6 +87,21 @@ const Panel = ( props ) => {
 					{ isOpen && props.details }
 				</div>
 			</details>
+			{ /* The status/action `icons` are INTERACTIVE (Radix tooltip triggers / the Script Center enable
+			     SwitchInput). WCAG forbids an interactive element inside a `<summary>` (axe nested-interactive),
+			     so they render OUTSIDE the `<details>` entirely — as an absolutely-positioned sibling anchored
+			     to the `tw-relative` list-item wrapper, overlaying the header's icons slot (just before the
+			     chevron). Rendering them outside `<details>` (not merely outside `<summary>`) is required: a
+			     COLLAPSED native `<details>` hides every non-summary child via `content-visibility:hidden`,
+			     which also hides absolutely-positioned descendants — so icons placed inside `<details>` would
+			     vanish while collapsed (the default). The summary stays the native first-child toggle (its
+			     keyboard/focus/role a11y unchanged); the toggle is React-controlled (open={isOpen} + onClick),
+			     so the icons living outside it does not affect open/close. */ }
+			{ props.icons && (
+				<div className="tw-absolute [inset-block-start:0] [block-size:40px] [inset-inline-end:calc(var(--cmplz-space-s,_12px)_+_18px_+_var(--cmplz-space-s,_12px))] tw-flex tw-items-center tw-gap-[var(--cmplz-space-2xs,_4px)]">
+					{ props.icons }
+				</div>
+			) }
 		</div>
 	);
 };

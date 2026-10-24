@@ -3,6 +3,7 @@ import useStatistics from "./StatisticsData";
 import { useState, useEffect } from "@wordpress/element";
 import useLicense from "../Settings/License/LicenseData";
 import {memo} from "@wordpress/element";
+import { __ } from '@wordpress/i18n';
 // import { useMemo } from 'react';
 const Statistics = () => {
 
@@ -85,11 +86,11 @@ const Statistics = () => {
 	const loadingClass = statisticsLoading ? 'tw-opacity-30' : '';
 	return (
 		 <>
-			 {consentTypes.length>1 && <select value={consentType} onChange={(e) => setConsentType(e.target.value)}>
+			 {consentTypes.length>1 && <select aria-label={__('Consent type', 'complianz-gdpr')} value={consentType} onChange={(e) => setConsentType(e.target.value)}>
 				 {consentTypes.map((type, i) =>
 					 <option key={i} value={type.id} >{type.label}</option>)}
 			 </select>}
-			 {data && Bar && <Bar className={`tw-[transition:opacity_0.2s_ease-in-out,_filter_0.2s_ease-in-out] ${loadingClass}`} options={options} data={data} />}
+			 {data && Bar && <Bar aria-label={__('Consent statistics chart', 'complianz-gdpr')} className={`tw-[transition:opacity_0.2s_ease-in-out,_filter_0.2s_ease-in-out] ${loadingClass}`} options={options} data={data} />}
 		 </>
 	);
 };

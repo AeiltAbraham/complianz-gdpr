@@ -335,13 +335,19 @@
 }
 :where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-task-status.cmplz-open {
   background-color: #f4bf3e;
+  /* SC-05 (REL-1): the "Not installed"/open badge had no text colour and fell back to an inherited
+   * light colour that failed AA on the #f4bf3e amber (axe color-contrast on #tools/security). Pin the
+   * dark text token (~9:1 on amber); existing token, no new token. */
+  color: var(--cmplz-text, #0f172a);
 }
 :where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-task-status.cmplz-urgent {
   background-color: var(--cmplz-danger, #d7263d);
   color: rgba(255, 255, 255, 0.95);
 }
 :where(#complianz [data-cmplz-ui], #complianz-portal [data-cmplz-ui]) .cmplz-task-status.cmplz-premium {
-  background-color: var(--cmplz-accent, #009fff);
+  /* SC-05 (REL-1): white on --cmplz-accent (#009fff) is ~2.84:1 (fails AA for this ~11px pill).
+   * --cmplz-accent-strong (#1e73be) gives ~4.9:1; existing token, no new token. */
+  background-color: var(--cmplz-accent-strong, #1e73be);
   color: rgba(255, 255, 255, 0.95);
 }
 

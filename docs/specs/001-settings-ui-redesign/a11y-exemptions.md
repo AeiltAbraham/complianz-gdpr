@@ -251,6 +251,18 @@ Re-theme the Shepherd buttons (token-based background/foreground meeting 4.5:1);
 
 ## react-ace — `settings/src/Settings/Editor/AceEditorControl.js`
 
+> **UPDATED in REL-1 (SC-05 full gate expansion, 2026-10-24).** When the whole `#complianz` subtree is
+> gated (not just the `.ace_editor`-scoped audit below), the Ace `theme-github` **gutter** line-number
+> column (`.ace_gutter`) surfaces a `color-contrast` serious finding: the vendor theme paints the
+> decorative line numbers in a grey that falls below AA (axe's color-contrast evaluates them regardless
+> of any aria-hidden on the gutter). It is a **third-party widget
+> internal** (react-ace / ace-builds), not our markup, and not overridable without forking the vendor
+> theme — so it is the ONE new **scoped exemption** approved for REL-1: two rows in `EXEMPTIONS`
+> (`helpers/axe.js`), scoped to exactly `.ace_gutter` on the two css-type Ace screens that render it
+> (`#banner/custom-css` and `#tools/tools-documents`). The editable textarea and our own chrome are NOT
+> exempted. The T-015 `.ace_editor`-scoped audit below reported no violations because the gutter grey
+> only fails against the surrounding surface at whole-page scope.
+
 `css`-type fields (banner Custom CSS, Document CSS) and the integrations Script Center.
 Audited on `#tools/tools-documents/tools-documents-css`. Root: `.ace_editor`.
 
@@ -353,13 +365,19 @@ that renders the widget — listed in each widget section above). Every row here
 **widget-internal, fixable-in-Phase-4** finding and is removed when its fix lands; our-own-
 code findings are deliberately absent (they are must-fix).
 
+This table mirrors `EXEMPTIONS` in `tests/e2e/admin/helpers/axe.js` (the code is the source of truth).
+The T-015 react-date-range rows (`button-name`/`select-name`/date-input/preset-label `color-contrast`)
+were **FIXED, not exempted** in T-056 (the `ariaLabels` prop + vendored-CSS AA fixes) and are gone; only
+the library's intentionally-faded **non-interactive** day numbers remain. REL-1 (2026-10-24) added the
+two react-ace gutter rows for the full SC-05 gate.
+
 | axe rule ID | impact | widget root selector | screen | reason |
 |---|---|---|---|---|
-| `color-contrast` | serious | `.chrome-picker` | `#banner/colors/colors-general` | react-color inline-styles the HEX/RGB field labels at 2.95:1; widget-internal DOM, overridable only via the ChromePicker `styles` prop (Phase 4) |
-| `button-name` | critical | `.rdrMonthAndYearWrapper` | `#tools/data-requests/datarequest-entries` | react-date-range prev/next month icon buttons render `<button><i></i></button>` with no name; fixable via the library `ariaLabels` prop (Phase 4) |
-| `select-name` | critical | `.rdrMonthAndYearPickers` | `#tools/data-requests/datarequest-entries` | react-date-range month/year `<select>`s render without a label; fixable via the library `ariaLabels` prop (Phase 4) |
-| `color-contrast` | serious | `.rdrDateDisplayWrapper` | `#tools/data-requests/datarequest-entries` | react-date-range start/end date inputs at ~1.3:1; fixable in the vendored `date-range.scss` (Phase 4) |
-| `color-contrast` | serious | `.rdrDefinedRangesWrapper` | `#tools/data-requests/datarequest-entries` | react-date-range preset-range labels at ~1.29:1; fixable in the vendored `date-range.scss` (Phase 4) |
+| `color-contrast` | serious | `.chrome-picker` | `#banner/colors/colors-general` | react-color inline-styles the HEX/RGB field labels at 2.95:1; widget-internal DOM, overridable only via the ChromePicker `styles` prop |
+| `color-contrast` | serious | `.rdrDayPassive` | `#tools/data-requests` | react-date-range fades OTHER-MONTH day numbers (~1.9:1) by design; darkening removes the current-vs-adjacent-month distinction. Widget-internal, non-interactive |
+| `color-contrast` | serious | `.rdrDayDisabled` | `#tools/data-requests` | react-date-range fades DISABLED (out-of-range) day numbers; WCAG 1.4.3 exempts disabled. Widget-internal, non-interactive |
+| `color-contrast` | serious | `.ace_gutter` | `#banner/custom-css` | react-ace `theme-github` gutter line numbers below AA; third-party widget internal (decorative line numbers), not overridable without forking the vendor theme (REL-1) |
+| `color-contrast` | serious | `.ace_gutter` | `#tools/tools-documents` | react-ace `theme-github` gutter line numbers below AA; third-party widget internal (decorative line numbers), not overridable without forking the vendor theme (REL-1) |
 
 ### How the axe spec consumes this table
 

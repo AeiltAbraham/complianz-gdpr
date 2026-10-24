@@ -15,7 +15,7 @@ const OtherPlugins = () => {
     const otherPluginElement = (plugin, i) => {
         return (
             <div key={i}  className={"cmplz-suggested-plugin cmplz-"+plugin.slug}>
-                <img className="cmplz-suggested-plugin-img" src={cmplz_settings.plugin_url+'/upgrade/img/'+plugin.image} />
+                <img className="cmplz-suggested-plugin-img" src={cmplz_settings.plugin_url+'/upgrade/img/'+plugin.image} alt={plugin.title} />
                 <div className="cmplz-suggested-plugin-group">
                     <div className="cmplz-suggested-plugin-group-title">{plugin.title}</div>
                     <div className="cmplz-suggested-plugin-group-desc">{plugin.summary}</div>
