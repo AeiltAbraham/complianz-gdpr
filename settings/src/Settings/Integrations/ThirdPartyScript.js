@@ -76,7 +76,7 @@ const ThirdPartyScript = (props) => {
 							disabled={fetching}
 							onChange={ (value) => onEditorChangeHandler(value)	}
 							placeholder = "Enter your script here"
-							value= { script.editor ? script.editor : console.log('marketing enabled') }/>
+							value= { script.editor ? script.editor : '' }/>
 					</div>
 				}
 
