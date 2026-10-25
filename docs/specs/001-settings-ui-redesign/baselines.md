@@ -144,5 +144,7 @@ as the 2026-10-07 baseline above (gzip = default level; a visitor loads ONE dire
 - **SC-04 (script = JS) — NOT met.** gzip 1143195 → **1171682** bytes (+28487, **+2.5%**); raw
   3937959 → 4037399 (+2.5%). The Radix primitives + new component infrastructure net-ADD JS
   rather than shedding it by the weight of the removed component sets. **Maintainer decision
-  required** before the release claims SC-04: accept with the +2.5% documented, re-scope the
-  criterion, or investigate/trim the JS.
+  2026-10-25: ACCEPTED, +2.5% documented.** The redesign's value is the CSS download
+  reduction (−28.5%) plus the full Tailwind/token migration and maintainability, not JS
+  reduction; the +2.5% (Radix primitives + new component infrastructure) is accepted as a known,
+  documented outcome, not a release blocker. Recorded in the readme 7.6.0 Performance note.

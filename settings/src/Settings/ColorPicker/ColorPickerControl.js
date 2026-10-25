@@ -1,5 +1,5 @@
 import { memo } from "@wordpress/element";
-import './ColorPicker.scss';
+import './ColorPicker.css';
 import ColorPickerElement from './ColorPickerElement';
 
 /**

@@ -1,7 +1,7 @@
 import { useState } from "@wordpress/element";
 import ColorPicker from '../Inputs/ColorPicker';
 import * as Popover from '@radix-ui/react-popover';
-import './ColorPicker.scss';
+import './ColorPicker.css';
 
 import useFields from "../Fields/FieldsData";
 
