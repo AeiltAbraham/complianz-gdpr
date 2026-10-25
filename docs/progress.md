@@ -6,8 +6,11 @@ Session handoff log. `/flow:handoff` rewrites the "Current" section before `/cle
 ## Current (2026-10-25)
 
 - **Feature:** 001-settings-ui-redesign — **CODE-COMPLETE, tagged `v7.6.0-rc1`**.
-- **Branch:** `001-settings-ui-redesign` (integration), at `25d7b6a3`; cut from `master`
-  at 7.5.5 (`8bc8bb00`). Tag `v7.6.0-rc1` on `25d7b6a3`, pushed.
+- **Branch:** `001-settings-ui-redesign` (integration), head `38b9fead`; cut from `master`
+  at 7.5.5 (`8bc8bb00`). Tag `v7.6.0-rc1` on `25d7b6a3`, pushed. One safe post-RC fix has
+  landed on 001 after the tag — #24 (`ThirdPartyScript` controlled-input default, CI green);
+  it rides into the release at DB-18. If more fixes accumulate during the bake, consider
+  re-tagging `v7.6.0-rc2` and restarting the bake; a single trivial fix does not warrant it.
 - **Phase:** Bundle F shipped → **CP5 release candidate**. The one-week RC self-QA bake
   (C-6 / SC-07) began 2026-10-25 (ends ~2026-11-01). Code freeze.
 - **Done:** every section migrated to the Tailwind + Radix + semantic-token design system;
@@ -30,13 +33,14 @@ Session handoff log. `/flow:handoff` rewrites the "Current" section before `/cle
 - **ADR-006 note:** work branches never commit build output, but the *release* commits it
   once on the integration branch — Bundle F (#23) is that commit (fresh `settings/build`
   incl. the single `index.css`, FR-017 clean).
-- **Follow-ups flagged (non-blocking):** `ThirdPartyScript.js:79` `value={undefined}`
-  pre-existing bug spun off as a task; 11 `console.log` in `settings/src` (error-path, low
-  priority); 3 legacy website-CSS `.css.map` tracked under `assets/css/` (pre-2021, out of
-  001 scope); a `v7.5.6` upstream tag exists → reconcile upstream after release.
+- **Follow-ups:** `ThirdPartyScript.js:79` `value={undefined}` pre-existing bug **FIXED**
+  (#24, merged to 001 post-RC, CI green). Remaining non-blocking: 10 `console.log` in
+  `settings/src` (error-path, low priority); 3 legacy website-CSS `.css.map` tracked under
+  `assets/css/` (pre-2021, out of 001 scope); a `v7.5.6` upstream tag exists → reconcile
+  upstream after release.
 - **Failing tests:** none product. The `dialogs.spec.js` Cancel focus-return case is a
   known pre-existing flake (proven identical on HEAD; absorbed by CI `retries:2`).
-- **Pushed:** yes — `origin/001` at `25d7b6a3`; tag `v7.6.0-rc1` pushed.
+- **Pushed:** yes — `origin/001` at `38b9fead`; tag `v7.6.0-rc1` at `25d7b6a3` pushed.
 
 ## Build log (001)
 
@@ -241,3 +245,5 @@ One line per finished task; `tasks.md` holds the durable `outcome:` records.
 - 2026-10-23 Bundle D legacy-CSS removal (#18–#20): B1 ColorPicker legacy-token decouple (#18); B2 shared chrome rules re-homed to island-scoped `settings/src/styles/components.css` (#19, proven zero-drift); B3 + teardown deleted the wp-admin button block and de-enqueued `admin.css` (#20) → `legacy-globals.scss` + `variables.scss` + `admin.scss` all deleted, `--cmplz-legacy-`/`--rsp-` grep = 0, ADR-005 no wp-core regression, FR-017 single `index.css`, e2e 84/84. Base typography relocated zero-drift (teardown reached all of admin.scss).
 - 2026-10-25 REL-1 + Bundle E (#21–#22): SC-05 axe gate green on all 37 migrated screens + determinism fixes (#21, ~15 behaviour-free attribute fixes, 3 contrast fixes, 2 structural; one new scoped react-ace gutter exemption); Bundle E asset-weight proof (SC-03 CSS −28.5% gzip, SC-04 JS +2.5% accepted+documented) + FR-015 ColorPicker `.scss`→`.css` + the single final 144-shot re-baseline (#22).
 - 2026-10-25 Bundle F (#23) + RC: version → 7.6.0 across the 6 manifest spots + the 4 package-lock self-version fields; the one-time ADR-006 artifact rebuild committed on 001 (fresh `settings/build`, single `index.css`/`index-rtl.css`, no chunk CSS); POT regenerated against the shipped build (111 chunks, 0 missing refs, +7 a11y accessible-name strings, de_DE verify green). A 6-agent adversarial release audit = **0 blockers**. 4-project Admin e2e green on `7a15ed5c`. **`v7.6.0-rc1` tagged + pushed on `25d7b6a3` → feature 001 is code-complete; the one-week RC self-QA bake (C-6/SC-07) begins.** Remaining = reserved maintainer gates only (bake, FR-022, DB-06, DB-18).
+
+- 2026-10-25 #24 (post-RC fix): `ThirdPartyScript` third-party-script editor now uses a controlled-input default (`value={ script.editor ? script.editor : '' }`) instead of falling back to `console.log(...)` (which returned `undefined` → uncontrolled field + console noise). One-line fix, stray `console.log` gone, CI green (e2e 25m59s + build). Landed on 001 (`38b9fead`) after the RC tag; rides into the release at DB-18 (the RC tag stays frozen at `25d7b6a3`).
