@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkcomplianz_settings||=[]).push([[4612],{4612(e,s,t){var a=t(86087),u=t(10790);const i=(0,a.memo)(({value:e})=>(0,u.jsx)("input",{type:"hidden",value:e}));t.d(s,["default",0,i])}}]);

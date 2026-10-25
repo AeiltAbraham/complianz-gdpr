@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkcomplianz_settings||=[]).push([[2921],{32921(e,r,a){var t=a(27723),s=a(44124),l=a(10790);a.d(r,["default",0,e=>(0,l.jsxs)(l.Fragment,{children:[" ",(0,l.jsx)(s.default,{url:e,target:"_blank",rel:"noopener noreferrer",text:(0,t.__)("For more information, please read this %sarticle%s.","complianz-gdpr")})," "]})])}}]);
