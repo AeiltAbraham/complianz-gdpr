@@ -1,6 +1,6 @@
 {
   "name": "complianz-settings",
-  "version": "7.5.5",
+  "version": "7.6.0",
   "private": true,
   "description": "React settings app for the Complianz GDPR/CCPA Cookie Consent plugin (free edition).",
   "author": "Really Simple Plugins",

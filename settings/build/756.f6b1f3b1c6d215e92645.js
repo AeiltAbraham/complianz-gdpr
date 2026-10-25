@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkcomplianz_settings||=[]).push([[756],{80756(s,a,e){var i=e(10790);e.d(a,["default",0,(s,a)=>(0,i.jsx)(i.Fragment,{children:s&&a.map((s,a)=>(0,i.jsx)("div",{children:s},a))})])}}]);
