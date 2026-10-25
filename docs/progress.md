@@ -3,29 +3,40 @@
 Session handoff log. `/flow:handoff` rewrites the "Current" section before `/clear`;
 `/flow:catchup` reads it after.
 
-## Current (2026-10-06)
+## Current (2026-10-25)
 
-- **Feature:** 001-settings-ui-redesign (`docs/specs/001-settings-ui-redesign/`).
-- **Branch:** `001-settings-ui-redesign`, the integration branch, cut from `master` at
-  7.5.5 (`8bc8bb00`).
-- **Phase:** build in progress (started 2026-10-07, running until blocked).
-- **Done:** spec approved (DB-01 to DB-18, SC-01 to SC-07); clarifications C-1 to C-9
-  (`clarify.md`); ADR-001 to ADR-013 (ADR-012 accepted at sign-off; ADR-014 reserved for
-  spike T-014); `plan.md` and `tasks.md` approved with review fixes (32 tasks: stages A–F
-  tasked, G–I gated slices; T-017 signed off as the only script task); flow initialized.
-- **In progress:** nothing.
-- **Carry into build:**
-  - The input technical spec lives outside the repo
-    (`~/Downloads/SETTINGS-UI/TAILWIND-MIGRATION-SPEC.md`); builders use it for detail.
-  - E2E proofs run through `npm run e2e`; from T-032 on they build first
-    (`npm run build:all`). Never stage or commit build output (ADR-006).
-  - Tasks land as direct commits on the integration branch until T-019 brings CI
-    (plan §4 item 8); T-006's gate fails with an install hint when phpcs is missing
-    (item 9).
-- **Problems:** pinned PHP dev tools likely fail on PHP 8.5 (T-004 fixes);
-  `phpunit.xml.dist` points at a missing `tests/legacy/` (T-005 fixes).
-- **Failing tests:** none known; no runnable suite yet.
-- **Pushed:** no; the branch exists only locally.
+- **Feature:** 001-settings-ui-redesign — **CODE-COMPLETE, tagged `v7.6.0-rc1`**.
+- **Branch:** `001-settings-ui-redesign` (integration), at `25d7b6a3`; cut from `master`
+  at 7.5.5 (`8bc8bb00`). Tag `v7.6.0-rc1` on `25d7b6a3`, pushed.
+- **Phase:** Bundle F shipped → **CP5 release candidate**. The one-week RC self-QA bake
+  (C-6 / SC-07) began 2026-10-25 (ends ~2026-11-01). Code freeze.
+- **Done:** every section migrated to the Tailwind + Radix + semantic-token design system;
+  ADR-001 marker move landed (#17); legacy admin SCSS fully retired (Bundle D, #18–#20,
+  ADR-005 — `legacy-globals.scss`/`variables.scss`/`admin.scss` deleted, `--cmplz-legacy-`
+  grep = 0); SC-05 axe a11y gate green on all 37 screens (#21); Bundle E asset-weight +
+  final re-baseline (#22); **Bundle F** — version 7.6.0, one-time ADR-006 artifact rebuild,
+  POT regen, package-lock sync (#23). A 6-agent adversarial release audit returned
+  **0 blockers**.
+- **Success criteria:** SC-03 settings CSS −28.5% gzip over the wire; SC-04 JS +2.5%
+  (maintainer-accepted + documented in `baselines.md`); SC-05 a11y green; 4-project Admin
+  e2e green on the release build (`7a15ed5c`).
+- **In progress:** nothing — code freeze for the RC bake.
+- **Reserved maintainer gates (all that remain):**
+  - **C-6 / SC-07** — one-week RC self-QA bake (running).
+  - **FR-022** — mark `checks.yml` a required status check in GitHub branch protection.
+  - **DB-06** — banner-preview diff sign-off (isolation shots byte-stable; effectively clear).
+  - **DB-18** — the single release merge `001` → `master` + the wordpress.org stable-tag
+    flip, after the bake.
+- **ADR-006 note:** work branches never commit build output, but the *release* commits it
+  once on the integration branch — Bundle F (#23) is that commit (fresh `settings/build`
+  incl. the single `index.css`, FR-017 clean).
+- **Follow-ups flagged (non-blocking):** `ThirdPartyScript.js:79` `value={undefined}`
+  pre-existing bug spun off as a task; 11 `console.log` in `settings/src` (error-path, low
+  priority); 3 legacy website-CSS `.css.map` tracked under `assets/css/` (pre-2021, out of
+  001 scope); a `v7.5.6` upstream tag exists → reconcile upstream after release.
+- **Failing tests:** none product. The `dialogs.spec.js` Cancel focus-return case is a
+  known pre-existing flake (proven identical on HEAD; absorbed by CI `retries:2`).
+- **Pushed:** yes — `origin/001` at `25d7b6a3`; tag `v7.6.0-rc1` pushed.
 
 ## Build log (001)
 
@@ -225,3 +236,8 @@ One line per finished task; `tasks.md` holds the durable `outcome:` records.
   final re-baseline (a11y + determinism changes now settled).
 
 - 2026-10-19 Bundle A (ADR-001 marker move) done — SCOPE REVISED after a finding, maintainer-chosen path = **zero-drift token broadening only** (branch `phase5-marker-move`, worktree, Wave 1). FINDING: the literal marker move (one `data-cmplz-ui` on the app root + drop per-component markers + move the base reset) is NOT zero-drift in the current tree — ADR-001's "by Phase 5 all bodies migrated" precondition does not hold. Two reasons, both proven empirically (live computed-style probe + before/after `#complianz-app` screenshots on :8888): (1) the Phase-3/4 redesigned frame is deliberately MARKERLESS and inherits the legacy `.cmplz` base (`font-size:0.8125rem`=13px, `color:rgba(15,23,42,0.95)`), while base.css B2 root typography is `14px`/`#0f172a` — a marker on the app root flips the whole subtree 13px→14px + alpha, a broad reflow on every screen; (2) ~14 composite field-bodies (Finish/Support/Editor/Debug/SecurityMeasures/WebSiteScan/Translations/documents/documents-menu/processors-thirdparties/PlaceholderPreview/WcagContrastChecker/Import/cookiescan…) were never assigned to a Phase-4 section and are still LEGACY (raw buttons/inputs/svgs the base reset B1/B4/B5 would strip — the T-038/T-052 landmine). Maintainer chose zero-drift token broadening (vs full-move+re-baseline, vs migrate-the-14-bodies-first). IMPLEMENTATION (3 source files): `settings/src/styles/tokens.css` — the semantic `--cmplz-*` tokens are additionally declared on `#complianz-app` (both the main block and the reduced-motion `@media`), a SELECTOR-ONLY declaration (no `data-cmplz-ui` attribute added; base.css B1-B5 + B2 UNCHANGED, still keyed to `[data-cmplz-ui]`; per-component markers RETAINED; isolate zones untouched). Because custom properties inherit, every `var(--cmplz-*, <literal>)` on the still-markerless frame (Page grid, SettingsGroup card, Settings body/footer, Field rows, Help, Premium, SettingsPlaceholder, Icon, GridBlock, dashboard bodies) now resolves to the TOKEN — the deferred ADR-001 "fallbacks auto-upgrade" payoff — pixel-identically (all 35+ fallback literals verified == their token value; B2 NOT broadened so the frame stays 13px and islands stay 14px → no type drift). The full marker move (base-reset move + per-component-marker removal) stays DEFERRED until the ~14 legacy bodies migrate. Pre-push adversarial review (flow:reviewer, 6-axis) confirmed ONE real edge the frame-fallback reasoning missed: the markerless Support `<Textarea>` (premium group, free-rendered dimmed behind an 80% scrim, IN the `tools-support` LTR+RTL baselines) used BARE tokens → zero-drift hardening applied: gave `components/ui/Textarea.js` (4 vars) + `components/ui/Button.js` (focus-visible outline) the same literal fallbacks `TextField` already carries, so the broadening is a provable no-op, not merely sub-threshold. Everything else cleared (isolate zones / legacy SCSS use only `--cmplz-legacy-`; no other markerless bare-var consumer; specificity/RTL fine). PROOF: build:all green; token-hygiene + physical-utility (201 files) + stylelint (full CI list) all green; live check confirms the markerless SettingsGroup card now inherits `--cmplz-border` and renders identical `rgb(226,232,240)` while `#complianz-app` stays 13px markerless and islands stay 14px; `var(--cmplz-*)` resolves to the token (not the literal) on a sampled island in build/index.css. Full reset-DB e2e across all 4 admin projects: ZERO visual drift (admin + admin-rtl, 768+1440), 76 passed / 1 flaky (the known, CSS-independent dialogs focus-return flake, green under `retries:2`); a second (accumulated-DB) visual pass drifted only the two documented nondeterministic shots (banner-general-768, proof-of-consent-768) — `tools-support` zero in both. Compiled output restored (ADR-006). No ADR overturned (ADR-001 end-state unchanged, just staged); the deferral is recorded for Bundle D (legacy removal still waits on the full marker move / the 14 bodies).
+
+- 2026-10-22 H6/H7/H8 + H.9 + marker move (#13–#17): the remaining legacy bodies migrated to C-2 — H6 document-tools (#13), H7 cookiedatabase/integration-rows + Panel-primitive modernize (#15), H8 tools/misc + onboarding modal on Radix Dialog (#14); two 9-agent adversarial scope audits caught the unowned Dashboard subtree → H.9 remediated the 7 Dashboard + 2 Integrations raw controls (#16). **ADR-001 marker move landed (#17):** one `data-cmplz-ui` on `#complianz-app`, per-component markers dropped (34→0), 6 isolate zones kept, the intended app-wide 13→14px flip re-baselined (144 shots), Help.js folded into the design system. 4-project e2e green (only the known focus-return flake, proven identical on HEAD).
+- 2026-10-23 Bundle D legacy-CSS removal (#18–#20): B1 ColorPicker legacy-token decouple (#18); B2 shared chrome rules re-homed to island-scoped `settings/src/styles/components.css` (#19, proven zero-drift); B3 + teardown deleted the wp-admin button block and de-enqueued `admin.css` (#20) → `legacy-globals.scss` + `variables.scss` + `admin.scss` all deleted, `--cmplz-legacy-`/`--rsp-` grep = 0, ADR-005 no wp-core regression, FR-017 single `index.css`, e2e 84/84. Base typography relocated zero-drift (teardown reached all of admin.scss).
+- 2026-10-25 REL-1 + Bundle E (#21–#22): SC-05 axe gate green on all 37 migrated screens + determinism fixes (#21, ~15 behaviour-free attribute fixes, 3 contrast fixes, 2 structural; one new scoped react-ace gutter exemption); Bundle E asset-weight proof (SC-03 CSS −28.5% gzip, SC-04 JS +2.5% accepted+documented) + FR-015 ColorPicker `.scss`→`.css` + the single final 144-shot re-baseline (#22).
+- 2026-10-25 Bundle F (#23) + RC: version → 7.6.0 across the 6 manifest spots + the 4 package-lock self-version fields; the one-time ADR-006 artifact rebuild committed on 001 (fresh `settings/build`, single `index.css`/`index-rtl.css`, no chunk CSS); POT regenerated against the shipped build (111 chunks, 0 missing refs, +7 a11y accessible-name strings, de_DE verify green). A 6-agent adversarial release audit = **0 blockers**. 4-project Admin e2e green on `7a15ed5c`. **`v7.6.0-rc1` tagged + pushed on `25d7b6a3` → feature 001 is code-complete; the one-week RC self-QA bake (C-6/SC-07) begins.** Remaining = reserved maintainer gates only (bake, FR-022, DB-06, DB-18).
