@@ -1,6 +1,6 @@
 {
   "name": "complianz-gdpr",
-  "version": "7.5.5",
+  "version": "7.6.0",
   "private": true,
   "description": "Root build toolchain for the Complianz GDPR/CCPA Cookie Consent plugin (free edition): the gulp SCSS pipeline for the legacy admin and front-end CSS.",
   "author": "Really Simple Plugins",
