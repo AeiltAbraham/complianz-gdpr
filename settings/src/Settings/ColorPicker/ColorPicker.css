@@ -1,0 +1,55 @@
+/* ColorPicker control chrome. Converted from ColorPicker.scss to plain CSS (FR-015: no
+ * `.scss` under settings/src). Nesting is flattened because the settings CSS pipeline
+ * (postcss-import + autoprefixer; no nesting plugin) does not process CSS nesting. The widget
+ * is isolate-zoned (data-cmplz-isolate="color-picker"); the two neutral greys are the resolved
+ * literals the legacy variables.scss used to supply (decoupled in Bundle D B1, #18) — zero drift. */
+.cmplz-color-picker-control {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.cmplz-color-picker-control button {
+  margin-right: 10px;
+  background-color: transparent;
+  border-radius: 6px;
+  border: 1px solid #c6c6c6;
+  min-width: 140px;
+  font-size: 13px;
+}
+.cmplz-color-picker-control .cmplz-color-picker-control-items {
+  flex: 1;
+}
+.cmplz-color-picker-control .cmplz-color-picker-control-item {
+  cursor: pointer;
+  display: flex;
+  padding: 5px;
+  gap: 14px;
+  align-items: center;
+}
+.cmplz-color-picker-control .cmplz-color-picker-control-item .cmplz-color-picker-color {
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #ededed;
+}
+.cmplz-color-picker-control .cmplz-contrast-checker {
+  flex: 1;
+  text-align: left;
+  margin-top: 12px;
+}
+@media (min-width: 768px) {
+  .cmplz-color-picker-control {
+    flex-direction: row;
+  }
+  .cmplz-color-picker-control .cmplz-color-picker-control-items {
+    flex: 1.6;
+  }
+  .cmplz-color-picker-control .cmplz-contrast-checker {
+    flex: 1.3;
+    align-self: flex-start;
+    margin-top: 0;
+  }
+}
+[data-radix-popper-content-wrapper] {
+  z-index: 20 !important;
+}

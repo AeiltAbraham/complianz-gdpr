@@ -120,3 +120,31 @@ authorizes it: the redesigned screenshots become the new baseline.
   path has no `{platform}` token); the committed PNGs are the human review reference and the
   Phase-5 re-baseline starting point. The banner PREVIEW/website shots are re-baselined again
   in Phase 5 against the frontend banner (ADR-008, DB-06).
+
+## Release build (post-redesign) — 2026-10-25 (Bundle E, SC-03/SC-04 comparison)
+
+Fresh `npm run build:all` at the post-Bundle-D tree (legacy `admin.css` + chunk CSS removed;
+single `settings/build/index.css` + the slim `assets/css/premium.min.css`). Same tool/method
+as the 2026-10-07 baseline above (gzip = default level; a visitor loads ONE direction, so
+`index-rtl.css` is excluded as the same-size RTL alternate of `index.css`).
+
+| Group | File(s) | raw (bytes) | gzip (bytes) |
+|---|---|--:|--:|
+| legacy admin CSS | REMOVED (`admin.min.css` deleted) | 0 | 0 |
+| settings entry CSS | `settings/build/index.css` | 227528 | 26929 |
+| premium block CSS | `assets/css/premium.min.css` | 4693 | 1078 |
+| settings entry JS | `settings/build/index.*.js` | 285186 | 93974 |
+| settings other JS | `settings/build/*.js` sans entry | 3752213 | 1077708 |
+
+- **SC-03 (styling = CSS) — MET on the download (gzip) metric.** gzip 39170 → **28007** bytes
+  (−11163, **−28.5%**): the legacy `admin.css` (16572 gzip) is gone, and `index.css` (26.9 KB
+  gzip) + slim premium (1.1 KB gzip) replace it + the chunk CSS. Raw rose 179764 → 232221
+  (+29%) because Tailwind utility classes are verbose raw but compress ~8.4×, so the
+  over-the-wire download (gzip) is what drops.
+- **SC-04 (script = JS) — NOT met.** gzip 1143195 → **1171682** bytes (+28487, **+2.5%**); raw
+  3937959 → 4037399 (+2.5%). The Radix primitives + new component infrastructure net-ADD JS
+  rather than shedding it by the weight of the removed component sets. **Maintainer decision
+  2026-10-25: ACCEPTED, +2.5% documented.** The redesign's value is the CSS download
+  reduction (−28.5%) plus the full Tailwind/token migration and maintainability, not JS
+  reduction; the +2.5% (Radix primitives + new component infrastructure) is accepted as a known,
+  documented outcome, not a release blocker. Recorded in the readme 7.6.0 Performance note.

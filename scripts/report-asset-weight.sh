@@ -39,6 +39,7 @@ else
 fi
 
 admin_css="$root/assets/css/admin.min.css"
+premium_css="$root/assets/css/premium.min.css"
 build_dir="$root/settings/build"
 
 # die PATH -- name a missing artifact on stderr and stop with a non-zero status.
@@ -52,16 +53,31 @@ row() {
 	printf '%-52s raw=%s gzip=%s\n' "$1" "$2" "$3"
 }
 
-# --- legacy admin CSS (single file) ----------------------------------------------
-[ -f "$admin_css" ] || die "$admin_css"
-admin_raw=$( wc -c < "$admin_css" ); admin_raw=$(( admin_raw ))
-admin_gzip=$( gzip -c "$admin_css" | wc -c ); admin_gzip=$(( admin_gzip ))
+# --- legacy admin CSS (REMOVED by Bundle D — assets/css/admin.min.css deleted) ----
+# The legacy admin stylesheet is gone; measured as 0 when absent so the removal shows
+# as the SC-03 win against the pre-redesign baselines.md row.
+if [ -f "$admin_css" ]; then
+	admin_raw=$( wc -c < "$admin_css" ); admin_raw=$(( admin_raw ))
+	admin_gzip=$( gzip -c "$admin_css" | wc -c ); admin_gzip=$(( admin_gzip ))
+else
+	admin_raw=0; admin_gzip=0
+fi
 
-# --- settings chunk CSS: sum over settings/build/*.css ---------------------------
+# --- premium block CSS (slim, Bundle D): assets/css/premium.min.css --------------
+if [ -f "$premium_css" ]; then
+	premium_raw=$( wc -c < "$premium_css" ); premium_raw=$(( premium_raw ))
+	premium_gzip=$( gzip -c "$premium_css" | wc -c ); premium_gzip=$(( premium_gzip ))
+else
+	premium_raw=0; premium_gzip=0
+fi
+
+# --- settings entry CSS: settings/build/*.css (single index.css post-FR-017) ------
 css_raw=0
 css_gzip=0
 for f in "$build_dir"/*.css; do
-	[ -f "$f" ] || die "$f"
+	[ -f "$f" ] || continue
+	# A visitor loads ONE direction; index-rtl.css is the same-size RTL alternate of index.css.
+	case ${f##*/} in *-rtl.css) continue ;; esac
 	n=$( wc -c < "$f" ); css_raw=$(( css_raw + n ))
 	n=$( gzip -c "$f" | wc -c ); css_gzip=$(( css_gzip + n ))
 done
@@ -92,7 +108,8 @@ echo "Complianz settings-screen asset weight (SC-03 styling, SC-04 script)"
 echo "root: $root"
 echo "sizes in bytes; a group figure is the sum over its files; gzip = default level"
 echo
-row "legacy admin CSS   [assets/css/admin.min.css]"       "$admin_raw"  "$admin_gzip"
-row "settings chunk CSS [settings/build/*.css]"           "$css_raw"    "$css_gzip"
-row "settings entry JS  [settings/build/index.*.js]"      "$entry_raw"  "$entry_gzip"
-row "settings other JS  [settings/build/*.js sans entry]" "$other_raw"  "$other_gzip"
+row "legacy admin CSS   [REMOVED — admin.min.css deleted]" "$admin_raw"  "$admin_gzip"
+row "settings entry CSS [settings/build/index.css]"        "$css_raw"    "$css_gzip"
+row "premium block CSS  [assets/css/premium.min.css]"      "$premium_raw" "$premium_gzip"
+row "settings entry JS  [settings/build/index.*.js]"       "$entry_raw"  "$entry_gzip"
+row "settings other JS  [settings/build/*.js sans entry]"  "$other_raw"  "$other_gzip"
