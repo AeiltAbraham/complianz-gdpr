@@ -45,10 +45,6 @@ if (!function_exists('cmplz_blocks')) {
 			],
 			array(
 				'id'        => 'feature-ctas',
-				'header'    => array(
-					'type' => 'text',
-					'data' => __( 'Recommended for you', 'complianz-gdpr' ),
-				),
 				'content'   => array(
 					'type' => 'react',
 					'data' => 'FeatureCTAs',

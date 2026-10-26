@@ -121,7 +121,7 @@ const GridBlock = ({block}) => {
 	return (
 		<ErrorBoundary fallback={"Could not load:"+' '+blockData.id}>
 			<div key={"block-"+blockData.id} className={className}>
-				<div className={clsx("cmplz-grid-item-header", headerCls(variant))}>
+				{blockData.header && <div className={clsx("cmplz-grid-item-header", headerCls(variant))}>
 					{blockData.header.type==='text' && <>
 						<h3 className="cmplz-grid-title cmplz-h4 tw-m-0">{ blockData.header.data }</h3>
 						<div className="cmplz-grid-item-controls tw-flex tw-items-center tw-gap-[var(--cmplz-space-s,_12px)]">
@@ -132,7 +132,7 @@ const GridBlock = ({block}) => {
 					{blockData.header.type==='react' && <>
 						{ wp.element.createElement(dynamicComponents[blockData.header.data])}
 					</>}
-				</div>
+				</div>}
 				 <div className={clsx("cmplz-grid-item-content", contentCls(variant))}>{wp.element.createElement(dynamicComponents[block.content.data])}</div>
 
 				{!footer && <div className="cmplz-grid-item-footer"></div>}
