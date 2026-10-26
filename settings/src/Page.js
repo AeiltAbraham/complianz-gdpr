@@ -167,8 +167,10 @@ const Page = () => {
 					className={clsx(
 						"cmplz-content-area cmplz-grid cmplz-" + selectedMainMenuItem,
 						CONTENT_AREA_FRAME,
+						// Dashboard: a fixed 4-column grid so blocks tile 50/25/25 (col-span-2 = 50%,
+						// col-span-1 = 25%) on both rows; stacks to a single column below the md breakpoint.
 						selectedMainMenuItem === 'dashboard'
-							? "tw-grid-cols-[repeat(auto-fit,minmax(18rem,1fr))]"
+							? "tw-grid-cols-1 md:tw-grid-cols-4"
 							: "tw-grid-cols-[28ch_1fr_1fr_1fr]",
 						// Banner save-clearance (T-050, ADR-008): replaces the legacy
 						// `.cmplz-grid.cmplz-banner { margin-bottom: 200px }` (CookieBannerPreview.scss, now

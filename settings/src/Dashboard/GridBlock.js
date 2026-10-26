@@ -13,7 +13,7 @@ import OtherPlugins from "./OtherPlugins/OtherPlugins";
 import TipsTricks from "./TipsTricks/TipsTricks";
 import TipsTricksFooter from "./TipsTricks/TipsTricksFooter";
 import OtherPluginsHeader from "./OtherPlugins/OtherPluginsHeader";
-import FeatureCTAs from "./FeatureCTAs/FeatureCTAs";
+import FeatureCTA from "./FeatureCTAs/FeatureCTA";
 import ErrorBoundary from "../utils/ErrorBoundary";
 
 /*
@@ -34,7 +34,7 @@ var dynamicComponents = {
 	"Tools": Tools,
     "OtherPluginsHeader": OtherPluginsHeader,
     "OtherPlugins": OtherPlugins,
-    "FeatureCTAs": FeatureCTAs,
+    "FeatureCTA": FeatureCTA,
 };
 
 // Dashboard GridBlock (T-048, DB-17 / C-4; Stage-H Dashboard). Reads the ADR-015 forward width/variant
@@ -133,7 +133,7 @@ const GridBlock = ({block}) => {
 						{ wp.element.createElement(dynamicComponents[blockData.header.data])}
 					</>}
 				</div>}
-				 <div className={clsx("cmplz-grid-item-content", contentCls(variant))}>{wp.element.createElement(dynamicComponents[block.content.data])}</div>
+				 <div className={clsx("cmplz-grid-item-content", contentCls(variant))}>{wp.element.createElement(dynamicComponents[block.content.data], {block})}</div>
 
 				{!footer && <div className="cmplz-grid-item-footer"></div>}
 				{footer && <div className={clsx("cmplz-grid-item-footer", footerCls, "empty:tw-hidden")}>{wp.element.createElement(dynamicComponents[block.footer.data])}</div>}

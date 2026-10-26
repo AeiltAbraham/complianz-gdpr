@@ -44,13 +44,58 @@ if (!function_exists('cmplz_blocks')) {
 				'variant' => 'edge-to-edge',
 			],
 			array(
-				'id'        => 'feature-ctas',
-				'content'   => array(
+				'id'      => 'cta-premium',
+				'content' => array(
 					'type' => 'react',
-					'data' => 'FeatureCTAs',
+					'data' => 'FeatureCTA',
 				),
-				'fullWidth' => true,
-				'variant'   => 'borderless',
+				'cta'     => array(
+					'icon'    => 'crown',
+					'tint'    => 'accent-filled',
+					'primary' => true,
+					'title'   => __( 'Upgrade to Premium', 'complianz-gdpr' ),
+					'desc'    => __( 'Get the most out of Complianz — unlock every premium feature for complete, worldwide compliance.', 'complianz-gdpr' ),
+					'button'  => __( 'Go Pro', 'complianz-gdpr' ),
+					'href'    => 'https://complianz.io/pricing/',
+				),
+				'width'   => 2,
+				'variant' => 'default',
+			),
+			array(
+				'id'      => 'cta-tcf',
+				'content' => array(
+					'type' => 'react',
+					'data' => 'FeatureCTA',
+				),
+				'cta'     => array(
+					'icon'    => 'tcf',
+					'tint'    => 'accent',
+					'primary' => false,
+					'title'   => __( 'TCF v2.4', 'complianz-gdpr' ),
+					'desc'    => __( 'Enable the IAB Transparency & Consent Framework v2.4 for programmatic advertising.', 'complianz-gdpr' ),
+					'button'  => __( 'Learn more', 'complianz-gdpr' ),
+					'href'    => 'https://complianz.io/',
+				),
+				'width'   => 1,
+				'variant' => 'default',
+			),
+			array(
+				'id'      => 'cta-geolocation',
+				'content' => array(
+					'type' => 'react',
+					'data' => 'FeatureCTA',
+				),
+				'cta'     => array(
+					'icon'    => 'globe',
+					'tint'    => 'success',
+					'primary' => false,
+					'title'   => __( 'Geolocation', 'complianz-gdpr' ),
+					'desc'    => __( 'Show the right consent banner for every region with geo-targeting.', 'complianz-gdpr' ),
+					'button'  => __( 'Learn more', 'complianz-gdpr' ),
+					'href'    => 'https://complianz.io/',
+				),
+				'width'   => 1,
+				'variant' => 'default',
 			),
 		];
 
