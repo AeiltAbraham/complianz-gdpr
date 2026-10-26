@@ -16,9 +16,9 @@ name: checks
 
 on:
   push:
-    branches: [ '001-settings-ui-redesign' ]
+    branches: [ '001-settings-ui-redesign', 'master' ]
   pull_request:
-    branches: [ '001-settings-ui-redesign' ]
+    branches: [ '001-settings-ui-redesign', 'master' ]
 
 # A newer push to the same ref cancels the older in-flight run.
 concurrency:
