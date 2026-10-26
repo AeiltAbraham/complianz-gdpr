@@ -13,6 +13,7 @@ import OtherPlugins from "./OtherPlugins/OtherPlugins";
 import TipsTricks from "./TipsTricks/TipsTricks";
 import TipsTricksFooter from "./TipsTricks/TipsTricksFooter";
 import OtherPluginsHeader from "./OtherPlugins/OtherPluginsHeader";
+import FeatureCTAs from "./FeatureCTAs/FeatureCTAs";
 import ErrorBoundary from "../utils/ErrorBoundary";
 
 /*
@@ -33,6 +34,7 @@ var dynamicComponents = {
 	"Tools": Tools,
     "OtherPluginsHeader": OtherPluginsHeader,
     "OtherPlugins": OtherPlugins,
+    "FeatureCTAs": FeatureCTAs,
 };
 
 // Dashboard GridBlock (T-048, DB-17 / C-4; Stage-H Dashboard). Reads the ADR-015 forward width/variant
@@ -111,7 +113,9 @@ const GridBlock = ({block}) => {
 	if ( width && ! WIDTH_CLASS[ width ] ) {
 		console.warn( 'cmplz: dashboard block "' + blockData.id + '" requested unsupported width ' + width + ' — falling back to span 1.' );
 	}
-	const className = clsx("cmplz-grid-item", "cmplz-" + blockData.id, cardCls(variant, width));
+	// A `fullWidth` block spans the whole auto-fit grid row (grid-column: 1 / -1) — used by the
+	// feature-CTA row so its internal responsive card grid fills the dashboard width (ADR-013 literal).
+	const className = clsx("cmplz-grid-item", "cmplz-" + blockData.id, cardCls(variant, width), blockData.fullWidth && "tw-col-span-full");
 	const footer =block.footer ? block.footer.data : false;
 
 	return (

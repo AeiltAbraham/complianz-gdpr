@@ -43,30 +43,19 @@ if (!function_exists('cmplz_blocks')) {
 				'width'   => 1,
 				'variant' => 'edge-to-edge',
 			],
-			[
-				'id'       => 'tips_tricks',
-				'header' => [
+			array(
+				'id'        => 'feature-ctas',
+				'header'    => array(
 					'type' => 'text',
-					'data' => __( "Tips & Tricks", 'complianz-gdpr' ),
-				],
-				'content'  => ['data' => 'TipsTricks' ],
-				'footer'   => [ 'data' => 'TipsTricksFooter' ],
-				'width'   => 2,
-				'variant' => 'default',
-			],
-			[
-				'id'       => 'other-plugins',
-				'header' => [
+					'data' => __( 'Recommended for you', 'complianz-gdpr' ),
+				),
+				'content'   => array(
 					'type' => 'react',
-					'data' => 'OtherPluginsHeader'
-				],
-				'title'    => __( "Other Plugins", 'complianz-gdpr' ),
-				'help'     => __( 'A help text', 'complianz-gdpr' ),
-				'content'  => [ 'type' => 'react', 'data' => 'OtherPlugins' ],
-				'footer'   => [ 'type' => 'html', 'data' => '' ],
-				'width'   => 2,
-				'variant' => 'borderless',
-			],
+					'data' => 'FeatureCTAs',
+				),
+				'fullWidth' => true,
+				'variant'   => 'borderless',
+			),
 		];
 
 		return apply_filters( 'cmplz_blocks', $blocks );
