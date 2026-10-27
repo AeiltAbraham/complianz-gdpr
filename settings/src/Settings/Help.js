@@ -30,6 +30,7 @@ const noticeBox = clsx(
 );
 const DEFAULT_TINT = "tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)]";
 const WARNING_TINT = "tw-bg-[var(--cmplz-warning-surface,_#fbf4da)]";
+const DANGER_TINT = "tw-bg-[var(--cmplz-danger-surface,_#fdebed)]";
 const accordionCls = clsx(
 	"[&_.cmplz-icon]:tw-transition-transform",
 	"[&_.cmplz-icon]:tw-duration-[var(--cmplz-duration,_200ms)] [&_.cmplz-icon]:tw-ease-[var(--cmplz-ease,_cubic-bezier(0.4,0,0.2,1))]",
@@ -85,7 +86,11 @@ const Help = (props) => {
 	//we can use notice.linked_field to create a visual link to the field.
 
 	let target = notice.url && notice.url.indexOf("complianz.io") !==-1 ? "_blank" : '_self';
-	let tint = notice.label.toLowerCase() === 'warning' ? WARNING_TINT : DEFAULT_TINT;
+	let tint = notice.label.toLowerCase() === 'warning'
+		? WARNING_TINT
+		: notice.label.toLowerCase() === 'error'
+			? DANGER_TINT
+			: DEFAULT_TINT;
 	return (
 		<>
 			{ notice.title && notice.text &&

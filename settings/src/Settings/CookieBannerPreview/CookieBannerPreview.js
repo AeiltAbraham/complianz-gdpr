@@ -5,6 +5,23 @@ import {useEffect, useState, useRef} from "@wordpress/element";
 import DOMPurify from "dompurify";
 import {getPurposes, filterArray, concatenateString} from "./tcf";
 import useMenu from "../../Menu/MenuData";
+// SHOWCASE-ONLY (design-dashboard-ctas): shared customer-state preview.
+import { getCustomerState } from "../../preview/customerState";
+
+// SHOWCASE-ONLY (design-dashboard-ctas): a NEW customer gets a distinct starter banner — the blue accent
+// (the #3b29ff accept button + links) swapped for the system green (#1f7a34) and softer corners. Scoped to
+// the isolated preview container and !important so it beats the generated preview CSS. Inert without a
+// customer-state override; remove with the preview/ helpers before release.
+const NEW_CUSTOMER_BANNER_CSS = `
+#cmplz-preview-banner-container .cmplz-cookiebanner { border-radius: 16px !important; }
+#cmplz-preview-banner-container .cmplz-cookiebanner .cmplz-btn { border-radius: 8px !important; }
+#cmplz-preview-banner-container .cmplz-cookiebanner .cmplz-btn.cmplz-accept {
+	background-color: #1f7a34 !important;
+	border-color: #1f7a34 !important;
+}
+#cmplz-preview-banner-container .cmplz-cookiebanner .cmplz-link,
+#cmplz-preview-banner-container .cmplz-cookiebanner a.cmplz-link { color: #1f7a34 !important; }
+`;
 /**
  * Render a help notice in the sidebar
  */
@@ -457,6 +474,7 @@ const CookieBannerPreview = () => {
 	setUpBanner();
 	return (
 		<>
+			{ getCustomerState() === 'new' && <style>{ NEW_CUSTOMER_BANNER_CSS }</style> }
 			<div id="cmplz-preview-banner-container" data-cmplz-isolate="preview" ref={rootRef}>
 				<div id="cmplz-cookiebanner-container"
 					 className={bannerContainerClass} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(resultHtml) }}>

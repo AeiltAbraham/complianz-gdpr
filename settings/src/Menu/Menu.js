@@ -4,9 +4,18 @@ import useMenu from "./MenuData";
 import CookieBannerControls from "../Settings/CookieBannerPreview/CookieBannerControls";
 import MenuPlaceholder from "../Placeholder/MenuPlaceholder";
 import { clsx } from "../components/ui/cx";
-import Icon from "../utils/Icon";
 // SHOWCASE-ONLY (design-dashboard-ctas): shared customer-state preview.
 import { getCustomerState } from "../preview/customerState";
+
+// The premium crown used elsewhere (Settings/Premium.js, Dashboard/FeatureCTAs, Onboarding/PremiumLicense) —
+// lucide "crown", stroke/currentColor so it takes the parent text colour. Defined locally per the project's
+// existing convention (each consumer declares its own).
+const Crown = ( { s = 14 } ) => (
+	<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+		<path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z" />
+		<path d="M5 21h14" />
+	</svg>
+);
 
 // Redesigned sidebar menu frame (T-040, DB-07, C-3, ADR-005), rebuilt on `tw-` utilities + the semantic
 // `--cmplz-*` tokens, matching docs/specs/001-settings-ui-redesign/design/shell-preview.html. The active
@@ -47,8 +56,8 @@ const PREMIUM_BUTTON = clsx(
 	"tw-py-[8px] tw-px-[16px] tw-rounded-[var(--cmplz-radius-field)] tw-text-[length:var(--cmplz-font-size-sm)]"
 );
 // SHOWCASE-ONLY (design-dashboard-ctas): a subtle premium upsell under the banner sub-menu for a previewed
-// NEW customer, pairing with the locked look sections above (MenuItem.js). Muted sunken card, lock glyph,
-// one quiet accent link — deliberately understated. Inert without a customer-state override. Remove with preview/.
+// NEW / current-unauthenticated customer, pairing with the locked look sections above (MenuItem.js). Muted
+// sunken card, crown glyph, one quiet accent link — understated. Inert without a state override. Remove with preview/.
 const UPSELL_CARD = clsx(
 	"cmplz-premium-menu-item",
 	"tw-mt-[var(--cmplz-space-s)] tw-flex tw-flex-col tw-gap-[var(--cmplz-space-2xs)]",
@@ -57,7 +66,7 @@ const UPSELL_CARD = clsx(
 );
 const UPSELL_HEAD = clsx(
 	"tw-flex tw-items-center tw-gap-[var(--cmplz-space-2xs)]",
-	"[&_svg]:tw-h-[13px] [&_svg]:tw-w-[13px]",
+	"[&_svg]:tw-h-[14px] [&_svg]:tw-w-[14px]",
 	"tw-font-semibold tw-text-[length:var(--cmplz-font-size-sm)] tw-text-[color:var(--cmplz-text,_#0f172a)]"
 );
 const UPSELL_TEXT = "tw-m-0 tw-text-[length:var(--cmplz-font-size-xs)] tw-text-[color:var(--cmplz-text-muted,_#475569)]";
@@ -89,10 +98,10 @@ const UPSELL_LINK = clsx(
 					{ hasPremiumItems && cmplz_settings.is_premium &&
 						<div className={PREMIUM_ITEM}><a target="_blank" rel="noopener noreferrer" href={cmplz_settings.upgrade_link} className={PREMIUM_BUTTON}>{__('Go Pro', 'complianz-gdpr')}</a></div>
 					}
-					{ selectedMainMenuItem === 'banner' && getCustomerState() === 'new' &&
+					{ selectedMainMenuItem === 'banner' && ( getCustomerState() === 'new' || getCustomerState() === 'unauthenticated' ) &&
 						<div className={UPSELL_CARD}>
 							<span className={UPSELL_HEAD}>
-								<Icon name="lock" size={13} color="dark-blue" />
+								<span className="tw-flex tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]"><Crown s={14} /></span>
 								{__('Premium design', 'complianz-gdpr')}
 							</span>
 							<p className={UPSELL_TEXT}>

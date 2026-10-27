@@ -255,18 +255,31 @@ const Settings = () => {
 	}
 	helpNotices = helpNotices.filter(
 		notice => notice.label.toLowerCase() !== 'completed');
-	// SHOWCASE-ONLY (design-dashboard-ctas): a previewed NEW customer gets a banner-page notification nudging
-	// domain authentication — the free-plan lever that unlocks more customization and automates consent
-	// management. Prepended so it leads the Notifications list. Inert without a customer-state override;
-	// remove with the preview/ helpers before release.
-	if ( selectedMainMenuItem === 'banner' && getCustomerState() === 'new' ) {
+	// SHOWCASE-ONLY (design-dashboard-ctas): a banner-page notification that differs per previewed customer —
+	// a CURRENT-UNAUTHENTICATED customer is nudged to authenticate (the lever for more customization +
+	// automated consent), a CURRENT customer is told their banner was rebuilt and asked to review the design.
+	// Both are red (label 'error') and lead the Notifications list. A NEW customer gets no warning here — they
+	// get the distinct starter-banner treatment instead. Inert without a customer-state override; remove with
+	// the preview/ helpers before release.
+	const previewCustomerState = selectedMainMenuItem === 'banner' ? getCustomerState() : null;
+	if ( previewCustomerState === 'unauthenticated' ) {
 		helpNotices = [
 			{
-				id: 'cmplz-preview-new-authenticate',
-				label: 'warning',
+				id: 'cmplz-preview-unauthenticated-authenticate',
+				label: 'error',
 				title: __( 'Authenticate your domain', 'complianz-gdpr' ),
-				text: __( 'You’re on the free plan with a local banner. Authenticate your domain to unlock more customization options and to let Complianz manage your consent automatically.', 'complianz-gdpr' ),
+				text: __( 'Your domain isn’t verified yet. Authenticate your domain to unlock more customization options and to let Complianz manage your consent automatically.', 'complianz-gdpr' ),
 				url: 'https://complianz.io/authentication/',
+			},
+			...helpNotices,
+		];
+	} else if ( previewCustomerState === 'current' ) {
+		helpNotices = [
+			{
+				id: 'cmplz-preview-current-newbanner',
+				label: 'error',
+				title: __( 'Your consent banner has changed', 'complianz-gdpr' ),
+				text: __( 'We’ve rebuilt your consent banner for better performance, security and consent metrics. Please review the design — we kept it as close as possible to your previous banner.', 'complianz-gdpr' ),
 			},
 			...helpNotices,
 		];

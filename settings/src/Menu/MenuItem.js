@@ -8,6 +8,16 @@ import { clsx } from "../components/ui/cx";
 // SHOWCASE-ONLY (design-dashboard-ctas): shared customer-state preview.
 import { getCustomerState } from "../preview/customerState";
 
+// The premium crown used elsewhere (Settings/Premium.js, Dashboard/FeatureCTAs, Onboarding/PremiumLicense) —
+// lucide "crown", stroke/currentColor so it takes the parent text colour. Defined locally per the project's
+// existing convention (each consumer declares its own).
+const Crown = ( { s = 12 } ) => (
+	<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+		<path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z" />
+		<path d="M5 21h14" />
+	</svg>
+);
+
 // Redesigned sidebar menu item (T-040, DB-07, C-3, ADR-005), rebuilt on `tw-` utilities + the semantic
 // `--cmplz-*` tokens, matching docs/specs/001-settings-ui-redesign/design/shell-preview.html (the
 // per-section sub-menu with its step icons). The active rules in assets/css/admin/modules/wizard/menu.scss
@@ -67,9 +77,9 @@ const FEATURED_PILL = clsx(
 	"tw-ms-auto tw-bg-[color:var(--cmplz-success)] tw-text-[color:var(--cmplz-text-on-accent)]",
 	"tw-py-[1px] tw-px-[8px] tw-rounded-[999px] tw-text-[length:var(--cmplz-font-size-xs)] tw-font-bold"
 );
-// SHOWCASE-ONLY (design-dashboard-ctas): for a previewed NEW customer, the Consent Banner's look sections
-// read as premium-locked in the sub-menu — dimmed, non-navigable, with a lock glyph (paired with the Menu.js
-// upsell). Inert without a customer-state override, so the real menu is untouched. Remove with preview/.
+// SHOWCASE-ONLY (design-dashboard-ctas): for a previewed NEW / current-unauthenticated customer, the Consent
+// Banner's look sections read as premium-locked in the sub-menu — dimmed, non-navigable, with a crown (paired
+// with the Menu.js upsell). Inert without a customer-state override, so the real menu is untouched. Remove with preview/.
 const BANNER_LOCKED_IDS = [ 'appearance', 'colors', 'banner-texts' ];
 
 const useMenuItem = (menuItem, isMain) => {
@@ -131,11 +141,13 @@ const MenuItem = ({ index, menuItem, isMain }) => {
 		selectedMainMenuItem,
 		selectedSubMenuItem,
 	);
-	// SHOWCASE-ONLY: a previewed NEW customer sees the banner look sections as premium-locked — dimmed,
-	// non-navigable (href + submenu dropped) and flagged with a lock glyph. Inert without a state override.
+	// SHOWCASE-ONLY: a previewed NEW or CURRENT-UNAUTHENTICATED customer sees the banner look sections as
+	// premium-locked — dimmed, non-navigable (href + submenu dropped) and flagged with a crown. Inert
+	// without a state override.
+	const customerState = getCustomerState();
 	const locked = isMain
 		&& selectedMainMenuItem === 'banner'
-		&& getCustomerState() === 'new'
+		&& ( customerState === 'new' || customerState === 'unauthenticated' )
 		&& BANNER_LOCKED_IDS.includes(menuItem.id);
 	if (locked) {
 		delete attributes.href;
@@ -158,8 +170,8 @@ const MenuItem = ({ index, menuItem, isMain }) => {
             </span>
 					)}
 					{locked && (
-						<span className="tw-ms-auto tw-flex [&_svg]:tw-h-[12px] [&_svg]:tw-w-[12px]">
-							<Icon name="lock" size={12} color="grey" />
+						<span className="tw-ms-auto tw-flex tw-text-[color:var(--cmplz-accent-strong,_#1e73be)] [&_svg]:tw-h-[12px] [&_svg]:tw-w-[12px]">
+							<Crown s={12} />
 						</span>
 					)}
 				</a>
