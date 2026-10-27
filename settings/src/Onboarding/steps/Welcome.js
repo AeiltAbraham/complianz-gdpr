@@ -2,19 +2,22 @@ import { __ } from '@wordpress/i18n';
 import { useEffect } from '@wordpress/element';
 import { useNewOnboardingData } from "../NewOnboardingData";
 import OnboardingInput from '../components/Input';
+import PremiumLicense from '../components/PremiumLicense';
 import useFields from '../../Settings/Fields/FieldsData';
 import Placeholder from '../../Placeholder/Placeholder';
 
 // Per-audience intro copy — the seam for designing each onboarding apart (showcase). `needsEmail`
 // decides whether the email/verify input shows: new + unauthenticated users still have to verify the
-// domain, a current (authenticated) user does not. The variant is set from the ?cmplz_onboarding
-// override (OnboardingDevLauncher) and otherwise defaults to the real first-run 'new'.
+// domain, a current (authenticated) user does not. `showPremiumLicense` adds the premium-license
+// shortcut (new users only). The variant is set from the ?cmplz_onboarding override
+// (OnboardingDevLauncher) and otherwise defaults to the real first-run 'new'.
 const VARIANT_INTRO = {
 	new: {
 		needsEmail: true,
+		showPremiumLicense: true,
 		paragraphs: [
-			__( "In the latest release of Complianz, we introduce our newest Website Scan. This scan will not only retrieve services and cookies but also help you configure our plugin and keep you up-to-date if changes are made that might need legal changes.", "complianz-gdpr" ),
-			__( "To use our newest Website Scan we need to verify your website and confirm your access by email. Register below and get the latest from Complianz!", "complianz-gdpr" ),
+			__( "We’ve enabled a local banner. To use our automated services you need to authenticate your domain.", "complianz-gdpr" ),
+			__( "Without authentication this plugin is limited and needs manual configuration.", "complianz-gdpr" ),
 		],
 	},
 	unauthenticated: {
@@ -88,6 +91,7 @@ const Welcome = () => {
 							error={emailError}
 						/>
 					) }
+					{ intro.showPremiumLicense && <PremiumLicense /> }
 				</>
 			}
 		</div>
