@@ -3,6 +3,13 @@ import { create } from 'zustand';
 import { __ } from '@wordpress/i18n';
 
 const steps = {
+	serviceDisruption: { // unauthenticated audience only — precedes the default onboarding (showcase)
+		title: __("Your Complianz services are paused", "complianz-gdpr"),
+		prevButton: __("Not now", "complianz-gdpr"),
+		nextButton: __("Authenticate now", "complianz-gdpr"),
+		prevButtonGoTo: null, // on Not now, dismiss the onboarding (handled in goToPrevStep)
+		nextButtonGoTo: 'welcome' // on Authenticate now, continue into the normal verify flow
+	},
 	welcome: { // thanks for updating
 		title: __("Welcome to Complianz", "complianz-gdpr"),
 		prevButton: __("No, Thanks", "complianz-gdpr"),
@@ -42,6 +49,7 @@ const steps = {
 }
 
 const stepDismissOnPrev = {
+	serviceDisruption: null, // "Not now" closes the modal directly (see goToPrevStep), no skip call
 	welcome:    'websitescan',
 	terms:      'websitescan',
 	newsletter: 'newsletter',
@@ -125,6 +133,7 @@ const useNewOnboardingData = create((set, get) => ({
 	// audience. Defaults to 'new' so the real first-run auto-show behaves as before.
 	variant: 'new',
 	setVariant: (variant) => set({ variant }),
+	setCurrentStep: (currentStep) => set({ currentStep }),
 	stepProcessing: false,
 	isLoading: false,
 	isContentLoading: true,
@@ -227,15 +236,22 @@ const useNewOnboardingData = create((set, get) => ({
 	},
 	//
 	// buttons actions
-	goToPrevStep: () => set((state) => { // prev step or skip
-		const newStep = steps[state.currentStep]?.prevButtonGoTo ?? null;
-		if (!newStep) return state;
+	goToPrevStep: () => { // prev step or skip
+		// The service-disruption notice has no previous step — "Not now" dismisses the onboarding.
+		if (get().currentStep === 'serviceDisruption') {
+			get().closeModal(true);
+			return;
+		}
+		set((state) => {
+			const newStep = steps[state.currentStep]?.prevButtonGoTo ?? null;
+			if (!newStep) return state;
 
-		const dismissStep = stepDismissOnPrev[state.currentStep];
-		if (dismissStep) get().skipStep(dismissStep);
+			const dismissStep = stepDismissOnPrev[state.currentStep];
+			if (dismissStep) get().skipStep(dismissStep);
 
-		return { ...state, currentStep: newStep, stepProcessing: false };
-	}),
+			return { ...state, currentStep: newStep, stepProcessing: false };
+		});
+	},
 	goToNextStep: () => set(async (state) => {
 		let newStep = steps[state.currentStep].nextButtonGoTo;
 

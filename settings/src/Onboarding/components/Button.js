@@ -22,7 +22,10 @@ const OnboardingButton = ({ type, ...otherProps }) => {
 		currentStep
 	} = useNewOnboardingData();
 
-	const [prevButtonLabel] = useState(steps[currentStep].prevButton);
+	// Derive the prev label directly so it tracks the current step (the button stays mounted across
+	// steps, so a one-time useState would pin it to the first step's label — wrong once a step is
+	// inserted ahead of the flow, e.g. the unauthenticated service-disruption notice).
+	const prevButtonLabel = steps[currentStep].prevButton;
 	const [nextButtonLabel, setNextButtonLabel] = useState(steps[currentStep].nextButton);
 	const [buttonDisabledStatus, setButtonDisabledStatus] = useState(false);
 

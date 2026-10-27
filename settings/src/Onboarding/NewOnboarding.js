@@ -1,8 +1,9 @@
-import { useEffect, useState } from "@wordpress/element";
+import { useEffect, useRef, useState } from "@wordpress/element";
 import useFields from "../Settings/Fields/FieldsData";
 import { useNewOnboardingData, steps } from "./NewOnboardingData"
 import { OnboardingModalClose } from "./components/Close"
 import OnboardingButton from './components/Button';
+import ServiceDisruption from './steps/ServiceDisruption';
 import Welcome from './steps/Welcome';
 import Terms from './steps/Terms';
 import Newsletter from './steps/Newsletter';
@@ -37,6 +38,7 @@ const NewOnboarding = () => {
 		closeModal,
 		isContentLoading,
 		setVariant,
+		setCurrentStep,
 	} = useNewOnboardingData();
 
 	const {
@@ -45,6 +47,8 @@ const NewOnboarding = () => {
 	} = useFields();
 
 	const [showModal, setShowModal] = useState(false);
+	// Guards the one-time audience/starting-step init so the effect re-running never resets navigation.
+	const didInit = useRef(false);
 
 	// This useEffect checks if the wscClientId and wscClientSecret exist.
 	// If they don't exist, it shows the modal. Otherwise, it closes/reset the modal.
@@ -60,25 +64,38 @@ const NewOnboarding = () => {
 		// Showcase dev override (design-dashboard-ctas): ?cmplz_onboarding=new|current|unauthenticated
 		// force-opens the modal in that audience variant regardless of the real auth/dismissed state —
 		// a VISUAL override only, the database flags are left untouched. Driven by OnboardingDevLauncher.
+		// The unauthenticated audience gets an extra service-disruption step before the normal flow.
 		const variantParam = new URLSearchParams(window.location.search).get('cmplz_onboarding');
+
+		// init() sets the audience + starting step exactly once, so a later effect re-run (e.g. a field
+		// refresh) can keep syncing showModal without rewinding the user to the first step.
+		const init = (variant) => {
+			if (didInit.current) return;
+			didInit.current = true;
+			setVariant(variant);
+			if (variant === 'unauthenticated') {
+				setCurrentStep('serviceDisruption');
+			}
+		};
+
 		if (['new', 'current', 'unauthenticated'].includes(variantParam)) {
-			setVariant(variantParam);
+			init(variantParam);
 			setShowModal(true);
 			return;
 		}
 
 		if (!wscClientId || !wscClientSecret) {
 			// Real first-run / not-yet-authenticated state.
-			setVariant('new');
+			init('new');
 			setShowModal(true);
 		} else if (isForcedModal) {
-			setVariant('current');
+			init('current');
 			setShowModal(true);
 		} else {
 			// closeModal change the state and remove websitescan from url
 			closeModal();
 		}
-	}, [fieldsLoaded, closeModal, getFieldValue, setShowModal, setVariant]);
+	}, [fieldsLoaded, closeModal, getFieldValue, setShowModal, setVariant, setCurrentStep]);
 
 	if (!isModalOpen || !showModal) return null;
 
@@ -103,6 +120,7 @@ const NewOnboarding = () => {
 				</div>
 
 				<div className="tw-relative tw-text-[0.8125rem]">
+					{currentStep === 'serviceDisruption' && <ServiceDisruption />}
 					{currentStep === 'welcome' && <Welcome />}
 					{currentStep === 'terms' && <Terms />}
 					{currentStep === 'newsletter' && <Newsletter />}
