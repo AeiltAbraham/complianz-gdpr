@@ -36,20 +36,10 @@ const steps = {
 		prevButtonGoTo: 'plugins', // on Skip, go to plugins step
 		nextButtonGoTo: 'plugins' // on Continue, newsletter sign up, go to plugins step
 	},
-	plugins: { // list plugins with checkbox
-		title: __("Install quickly for free", "complianz-gdpr"),
-		prevButton: __("Skip", "complianz-gdpr"),
-		nextButton: __("Continue", "complianz-gdpr"), // wait the plugin installation, then go to thankyou step
-		nextButtonSecondary: __("Install", "complianz-gdpr"), // wait the plugin installation, then go to thankyou step
-		nextButtonThird: __("Installing ...", "complianz-gdpr"), // wait the plugin installation, then go to thankyou step
-		prevButtonGoTo: 'thankYou', // on Skip, go to thankyou step
-		nextButtonGoTo: 'thankYou' // on Install, wait the installation, then change button to thankYou step
-	},
-	thankYou: {
-		title: __("You’re almost there...", "complianz-gdpr"),
-		nextButton: __("Close", "complianz-gdpr"),
-		nextButtonGoTo: false // on Install, wait the installation, then change button to thankYou step
-		//  clsoe the onboarding
+	plugins: { // final step — "you're all set, start the wizard" (plugin install removed)
+		title: __("You’re all set", "complianz-gdpr"),
+		nextButton: __("Start the Wizard", "complianz-gdpr"),
+		nextButtonGoTo: false // terminal — closes the onboarding and opens the wizard (see goToNextStep)
 	}
 }
 
@@ -59,7 +49,6 @@ const stepDismissOnPrev = {
 	terms:      'websitescan',
 	newsletter: 'newsletter',
 	plugins:    null,
-	thankYou:   null,
 };
 
 const suggestedPlugins = [
@@ -305,34 +294,13 @@ const useNewOnboardingData = create((set, get) => ({
 					set({ isLoading: false });
 
 					break;
-				case 'plugins':
-					const isEnabled = get().enablePluginInstallation;
-					if (!isEnabled) break;
-
-					const newPlugins = get().plugins.filter((p) => p.toProcess);
-					if (newPlugins.length <= 0) break;
-
-					const defaultPlugins = get().suggestedPlugins;
-
-					set({ isInstalling: true });
-					for (const plugin of newPlugins) {
-						if (plugin.status === 'not-installed') {
-							// await installPlugin(defaultPlugins, plugin, set);
-							await handlePluginInstallation(defaultPlugins, 'install_plugin', plugin, set);
-						} else if (plugin.status === 'installed') {
-							// await activatePlugin(defaultPlugins, plugin, set);
-							await handlePluginInstallation(defaultPlugins, 'activate_plugin', plugin, set);
-						}
-					}
-					set({ isInstalling: false, stepProcessing: false, enablePluginInstallation: false });
-
-					return;
-				// break;
-				case 'thankYou':
-					set({ isOnboardingComplete: true });
-					get().closeModal();
-					break;
-				default:
+					case 'plugins':
+						// Final step — "Start the Wizard" ends onboarding and opens the wizard.
+						set({ isOnboardingComplete: true });
+						get().closeModal();
+						window.location.hash = '#wizard';
+						return;
+					default:
 					break;
 			}
 			set({ currentStep: newStep, stepProcessing: false, });

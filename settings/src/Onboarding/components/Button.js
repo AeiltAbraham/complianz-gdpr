@@ -16,7 +16,6 @@ const OnboardingButton = ({ type, ...otherProps }) => {
 		goToPrevStep,
 		nextStepDisabled,
 		prevStepDisabled,
-		enablePluginInstallation,
 		isInstalling,
 		isLoading,
 		currentStep
@@ -30,18 +29,8 @@ const OnboardingButton = ({ type, ...otherProps }) => {
 	const [buttonDisabledStatus, setButtonDisabledStatus] = useState(false);
 
 	useEffect(() => {
-		if (currentStep === 'plugins') {
-			if (isInstalling) {
-				setNextButtonLabel(steps[currentStep].nextButtonThird); // installing ...
-			} else if (enablePluginInstallation) {
-				setNextButtonLabel(steps[currentStep].nextButtonSecondary); // install
-			} else {
-				setNextButtonLabel(steps[currentStep].nextButton); // Continue
-			}
-		} else {
-			setNextButtonLabel(steps[currentStep].nextButton);
-		}
-	}, [currentStep, enablePluginInstallation, isInstalling]);
+		setNextButtonLabel(steps[currentStep].nextButton);
+	}, [currentStep]);
 
 	// disable button on step processing or when input fields are not valid
 	useEffect(() => {

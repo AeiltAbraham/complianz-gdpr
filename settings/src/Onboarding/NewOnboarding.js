@@ -10,7 +10,6 @@ import Welcome from './steps/Welcome';
 import Terms from './steps/Terms';
 import Newsletter from './steps/Newsletter';
 import Plugins from './steps/Plugins';
-import ThankYou from './steps/ThankYou';
 import {
 	Dialog,
 	DialogContent,
@@ -132,11 +131,10 @@ const NewOnboarding = () => {
 					{currentStep === 'terms' && <Terms />}
 					{currentStep === 'newsletter' && <Newsletter />}
 					{currentStep === 'plugins' && <Plugins />}
-					{currentStep === 'thankYou' && <ThankYou />}
 				</div>
 
 				<div className="tw-flex tw-items-center tw-justify-between tw-gap-[var(--cmplz-space-m)] tw-border-t tw-border-solid tw-border-[color:var(--cmplz-border)] tw-pt-[var(--cmplz-space-m)] max-[576px]:tw-flex-col-reverse">
-					{currentStep !== 'thankYou' && currentStep !== 'bannerUpdate' && <OnboardingButton type="prev" />}
+					{currentStep !== 'plugins' && currentStep !== 'bannerUpdate' && <OnboardingButton type="prev" />}
 					{currentStep === 'bannerUpdate' && (
 						<a
 							href="https://complianz.io/docs"

@@ -1,7 +1,12 @@
-import { useEffect } from '@wordpress/element';
 import { useNewOnboardingData } from "../NewOnboardingData";
 import { __ } from '@wordpress/i18n';
-import CheckBox from '../components/CheckBox';
+
+/**
+ * Plugins — the final onboarding step (showcase). The "install other plugins for free" picker has been
+ * removed; instead this is the hand-off screen: confirm the auth email is on its way, point the user to
+ * the Wizard for their first configuration (with a help article), and reassure them Complianz runs fully
+ * automated afterwards. The footer's "Start the Wizard" closes the modal and opens the wizard.
+ */
 
 const MailIcon = () => (
 	<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="tw-shrink-0">
@@ -10,38 +15,12 @@ const MailIcon = () => (
 	</svg>
 );
 
+// First-configuration help article (showcase placeholder — point at the real getting-started doc).
+const ARTICLE_URL = 'https://complianz.io/docs';
+const linkCls = 'tw-cursor-pointer tw-text-[color:var(--cmplz-accent-strong,_#1e73be)] tw-underline hover:tw-text-[#17608f]';
+
 const Plugins = () => {
-	const { plugins, fetchPlugins, setPlugins, setEnablePluginInstallation, setIsContentLoading, enableWsc } = useNewOnboardingData();
-
-	useEffect(() => {
-		const loadPlugins = async () => {
-			try {
-				setIsContentLoading(true);
-				await fetchPlugins();
-			} catch (error) {
-				console.log(error);
-
-			} finally {
-				setIsContentLoading(false);
-			}
-		}
-		loadPlugins();
-	}, [fetchPlugins]);
-
-	const handleChange = (plugin, isChecked) => {
-		// checkbox change update checked and toProcess
-		const updatedPlugins = plugins.map(p =>
-			p.slug === plugin.slug ? {
-				...p,
-				checked: isChecked,
-				toProcess: isChecked,
-			} : p
-		);
-		setPlugins(updatedPlugins);
-
-		const someToProcess = updatedPlugins.some(p => p.toProcess); // bool
-		setEnablePluginInstallation(someToProcess);
-	};
+	const { enableWsc } = useNewOnboardingData();
 
 	return (
 		<div className="tw-flex tw-flex-col tw-gap-[var(--cmplz-space-m)]">
@@ -53,11 +32,18 @@ const Plugins = () => {
 					</span>
 				</div>
 			) }
-			<p>{__("You want more Really Simple Plugins? Select below plugins you'd like to install for free! It only takes 10 seconds..", "complianz-gdpr")}</p>
-			{plugins && plugins.map((plugin, i) => <CheckBox key={plugin.slug} plugin={plugin} handleChange={handleChange} />)}
+			<p className="tw-m-0">
+				{ __( "You're all set! You can now exit this onboarding and start the Wizard to complete your first configuration.", 'complianz-gdpr' ) }
+			</p>
+			<p className="tw-m-0">
+				{ __( 'Need a hand with the first steps?', 'complianz-gdpr' ) }{ ' ' }
+				<a href={ ARTICLE_URL } target="_blank" rel="noopener noreferrer" className={ linkCls }>
+					{ __( 'Read our setup guide', 'complianz-gdpr' ) }
+				</a>.{ ' ' }
+				{ __( 'After that, Complianz runs fully automated.', 'complianz-gdpr' ) }
+			</p>
 		</div>
 	);
 };
 
 export default Plugins;
-
