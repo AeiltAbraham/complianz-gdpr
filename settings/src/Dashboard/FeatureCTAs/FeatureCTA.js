@@ -107,13 +107,21 @@ const MODALS = {
 	},
 };
 
-// Metric chips for the premium CTA card (showcase figures) — same icon+label treatment as the
-// Progress block legend. The posts counter is 'warning'-toned to flag it is near the free limit.
+const InfoIcon = (
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="tw-shrink-0">
+		<circle cx="12" cy="12" r="10" />
+		<path d="M12 16v-4" />
+		<path d="M12 8h.01" />
+	</svg>
+);
+
+// Usage metrics for the premium CTA card (showcase figures), stacked label/value in a panel. The
+// posts counter is 'warning'-toned to flag it is near the free limit.
 const METRICS = {
 	"cta-premium": [
-		{ icon: DocIcon, text: __( '43/50 posts', 'complianz-gdpr' ), tone: 'warning' },
-		{ icon: ScanIcon, text: __( 'Last scan: yesterday', 'complianz-gdpr' ), tone: null },
-		{ icon: SyncIcon, text: __( 'Last sync: yesterday', 'complianz-gdpr' ), tone: null },
+		{ icon: DocIcon, label: __( 'Posts', 'complianz-gdpr' ), value: '43/50', tone: 'warning' },
+		{ icon: ScanIcon, label: __( 'Last scan', 'complianz-gdpr' ), value: __( 'Yesterday', 'complianz-gdpr' ), tone: null },
+		{ icon: SyncIcon, label: __( 'Last sync', 'complianz-gdpr' ), value: __( 'Yesterday', 'complianz-gdpr' ), tone: null },
 	],
 };
 
@@ -135,17 +143,31 @@ const FeatureCTA = ( { block } ) => {
 		<Dialog>
 			<div className={cardCls}>
 				<div className={badge}>{ icon }</div>
-				<div className="tw-flex tw-grow tw-flex-col tw-gap-[var(--cmplz-space-2xs,_4px)]">
+				<div className="tw-flex tw-w-full tw-grow tw-flex-col tw-gap-[var(--cmplz-space-2xs,_4px)]">
 					<h4 className={titleCls}>{ c.title }</h4>
 					<p className={descCls}>{ c.desc }</p>
 					{ metrics && (
-						<div className="tw-mt-[var(--cmplz-space-s,_12px)] tw-flex tw-flex-wrap tw-gap-x-[var(--cmplz-space-l,_24px)] tw-gap-y-[var(--cmplz-space-xs,_8px)]">
-							{ metrics.map( ( mt, i ) => (
-								<div key={i} className="tw-flex tw-items-center tw-gap-[6px] tw-text-[13px]">
-									<span className={ mt.tone === 'warning' ? 'tw-shrink-0 tw-text-[#b45309]' : 'tw-shrink-0 tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]' }>{ mt.icon }</span>
-									<span className={ mt.tone === 'warning' ? 'tw-font-semibold tw-text-[#b45309]' : 'tw-text-[color:var(--cmplz-text,_#0f172a)]' }>{ mt.text }</span>
-								</div>
-							) ) }
+						<div className="tw-mt-[var(--cmplz-space-s,_12px)] tw-flex tw-flex-col tw-gap-[var(--cmplz-space-s,_12px)]">
+							{ /* Usage panel — metrics stacked, label on the left, value on the right. */ }
+							<div className="tw-flex tw-flex-col tw-gap-[var(--cmplz-space-xs,_8px)] tw-rounded-[var(--cmplz-radius-s,_8px)] tw-border tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)] tw-bg-[var(--cmplz-surface-sunken,_#f1f5f9)] tw-p-[var(--cmplz-space-m,_16px)]">
+								{ metrics.map( ( mt, i ) => (
+									<div key={i} className="tw-flex tw-items-center tw-justify-between tw-gap-[var(--cmplz-space-m,_16px)] tw-text-[13px]">
+										<span className="tw-flex tw-items-center tw-gap-[8px] tw-text-[color:var(--cmplz-text-muted,_#475569)]">
+											<span className={ mt.tone === 'warning' ? 'tw-shrink-0 tw-text-[#b45309]' : 'tw-shrink-0 tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]' }>{ mt.icon }</span>
+											{ mt.label }
+										</span>
+										<span className={ mt.tone === 'warning' ? 'tw-font-semibold tw-text-[#b45309]' : 'tw-font-semibold tw-text-[color:var(--cmplz-text,_#0f172a)]' }>{ mt.value }</span>
+									</div>
+								) ) }
+							</div>
+							{ /* Separate free-plan CTA notice. */ }
+							<div className="tw-flex tw-items-start tw-gap-[var(--cmplz-space-s,_12px)] tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)] tw-px-[var(--cmplz-space-m,_16px)] tw-py-[var(--cmplz-space-s,_12px)] tw-text-[13px]">
+								<span className="tw-mt-[1px] tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]">{ InfoIcon }</span>
+								<span className="tw-text-[color:var(--cmplz-text,_#0f172a)]">
+									<strong>{ __( "You're on the Free plan.", 'complianz-gdpr' ) }</strong>{ ' ' }
+									{ __( 'Services are limited above 50 posts — upgrade to keep them running.', 'complianz-gdpr' ) }
+								</span>
+							</div>
 						</div>
 					) }
 				</div>
