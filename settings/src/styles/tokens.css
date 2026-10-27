@@ -77,6 +77,7 @@
   --cmplz-space-s: 12px;
   --cmplz-space-m: 16px;
   --cmplz-space-l: 24px;
+  --cmplz-space-xl: 32px;
 
   /* Typography (base; the scale below adds the heading/caption steps) */
   --cmplz-font-size: 0.875rem;
