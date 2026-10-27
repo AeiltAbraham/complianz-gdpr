@@ -17,6 +17,7 @@ const IconHtml = React.forwardRef(function IconHtml(props, ref){
 		'dark-blue': 'var(--cmplz-accent-strong, #1e73be)',
 		'yellow': 'var(--cmplz-warning, #eab308)',
 		'orange': 'var(--cmplz-warning, #eab308)',
+		'orange-strong': '#b45309',
 		'red': 'var(--cmplz-danger, #d7263d)',
 		'grey': 'var(--cmplz-text-muted, #475569)',
 	};

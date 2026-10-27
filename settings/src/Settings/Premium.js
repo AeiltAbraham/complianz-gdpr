@@ -74,11 +74,12 @@ const DEFAULT_UPSELL = {
 const calloutCls = clsx(
 	'cmplz-premium-callout tw-flex tw-flex-wrap tw-items-center tw-gap-[var(--cmplz-space-s,_12px)]',
 	'tw-my-[var(--cmplz-space-s,_12px)] tw-py-[var(--cmplz-space-s,_12px)] tw-px-[var(--cmplz-space-m,_16px)]',
-	'tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)]',
-	'tw-border tw-border-solid tw-border-[color:var(--cmplz-accent-strong,_#1e73be)]'
+	'tw-rounded-[var(--cmplz-radius,_12px)] tw-bg-[var(--cmplz-surface,_#ffffff)]',
+	'tw-border tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)]',
+	'tw-shadow-[0_1px_3px_0_rgba(15,23,42,0.10)]'
 );
-const calloutIconCls = 'tw-flex tw-shrink-0 tw-items-center tw-justify-center tw-w-[32px] tw-h-[32px] tw-rounded-[var(--cmplz-radius-field,_6px)] tw-bg-[var(--cmplz-accent-strong,_#1e73be)] tw-text-[color:var(--cmplz-text-on-accent,_#ffffff)]';
-const hookCls = 'tw-grow tw-text-[length:var(--cmplz-font-size-sm,_0.8125rem)] tw-font-semibold tw-text-[color:var(--cmplz-accent-on-subtle,_#17608f)]';
+const calloutIconCls = 'tw-flex tw-shrink-0 tw-items-center tw-justify-center tw-w-[32px] tw-h-[32px] tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)] tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]';
+const hookCls = 'tw-grow tw-text-[length:var(--cmplz-font-size-sm,_0.8125rem)] tw-font-semibold tw-text-[color:var(--cmplz-text,_#0f172a)]';
 const ctaCls = clsx(
 	'cmplz-premium-cta tw-inline-flex tw-shrink-0 tw-items-center tw-gap-[6px] tw-whitespace-nowrap tw-cursor-pointer',
 	'tw-m-0 tw-rounded-[var(--cmplz-radius-field,_6px)] tw-border-0 tw-py-[6px] tw-px-[14px]',
