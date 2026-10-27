@@ -68,7 +68,7 @@ const DEFAULT_UPSELL = {
 };
 
 const triggerCls = clsx(
-	'cmplz-premium-cta tw-inline-flex tw-items-center tw-gap-[6px] tw-cursor-pointer',
+	'cmplz-premium-cta tw-inline-flex tw-shrink-0 tw-items-center tw-gap-[6px] tw-whitespace-nowrap tw-cursor-pointer',
 	'tw-m-0 tw-rounded-[999px] tw-border-0 tw-py-[5px] tw-px-[12px]',
 	'tw-bg-[var(--cmplz-accent-strong,_#1e73be)] tw-text-[color:var(--cmplz-text-on-accent,_#ffffff)]',
 	'tw-text-[length:var(--cmplz-font-size-sm,_0.8125rem)] tw-font-semibold tw-leading-none tw-no-underline',
