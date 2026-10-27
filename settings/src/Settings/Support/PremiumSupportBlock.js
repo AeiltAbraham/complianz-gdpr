@@ -1,0 +1,85 @@
+import { __ } from '@wordpress/i18n';
+import { clsx } from '../../components/ui/cx';
+
+// Premium Support upsell block (Tools > Support). Replaces the generic transparent locked-scrim + CTA overlay
+// that SettingsGroup draws over premium groups with a clear, self-standing block: crown, heading, the value
+// hook, benefits and one unambiguous CTA. Built on the C-2 design system (semantic --cmplz-* tokens with
+// literal fallbacks, so it holds up markerless too). Shown to free users in place of the (unusable) support
+// form; premium users with an invalid license keep the original check-license scrim (see SettingsGroup).
+
+// The premium crown + check used elsewhere (Settings/Premium.js, Dashboard/FeatureCTAs) — lucide, stroke/
+// currentColor so they take the parent text colour. Defined locally per the project's existing convention.
+const Crown = ( { s = 22 } ) => (
+	<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+		<path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z" />
+		<path d="M5 21h14" />
+	</svg>
+);
+const Check = () => (
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+		<path d="M20 6 9 17l-5-5" />
+	</svg>
+);
+
+const BENEFITS = [
+	__( 'Priority support, direct from the Complianz team', 'complianz-gdpr' ),
+	__( 'Faster response times when you need help most', 'complianz-gdpr' ),
+	__( 'Hands-on help with setup, integrations and region-specific compliance', 'complianz-gdpr' ),
+];
+
+const blockCls = clsx(
+	'cmplz-premium-support tw-flex tw-flex-col tw-items-start tw-gap-[var(--cmplz-space-s,_12px)]',
+	'tw-mx-[var(--cmplz-space-l,_24px)] tw-p-[var(--cmplz-space-l,_24px)]',
+	'tw-rounded-[var(--cmplz-radius,_12px)] tw-border tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)]',
+	'tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)]'
+);
+const iconCls = clsx(
+	'tw-flex tw-items-center tw-justify-center tw-w-[40px] tw-h-[40px] tw-shrink-0',
+	'tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-surface,_#ffffff)] tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]'
+);
+const headingCls = 'tw-m-0 tw-text-[length:var(--cmplz-font-size-lg,_1rem)] tw-font-bold tw-text-[color:var(--cmplz-text,_#0f172a)]';
+const textCls = 'tw-m-0 tw-text-[length:var(--cmplz-font-size-sm,_0.8125rem)] tw-text-[color:var(--cmplz-text-muted,_#475569)]';
+const listCls = 'tw-m-0 tw-p-0 tw-list-none tw-flex tw-flex-col tw-gap-[var(--cmplz-space-xs,_8px)]';
+const liCls = clsx(
+	'tw-flex tw-items-center tw-gap-[var(--cmplz-space-xs,_8px)]',
+	'tw-text-[length:var(--cmplz-font-size-sm,_0.8125rem)] tw-text-[color:var(--cmplz-text,_#0f172a)]',
+	'[&_svg]:tw-shrink-0 [&_svg]:tw-text-[color:var(--cmplz-success,_#1f7a34)]'
+);
+const ctaCls = clsx(
+	'cmplz-premium-support-cta tw-inline-flex tw-items-center tw-gap-[6px] tw-cursor-pointer tw-no-underline',
+	'tw-mt-[var(--cmplz-space-xs,_8px)] tw-rounded-[var(--cmplz-radius-field,_6px)] tw-border-0',
+	'tw-py-[10px] tw-px-[20px] tw-bg-[var(--cmplz-accent-strong,_#1e73be)] tw-text-[color:var(--cmplz-text-on-accent,_#ffffff)]',
+	'tw-text-[length:var(--cmplz-font-size-sm,_0.8125rem)] tw-font-semibold tw-leading-none',
+	'tw-transition-colors tw-duration-[var(--cmplz-duration,_200ms)] hover:tw-bg-[#17608f]',
+	'focus-visible:tw-outline focus-visible:tw-outline-2 focus-visible:tw-outline-offset-1 focus-visible:tw-outline-[color:var(--cmplz-accent-strong,_#1e73be)]'
+);
+const altCls = clsx(
+	'tw-m-0 tw-text-[length:var(--cmplz-font-size-xs,_0.6875rem)] tw-text-[color:var(--cmplz-text-muted,_#475569)]',
+	'[&_a]:tw-text-[color:var(--cmplz-accent-on-subtle,_#17608f)]'
+);
+
+const PremiumSupportBlock = ( { upgradeUrl = 'https://complianz.io/pricing/' } ) => (
+	<div className={ blockCls }>
+		<span className={ iconCls }><Crown s={ 22 } /></span>
+		<h4 className={ headingCls }>{ __( 'Premium Support', 'complianz-gdpr' ) }</h4>
+		<p className={ textCls }>
+			{ __( 'Get priority support from the Complianz team with a Premium license — the fastest way to a reliable answer.', 'complianz-gdpr' ) }
+		</p>
+		<ul className={ listCls }>
+			{ BENEFITS.map( ( benefit, i ) => (
+				<li key={ i } className={ liCls }><Check />{ benefit }</li>
+			) ) }
+		</ul>
+		<a className={ ctaCls } href={ upgradeUrl } target="_blank" rel="noopener noreferrer">
+			<Crown s={ 16 } />{ __( 'Get Premium', 'complianz-gdpr' ) }
+		</a>
+		<p className={ altCls }>
+			{ __( 'Just need a quick answer? Use our', 'complianz-gdpr' ) }{ ' ' }
+			<a href="https://complianz.io/support" target="_blank" rel="noopener noreferrer">
+				{ __( 'free online support form', 'complianz-gdpr' ) }
+			</a>.
+		</p>
+	</div>
+);
+
+export default PremiumSupportBlock;

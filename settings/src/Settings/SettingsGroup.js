@@ -8,6 +8,7 @@ import UseBannerData from "./CookieBannerPreview/CookieBannerData";
 import ErrorBoundary from "../utils/ErrorBoundary";
 import DOMPurify from "dompurify";
 import { clsx } from "../components/ui/cx";
+import PremiumSupportBlock from "./Support/PremiumSupportBlock";
 
 // Settings-screen CARD frame (T-046, DB-07/DB-08; Stage-H section 1b). Migrated off the retired
 // assets/css/admin/modules/wizard.scss (`.cmplz-wizard-settings .cmplz-grid-item*` layer) + the T-045
@@ -145,6 +146,11 @@ const SettingsGroup = (props) => {
 	let helplinkText = activeGroup.helpLink_text ? activeGroup.helpLink_text : __("Instructions","complianz-gdpr");
 	let disabledClass = disabled ? 'cmplz-disabled' : '';
 
+	// Tools > Support: for free users, replace the generic transparent locked-scrim + CTA overlay drawn over
+	// the (unusable) support form with a clear, self-standing Premium Support block + CTA. Premium users with
+	// an invalid license keep the original check-license scrim below.
+	const premiumSupportLocked = disabled && !cmplz_settings.is_premium && activeGroup.id === 'premiumsupport';
+
 	//if all fields are conditionally disabled, hide the entire group
 	if ( selectedFields.filter((field)=> ( field.conditionallyDisabled && field.conditionallyDisabled===true ) || (field.visible && field.visible===false) ).length===selectedFields.length ) {
 		return null;
@@ -175,13 +181,19 @@ const SettingsGroup = (props) => {
 				</div>}
 			</div>}
 			<div className={clsx("cmplz-grid-item-content", contentCls)}>
-				{activeGroup.intro &&
-					<div className={clsx("cmplz-settings-block-intro", introCls)} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize( activeGroup.intro ) } }></div>} {/* nosemgrep: react-dangerouslysetinnerhtml */}
-				{Field && selectedFields.map((field, i) =>
-					<ErrorBoundary key={"field-"+field.id} fallback={"Could not load field "+field.id}><Field key={field.id} field={field} highLightField={highLightField} firstPremiumId={firstPremiumId} /></ErrorBoundary>)
-				}
+				{premiumSupportLocked ? (
+					<PremiumSupportBlock upgradeUrl={upgrade} />
+				) : (
+					<>
+						{activeGroup.intro &&
+							<div className={clsx("cmplz-settings-block-intro", introCls)} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize( activeGroup.intro ) } }></div>} {/* nosemgrep: react-dangerouslysetinnerhtml */}
+						{Field && selectedFields.map((field, i) =>
+							<ErrorBoundary key={"field-"+field.id} fallback={"Could not load field "+field.id}><Field key={field.id} field={field} highLightField={highLightField} firstPremiumId={firstPremiumId} /></ErrorBoundary>)
+						}
+					</>
+				)}
 			</div>
-			{ disabled && <div className={clsx("cmplz-locked", lockedScrimCls)}>
+			{ disabled && !premiumSupportLocked && <div className={clsx("cmplz-locked", lockedScrimCls)}>
 				<div className={clsx("cmplz-locked-overlay", lockedOverlayCls)}>
 					<span className="cmplz-task-status cmplz-premium">{__("Upgrade","complianz-gdpr")}</span>
 					<span>
