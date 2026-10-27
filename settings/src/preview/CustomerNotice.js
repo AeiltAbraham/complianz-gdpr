@@ -35,10 +35,10 @@ const NOTICES = {
 };
 
 const CustomerNotice = () => {
-	const state =
-		getCustomerState() ||
-		( window.cmplz_settings && window.cmplz_settings.wsc_is_authenticated ? 'current' : 'unauthenticated' );
-	const n = NOTICES[ state ];
+	// Only render while a customer state is actively being previewed — no notice on the real/default
+	// banner page (no auth-flag fallback).
+	const state = getCustomerState();
+	const n = state && NOTICES[ state ];
 	if ( ! n ) {
 		return null;
 	}
