@@ -57,12 +57,17 @@ const BannerUpdate = () => {
 						{ __( 'You have', 'complianz-gdpr' ) }{ ' ' }
 						<strong>{ POST_COUNT } { __( 'posts', 'complianz-gdpr' ) }</strong>,{ ' ' }
 						{ __( 'so your services will be', 'complianz-gdpr' ) }{ ' ' }
-						<strong>{ __( 'suspended in', 'complianz-gdpr' ) } { DAYS_LEFT } { __( 'days', 'complianz-gdpr' ) }</strong>{ ' ' }
+						<strong>{ __( 'limited in', 'complianz-gdpr' ) } { DAYS_LEFT } { __( 'days', 'complianz-gdpr' ) }</strong>{ ' ' }
 						{ __( 'without a premium license.', 'complianz-gdpr' ) }
 					</span>
-					<a href={ upgradeUrl } target="_blank" rel="noopener noreferrer" className={ primaryLinkButtonCls }>
-						{ __( 'Upgrade to Premium', 'complianz-gdpr' ) }
-					</a>
+					<div className="tw-flex tw-flex-wrap tw-items-center tw-gap-[var(--cmplz-space-s,_12px)]">
+						<a href={ upgradeUrl } target="_blank" rel="noopener noreferrer" className={ primaryLinkButtonCls }>
+							{ __( 'Upgrade to Premium', 'complianz-gdpr' ) }
+						</a>
+						<span className="tw-inline-flex tw-items-center tw-rounded-full tw-bg-[var(--cmplz-success,_#1f7a34)] tw-px-[10px] tw-py-[3px] tw-text-[0.6875rem] tw-font-bold tw-uppercase tw-tracking-[0.04em] tw-text-[#ffffff]">
+							{ __( '50% off', 'complianz-gdpr' ) }
+						</span>
+					</div>
 				</div>
 			</div>
 

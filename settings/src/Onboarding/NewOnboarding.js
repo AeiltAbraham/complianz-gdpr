@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "@wordpress/element";
+import { __ } from "@wordpress/i18n";
 import useFields from "../Settings/Fields/FieldsData";
 import { useNewOnboardingData, steps } from "./NewOnboardingData"
 import { OnboardingModalClose } from "./components/Close"
@@ -15,6 +16,7 @@ import {
 	DialogContent,
 	DialogTitle,
 } from "../components/ui/Dialog";
+import { secondaryLinkButtonCls } from "../components/ui/downloadLink";
 
 /**
  * NewOnboarding — the website-scan onboarding/signup modal, lazy-loaded by Page.js when the URL
@@ -135,6 +137,16 @@ const NewOnboarding = () => {
 
 				<div className="tw-flex tw-items-center tw-justify-between tw-gap-[var(--cmplz-space-m)] tw-border-t tw-border-solid tw-border-[color:var(--cmplz-border)] tw-pt-[var(--cmplz-space-m)] max-[576px]:tw-flex-col-reverse">
 					{currentStep !== 'thankYou' && currentStep !== 'bannerUpdate' && <OnboardingButton type="prev" />}
+					{currentStep === 'bannerUpdate' && (
+						<a
+							href="https://complianz.io/docs"
+							target="_blank"
+							rel="noopener noreferrer"
+							className={secondaryLinkButtonCls + ' max-[576px]:tw-w-full max-[576px]:tw-justify-center'}
+						>
+							{__('Why did your banner change?', 'complianz-gdpr')}
+						</a>
+					)}
 					<OnboardingButton type="next" />
 				</div>
 			</DialogContent>
