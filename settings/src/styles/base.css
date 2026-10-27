@@ -31,3 +31,16 @@
 :is(#complianz, #complianz-portal) :where([data-cmplz-ui] :is(img,svg,video,canvas,audio,iframe,embed,object):not([data-cmplz-isolate] *):not([data-cmplz-isolate])) {
   display: block; max-width: 100%; height: auto; vertical-align: middle;
 }
+/* B6 — Tailwind transform-var defaults (Preflight replacement). Preflight is off (tailwind.config.js
+ * corePlugins), so the `*{--tw-translate-x:0;--tw-rotate:0;--tw-scale-x:1;…}` defaults Tailwind normally
+ * emits are absent. Every transform utility composes
+ * `transform: translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) … scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))`,
+ * so with those vars undefined the whole declaration is INVALID and resolves to `transform:none` — which
+ * silently broke every translate/rotate/scale utility (the Switch thumb slide, the Panel/Help chevron
+ * rotate). These defaults restore them; a transform utility on an element overrides the one var it sets and
+ * inherits the rest from here. Same scoped island selector as B1 (isolate zones excluded). */
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui] *:not([data-cmplz-isolate] *):not([data-cmplz-isolate])),
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui] *:not([data-cmplz-isolate] *):not([data-cmplz-isolate]))::before,
+:is(#complianz, #complianz-portal) :where([data-cmplz-ui] *:not([data-cmplz-isolate] *):not([data-cmplz-isolate]))::after {
+  --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1;
+}
