@@ -119,6 +119,12 @@ const useNewOnboardingData = create((set, get) => ({
 	isModalOpen: true,
 	isOnboardingComplete: false,
 	currentStep: 'welcome',
+	// Showcase dev override: which onboarding audience is being previewed —
+	// 'new' | 'current' | 'unauthenticated'. Set from the ?cmplz_onboarding URL param
+	// (via the floating OnboardingDevLauncher) and read by the steps to diverge copy per
+	// audience. Defaults to 'new' so the real first-run auto-show behaves as before.
+	variant: 'new',
+	setVariant: (variant) => set({ variant }),
 	stepProcessing: false,
 	isLoading: false,
 	isContentLoading: true,
@@ -208,6 +214,8 @@ const useNewOnboardingData = create((set, get) => ({
 
 		const url = new URL(window.location.href);
 		url.searchParams.delete('websitescan');
+		// Also clear the showcase variant override so a later reload doesn't silently re-trigger it.
+		url.searchParams.delete('cmplz_onboarding');
 		window.history.pushState({}, '', url.href);
 		set({ isModalOpen: false })
 	},

@@ -14,6 +14,9 @@ import PreloadFields from "./Settings/Fields/PreloadFields";
 import {__, setLocaleData} from "@wordpress/i18n";
 import ErrorBoundary from "./utils/ErrorBoundary";
 import { clsx } from "./components/ui/cx";
+// SHOWCASE-ONLY (design-dashboard-ctas): floating control to preview the onboarding modal as each
+// audience. Remove this import + its render below before any production build.
+import OnboardingDevLauncher from "./Onboarding/OnboardingDevLauncher";
 
 // Redesigned grid FRAME (T-038, DB-07, ADR-005). The `.cmplz-content-area .cmplz-grid` container is
 // restyled with `tw-` utilities (logical/block-axis only, ADR-007) matching
@@ -162,6 +165,8 @@ const Page = () => {
 				<Header/>
 				{ showTour && Tour && <Tour />}
 				{ showNewOnboarding && NewOnboarding && <NewOnboarding/>}
+				{ /* SHOWCASE-ONLY: onboarding-variant preview launcher (remove before production). */ }
+				<OnboardingDevLauncher/>
 
 				<div
 					className={clsx(

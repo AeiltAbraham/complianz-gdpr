@@ -36,6 +36,7 @@ const NewOnboarding = () => {
 		currentStep,
 		closeModal,
 		isContentLoading,
+		setVariant,
 	} = useNewOnboardingData();
 
 	const {
@@ -56,15 +57,28 @@ const NewOnboarding = () => {
 		// If the url contains cmplz_force_signup, it will force the modal to show.
 		const isForcedModal = window.location.href.indexOf('cmplz_force_signup') !== -1;
 
+		// Showcase dev override (design-dashboard-ctas): ?cmplz_onboarding=new|current|unauthenticated
+		// force-opens the modal in that audience variant regardless of the real auth/dismissed state —
+		// a VISUAL override only, the database flags are left untouched. Driven by OnboardingDevLauncher.
+		const variantParam = new URLSearchParams(window.location.search).get('cmplz_onboarding');
+		if (['new', 'current', 'unauthenticated'].includes(variantParam)) {
+			setVariant(variantParam);
+			setShowModal(true);
+			return;
+		}
+
 		if (!wscClientId || !wscClientSecret) {
+			// Real first-run / not-yet-authenticated state.
+			setVariant('new');
 			setShowModal(true);
 		} else if (isForcedModal) {
+			setVariant('current');
 			setShowModal(true);
 		} else {
 			// closeModal change the state and remove websitescan from url
 			closeModal();
 		}
-	}, [fieldsLoaded, closeModal, getFieldValue, setShowModal]);
+	}, [fieldsLoaded, closeModal, getFieldValue, setShowModal, setVariant]);
 
 	if (!isModalOpen || !showModal) return null;
 
