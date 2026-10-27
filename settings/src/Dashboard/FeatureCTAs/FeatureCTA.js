@@ -49,6 +49,30 @@ const Check = (
 );
 const ICONS = { crown: Crown, tcf: Shield, globe: Globe };
 
+// Small metric icons (posts / last scan / last sync) for the premium card legend.
+const DocIcon = (
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="tw-shrink-0">
+		<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z" />
+		<path d="M14 2v5h5" />
+		<path d="M8 13h8" />
+		<path d="M8 17h5" />
+	</svg>
+);
+const ScanIcon = (
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="tw-shrink-0">
+		<circle cx="11" cy="11" r="7" />
+		<path d="m21 21-4.3-4.3" />
+	</svg>
+);
+const SyncIcon = (
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="tw-shrink-0">
+		<path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+		<path d="M21 3v5h-5" />
+		<path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+		<path d="M3 21v-5h5" />
+	</svg>
+);
+
 const BADGE = {
 	"accent-filled": "tw-bg-[var(--cmplz-accent-strong,_#1e73be)] tw-text-[color:var(--cmplz-text-on-accent,_#ffffff)]",
 	"accent":        "tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)] tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]",
@@ -83,6 +107,16 @@ const MODALS = {
 	},
 };
 
+// Metric chips for the premium CTA card (showcase figures) — same icon+label treatment as the
+// Progress block legend. The posts counter is 'warning'-toned to flag it is near the free limit.
+const METRICS = {
+	"cta-premium": [
+		{ icon: DocIcon, text: __( '43/50 posts', 'complianz-gdpr' ), tone: 'warning' },
+		{ icon: ScanIcon, text: __( 'Last scan: yesterday', 'complianz-gdpr' ), tone: null },
+		{ icon: SyncIcon, text: __( 'Last sync: yesterday', 'complianz-gdpr' ), tone: null },
+	],
+};
+
 const cardCls = clsx(
 	"tw-flex tw-h-full tw-flex-col tw-items-start tw-gap-[var(--cmplz-space-m,_16px)]",
 );
@@ -93,6 +127,7 @@ const descCls   = "tw-m-0 tw-text-[14px] tw-leading-[1.5] tw-text-[color:var(--c
 const FeatureCTA = ( { block } ) => {
 	const c = ( block && block.cta ) || {};
 	const m = ( block && MODALS[ block.id ] ) || {};
+	const metrics = ( block && METRICS[ block.id ] ) || null;
 	const icon = ICONS[c.icon] || Crown;
 	const badge = clsx( badgeBase, BADGE[c.tint] || BADGE.accent );
 
@@ -103,6 +138,16 @@ const FeatureCTA = ( { block } ) => {
 				<div className="tw-flex tw-grow tw-flex-col tw-gap-[var(--cmplz-space-2xs,_4px)]">
 					<h4 className={titleCls}>{ c.title }</h4>
 					<p className={descCls}>{ c.desc }</p>
+					{ metrics && (
+						<div className="tw-mt-[var(--cmplz-space-s,_12px)] tw-flex tw-flex-wrap tw-gap-x-[var(--cmplz-space-l,_24px)] tw-gap-y-[var(--cmplz-space-xs,_8px)]">
+							{ metrics.map( ( mt, i ) => (
+								<div key={i} className="tw-flex tw-items-center tw-gap-[6px] tw-text-[13px]">
+									<span className={ mt.tone === 'warning' ? 'tw-shrink-0 tw-text-[#b45309]' : 'tw-shrink-0 tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]' }>{ mt.icon }</span>
+									<span className={ mt.tone === 'warning' ? 'tw-font-semibold tw-text-[#b45309]' : 'tw-text-[color:var(--cmplz-text,_#0f172a)]' }>{ mt.text }</span>
+								</div>
+							) ) }
+						</div>
+					) }
 				</div>
 				<DialogTrigger asChild>
 					<button type="button" className={clsx( c.primary ? primaryLinkButtonCls : secondaryLinkButtonCls, "tw-cursor-pointer tw-self-start" )}>
