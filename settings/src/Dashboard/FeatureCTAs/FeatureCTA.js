@@ -107,22 +107,22 @@ const MODALS = {
 	},
 };
 
-const InfoIcon = (
-	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="tw-shrink-0">
-		<circle cx="12" cy="12" r="10" />
-		<path d="M12 16v-4" />
-		<path d="M12 8h.01" />
-	</svg>
-);
-
-// Usage metrics for the premium CTA card (showcase figures), shown inline on one strip so the card
-// stays level with the TCF / Geolocation cards in its row. Posts is 'warning'-toned (near the limit).
+// Usage metrics for the premium CTA card (showcase figures), shown inline on the CTA row as a legend —
+// the same icon+label treatment as the Progress block footer. Posts is 'warning'-toned (near the free
+// limit); scan/sync recency is 'success'-toned (recently done).
 const METRICS = {
 	"cta-premium": [
 		{ icon: DocIcon, text: __( '43/50 posts', 'complianz-gdpr' ), tone: 'warning' },
-		{ icon: ScanIcon, text: __( 'Last scan: yesterday', 'complianz-gdpr' ), tone: null },
-		{ icon: SyncIcon, text: __( 'Last sync: yesterday', 'complianz-gdpr' ), tone: null },
+		{ icon: ScanIcon, text: __( 'Scanned yesterday', 'complianz-gdpr' ), tone: 'success' },
+		{ icon: SyncIcon, text: __( 'Synced yesterday', 'complianz-gdpr' ), tone: 'success' },
 	],
+};
+const METRIC_ICON = {
+	warning: 'tw-text-[#b45309]',
+	success: 'tw-text-[color:var(--cmplz-success,_#1f7a34)]',
+};
+const METRIC_TEXT = {
+	warning: 'tw-font-semibold tw-text-[#b45309]',
 };
 
 const cardCls = clsx(
@@ -143,30 +143,28 @@ const FeatureCTA = ( { block } ) => {
 		<Dialog>
 			<div className={cardCls}>
 				<div className={badge}>{ icon }</div>
-				<div className="tw-flex tw-w-full tw-grow tw-flex-col tw-gap-[var(--cmplz-space-2xs,_4px)]">
+				<div className="tw-flex tw-grow tw-flex-col tw-gap-[var(--cmplz-space-2xs,_4px)]">
 					<h4 className={titleCls}>{ c.title }</h4>
 					<p className={descCls}>{ c.desc }</p>
+				</div>
+				{ /* CTA row — button on the left, usage metrics as an inline legend on the right (Progress-footer style). */ }
+				<div className="tw-flex tw-w-full tw-flex-wrap tw-items-center tw-gap-x-[var(--cmplz-space-l,_24px)] tw-gap-y-[var(--cmplz-space-s,_12px)]">
+					<DialogTrigger asChild>
+						<button type="button" className={clsx( c.primary ? primaryLinkButtonCls : secondaryLinkButtonCls, "tw-cursor-pointer" )}>
+							{ c.button }
+						</button>
+					</DialogTrigger>
 					{ metrics && (
-						<div className="tw-mt-[var(--cmplz-space-s,_12px)] tw-flex tw-flex-wrap tw-items-center tw-gap-x-[var(--cmplz-space-l,_24px)] tw-gap-y-[var(--cmplz-space-xs,_8px)] tw-rounded-[var(--cmplz-radius-s,_8px)] tw-border tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)] tw-bg-[var(--cmplz-surface-sunken,_#f1f5f9)] tw-px-[var(--cmplz-space-m,_16px)] tw-py-[var(--cmplz-space-s,_12px)] tw-text-[13px]">
+						<div className="tw-ms-auto tw-flex tw-flex-wrap tw-items-center tw-gap-x-[var(--cmplz-space-l,_24px)] tw-gap-y-[4px] tw-text-[13px]">
 							{ metrics.map( ( mt, i ) => (
 								<span key={i} className="tw-flex tw-items-center tw-gap-[6px]">
-									<span className={ mt.tone === 'warning' ? 'tw-shrink-0 tw-text-[#b45309]' : 'tw-shrink-0 tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]' }>{ mt.icon }</span>
-									<span className={ mt.tone === 'warning' ? 'tw-font-semibold tw-text-[#b45309]' : 'tw-text-[color:var(--cmplz-text,_#0f172a)]' }>{ mt.text }</span>
+									<span className={ clsx( 'tw-shrink-0', METRIC_ICON[ mt.tone ] || 'tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]' ) }>{ mt.icon }</span>
+									<span className={ METRIC_TEXT[ mt.tone ] || 'tw-text-[color:var(--cmplz-text,_#0f172a)]' }>{ mt.text }</span>
 								</span>
 							) ) }
-							{ /* Free-plan status, pushed to the end of the same inline strip. */ }
-							<span className="tw-ms-auto tw-flex tw-items-center tw-gap-[6px] tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]">
-								{ InfoIcon }
-								<span className="tw-font-semibold">{ __( "You're on the Free plan", 'complianz-gdpr' ) }</span>
-							</span>
 						</div>
 					) }
 				</div>
-				<DialogTrigger asChild>
-					<button type="button" className={clsx( c.primary ? primaryLinkButtonCls : secondaryLinkButtonCls, "tw-cursor-pointer tw-self-start" )}>
-						{ c.button }
-					</button>
-				</DialogTrigger>
 			</div>
 			<DialogContent size="md">
 				<div className="tw-flex tw-flex-col tw-gap-[var(--cmplz-space-m,_16px)]">
