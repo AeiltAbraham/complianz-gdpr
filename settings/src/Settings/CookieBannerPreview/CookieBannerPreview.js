@@ -8,16 +8,30 @@ import useMenu from "../../Menu/MenuData";
 // SHOWCASE-ONLY (design-dashboard-ctas): shared customer-state preview.
 import { getCustomerState } from "../../preview/customerState";
 
-// SHOWCASE-ONLY (design-dashboard-ctas): a NEW customer gets a distinct starter banner — the blue accent
-// (the #3b29ff accept button + links) swapped for the system green (#1f7a34) and softer corners. Scoped to
-// the isolated preview container and !important so it beats the generated preview CSS. Inert without a
+// SHOWCASE-ONLY (design-dashboard-ctas): a NEW customer gets a visibly distinct starter banner — the blue
+// accent (the #3b29ff accept button + links) swapped for the system green (#1f7a34), a green top accent bar,
+// a green-tinted shadow, pill buttons, a solid-green Accept and ghost-green secondary buttons. Scoped to the
+// isolated preview container and !important so it beats the generated preview CSS. Inert without a
 // customer-state override; remove with the preview/ helpers before release.
 const NEW_CUSTOMER_BANNER_CSS = `
-#cmplz-preview-banner-container .cmplz-cookiebanner { border-radius: 16px !important; }
-#cmplz-preview-banner-container .cmplz-cookiebanner .cmplz-btn { border-radius: 8px !important; }
+#cmplz-preview-banner-container .cmplz-cookiebanner {
+	border-radius: 16px !important;
+	border-top: 4px solid #1f7a34 !important;
+	box-shadow: 0 12px 30px rgba(31, 122, 52, 0.20) !important;
+}
+#cmplz-preview-banner-container .cmplz-cookiebanner .cmplz-divider.cmplz-divider-header {
+	background-color: #1f7a34 !important;
+	opacity: 0.5 !important;
+}
+#cmplz-preview-banner-container .cmplz-cookiebanner .cmplz-btn { border-radius: 999px !important; }
 #cmplz-preview-banner-container .cmplz-cookiebanner .cmplz-btn.cmplz-accept {
 	background-color: #1f7a34 !important;
 	border-color: #1f7a34 !important;
+}
+#cmplz-preview-banner-container .cmplz-cookiebanner .cmplz-btn:not(.cmplz-accept) {
+	background-color: transparent !important;
+	border-color: #1f7a34 !important;
+	color: #1f7a34 !important;
 }
 #cmplz-preview-banner-container .cmplz-cookiebanner .cmplz-link,
 #cmplz-preview-banner-container .cmplz-cookiebanner a.cmplz-link { color: #1f7a34 !important; }
