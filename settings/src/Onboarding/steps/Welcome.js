@@ -24,13 +24,8 @@ const VARIANT_INTRO = {
 			__( "Confirm your access by email to switch the scan back on and keep your cookie policy up to date automatically.", "complianz-gdpr" ),
 		],
 	},
-	current: {
-		needsEmail: false,
-		paragraphs: [
-			__( "Welcome back! Your domain is verified and the Website Scan is active, so your cookie policy stays up to date automatically.", "complianz-gdpr" ),
-			__( "Here’s what’s new in this release, with a few recommended next steps to keep your site fully compliant.", "complianz-gdpr" ),
-		],
-	},
+	// The authenticated "current" audience no longer reaches this step — it gets the single BannerUpdate
+	// notice instead — so only 'new' and 'unauthenticated' intros live here.
 };
 
 const Welcome = () => {

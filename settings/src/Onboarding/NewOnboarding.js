@@ -4,6 +4,7 @@ import { useNewOnboardingData, steps } from "./NewOnboardingData"
 import { OnboardingModalClose } from "./components/Close"
 import OnboardingButton from './components/Button';
 import ServiceDisruption from './steps/ServiceDisruption';
+import BannerUpdate from './steps/BannerUpdate';
 import Welcome from './steps/Welcome';
 import Terms from './steps/Terms';
 import Newsletter from './steps/Newsletter';
@@ -75,6 +76,9 @@ const NewOnboarding = () => {
 			setVariant(variant);
 			if (variant === 'unauthenticated') {
 				setCurrentStep('serviceDisruption');
+			} else if (variant === 'current') {
+				// Authenticated users skip the full flow — a single what's-new/limits notice.
+				setCurrentStep('bannerUpdate');
 			}
 		};
 
@@ -121,6 +125,7 @@ const NewOnboarding = () => {
 
 				<div className="tw-relative tw-text-[0.8125rem]">
 					{currentStep === 'serviceDisruption' && <ServiceDisruption />}
+					{currentStep === 'bannerUpdate' && <BannerUpdate />}
 					{currentStep === 'welcome' && <Welcome />}
 					{currentStep === 'terms' && <Terms />}
 					{currentStep === 'newsletter' && <Newsletter />}
@@ -129,7 +134,7 @@ const NewOnboarding = () => {
 				</div>
 
 				<div className="tw-flex tw-items-center tw-justify-between tw-gap-[var(--cmplz-space-m)] tw-border-t tw-border-solid tw-border-[color:var(--cmplz-border)] tw-pt-[var(--cmplz-space-m)] max-[576px]:tw-flex-col-reverse">
-					{currentStep !== 'thankYou' && <OnboardingButton type="prev" />}
+					{currentStep !== 'thankYou' && currentStep !== 'bannerUpdate' && <OnboardingButton type="prev" />}
 					<OnboardingButton type="next" />
 				</div>
 			</DialogContent>

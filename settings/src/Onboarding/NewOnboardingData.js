@@ -10,6 +10,11 @@ const steps = {
 		prevButtonGoTo: null, // on Not now, dismiss the onboarding (handled in goToPrevStep)
 		nextButtonGoTo: 'welcome' // on Authenticate now, continue into the normal verify flow
 	},
+	bannerUpdate: { // authenticated "current" audience only — single what's-new + limits notice (showcase)
+		title: __("You have a new cookie banner", "complianz-gdpr"),
+		nextButton: __("Understood", "complianz-gdpr"),
+		nextButtonGoTo: false // single step — "Understood" closes the modal (handled in goToNextStep)
+	},
 	welcome: { // thanks for updating
 		title: __("Welcome to Complianz", "complianz-gdpr"),
 		prevButton: __("No, Thanks", "complianz-gdpr"),
@@ -258,6 +263,11 @@ const useNewOnboardingData = create((set, get) => ({
 		set({ stepProcessing: true });
 		try {
 			switch (state.currentStep) {
+				case 'bannerUpdate':
+					// Single-step notice for authenticated users — "Understood" just closes it.
+					// closeModal() with no arg does NOT persist a dismissal (DB-neutral, showcase).
+					get().closeModal();
+					return;
 				case 'welcome':
 					if (state.wscEmail.length === 0) {
 						set({ enableWsc: false });
