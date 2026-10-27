@@ -51,7 +51,7 @@ const ICONS = { crown: Crown, tcf: Shield, globe: Globe };
 
 // Small metric icons (posts / last scan / last sync) for the premium card legend.
 const DocIcon = (
-	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="tw-shrink-0">
+	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="tw-shrink-0">
 		<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z" />
 		<path d="M14 2v5h5" />
 		<path d="M8 13h8" />
@@ -59,13 +59,13 @@ const DocIcon = (
 	</svg>
 );
 const ScanIcon = (
-	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="tw-shrink-0">
+	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="tw-shrink-0">
 		<circle cx="11" cy="11" r="7" />
 		<path d="m21 21-4.3-4.3" />
 	</svg>
 );
 const SyncIcon = (
-	<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="tw-shrink-0">
+	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="tw-shrink-0">
 		<path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
 		<path d="M21 3v5h-5" />
 		<path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
@@ -107,23 +107,19 @@ const MODALS = {
 	},
 };
 
-// Usage metrics for the premium CTA card (showcase figures), shown inline on the CTA row as a legend —
-// the same icon+label treatment as the Progress block footer. Posts is 'warning'-toned (near the free
-// limit); scan/sync recency is 'success'-toned (recently done).
+// Usage metrics for the premium CTA card (showcase figures), shown inline on the CTA row inside a
+// light-blue legend pill — emulating the Progress block's accent-subtle pills (same bg + font-size-sm).
+// Default text/icons use accent-on-subtle; posts is 'warning'-toned (orange, near the free limit).
 const METRICS = {
 	"cta-premium": [
 		{ icon: DocIcon, text: __( '43/50 posts', 'complianz-gdpr' ), tone: 'warning' },
-		{ icon: ScanIcon, text: __( 'Scanned yesterday', 'complianz-gdpr' ), tone: 'success' },
-		{ icon: SyncIcon, text: __( 'Synced yesterday', 'complianz-gdpr' ), tone: 'success' },
+		{ icon: ScanIcon, text: __( 'Scanned yesterday', 'complianz-gdpr' ), tone: null },
+		{ icon: SyncIcon, text: __( 'Synced yesterday', 'complianz-gdpr' ), tone: null },
 	],
 };
-const METRIC_ICON = {
-	warning: 'tw-text-[#b45309]',
-	success: 'tw-text-[color:var(--cmplz-success,_#1f7a34)]',
-};
-const METRIC_TEXT = {
-	warning: 'tw-font-semibold tw-text-[#b45309]',
-};
+const METRIC_DEFAULT = 'tw-text-[color:var(--cmplz-accent-on-subtle,_#17608f)]';
+const METRIC_ICON = { warning: 'tw-text-[#b45309]' };
+const METRIC_TEXT = { warning: 'tw-font-semibold tw-text-[#b45309]' };
 
 const cardCls = clsx(
 	"tw-flex tw-h-full tw-flex-col tw-items-start tw-gap-[var(--cmplz-space-m,_16px)]",
@@ -147,19 +143,25 @@ const FeatureCTA = ( { block } ) => {
 					<h4 className={titleCls}>{ c.title }</h4>
 					<p className={descCls}>{ c.desc }</p>
 				</div>
-				{ /* CTA row — button on the left, usage metrics as an inline legend on the right (Progress-footer style). */ }
-				<div className="tw-flex tw-w-full tw-flex-wrap tw-items-center tw-gap-x-[var(--cmplz-space-l,_24px)] tw-gap-y-[var(--cmplz-space-s,_12px)]">
+				{ /* CTA row — button + Free-plan pill on the left, usage metrics as an inline light-blue
+				     legend pill on the right (emulating the Progress block's accent-subtle pills). */ }
+				<div className="tw-flex tw-w-full tw-flex-wrap tw-items-center tw-gap-x-[var(--cmplz-space-s,_12px)] tw-gap-y-[var(--cmplz-space-s,_12px)]">
 					<DialogTrigger asChild>
 						<button type="button" className={clsx( c.primary ? primaryLinkButtonCls : secondaryLinkButtonCls, "tw-cursor-pointer" )}>
 							{ c.button }
 						</button>
 					</DialogTrigger>
 					{ metrics && (
-						<div className="tw-ms-auto tw-flex tw-flex-wrap tw-items-center tw-gap-x-[var(--cmplz-space-l,_24px)] tw-gap-y-[4px] tw-text-[13px]">
+						<span className="tw-inline-flex tw-items-center tw-rounded-full tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)] tw-px-[10px] tw-py-[var(--cmplz-space-2xs,_4px)] tw-text-[length:var(--cmplz-font-size-xs,_0.6875rem)] tw-font-semibold tw-text-[color:var(--cmplz-accent-on-subtle,_#17608f)]">
+							{ __( 'Free plan', 'complianz-gdpr' ) }
+						</span>
+					) }
+					{ metrics && (
+						<div className="tw-ms-auto tw-flex tw-flex-wrap tw-items-center tw-gap-x-[var(--cmplz-space-s,_12px)] tw-gap-y-[4px] tw-rounded-full tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)] tw-px-[12px] tw-py-[var(--cmplz-space-2xs,_4px)] tw-text-[length:var(--cmplz-font-size-xs,_0.6875rem)]">
 							{ metrics.map( ( mt, i ) => (
 								<span key={i} className="tw-flex tw-items-center tw-gap-[6px]">
-									<span className={ clsx( 'tw-shrink-0', METRIC_ICON[ mt.tone ] || 'tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]' ) }>{ mt.icon }</span>
-									<span className={ METRIC_TEXT[ mt.tone ] || 'tw-text-[color:var(--cmplz-text,_#0f172a)]' }>{ mt.text }</span>
+									<span className={ clsx( 'tw-shrink-0', METRIC_ICON[ mt.tone ] || METRIC_DEFAULT ) }>{ mt.icon }</span>
+									<span className={ METRIC_TEXT[ mt.tone ] || METRIC_DEFAULT }>{ mt.text }</span>
 								</span>
 							) ) }
 						</div>
