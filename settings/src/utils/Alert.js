@@ -43,6 +43,11 @@ import useFields from '../Settings/Fields/FieldsData';
 const CARD_CLS =
 	'tw-flex tw-flex-wrap tw-items-center tw-gap-[var(--cmplz-space-l,_24px)] tw-rounded-[var(--cmplz-radius,_12px)] tw-border tw-border-solid tw-border-[color:var(--cmplz-warning,_#eab308)] tw-bg-[var(--cmplz-warning-surface,_#fbf4da)] tw-p-[var(--cmplz-space-l,_24px)]';
 
+// Compact variant — upsell-callout height: a smaller icon, radius-s, tighter gap/padding. Used for terse
+// alerts (title + CTA only), e.g. the Cookiedatabase Sync lock.
+const CARD_COMPACT_CLS =
+	'tw-flex tw-flex-wrap tw-items-center tw-gap-[var(--cmplz-space-s,_12px)] tw-rounded-[var(--cmplz-radius-s,_8px)] tw-border tw-border-solid tw-border-[color:var(--cmplz-warning,_#eab308)] tw-bg-[var(--cmplz-warning-surface,_#fbf4da)] tw-py-[var(--cmplz-space-s,_12px)] tw-px-[var(--cmplz-space-m,_16px)]';
+
 // CTA button/anchor — the secondary-button look (white fill, accent-strong text/border) as a complete
 // literal class string (ADR-013), with `tw-border-solid` so it renders bordered in this markerless
 // subtree. Reused for the onCtaClick <button> and the ctaUrl <a> so both read identically.
@@ -59,14 +64,15 @@ const Alert = ( {
 	ctaUrl,
 	ctaFieldId = '',
 	onCtaClick,
+	compact = false,
 } ) => {
 	const resolvedUrl = ctaUrl
 		? useFields.getState().getReferralUrl( 'warnings', ctaFieldId, ctaUrl )
 		: null;
 
 	return (
-		<div className={ CARD_CLS }>
-			<Icon name={ icon } color={ iconColor } size={ 48 } />
+		<div className={ compact ? CARD_COMPACT_CLS : CARD_CLS }>
+			<Icon name={ icon } color={ iconColor } size={ compact ? 24 : 48 } />
 			<div className="tw-flex tw-flex-col">
 				<div className="tw-text-[0.875rem] tw-font-semibold tw-text-[color:var(--cmplz-text,_#0f172a)]">
 					{ title }
