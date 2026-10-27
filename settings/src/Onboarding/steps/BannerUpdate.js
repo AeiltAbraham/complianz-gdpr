@@ -19,6 +19,10 @@ const POST_LIMIT = 50;
 const POST_COUNT = 248;
 const DAYS_LEFT = 14;
 
+// Showcase promo for the upgrade CTA (easy to tweak per campaign).
+const PROMO_CODE = 'BANNER50';
+const PROMO_EXPIRY = '10 November 2026';
+
 const WarnIcon = () => (
 	<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="tw-shrink-0">
 		<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
@@ -60,12 +64,19 @@ const BannerUpdate = () => {
 						<strong>{ __( 'limited in', 'complianz-gdpr' ) } { DAYS_LEFT } { __( 'days', 'complianz-gdpr' ) }</strong>{ ' ' }
 						{ __( 'without a premium license.', 'complianz-gdpr' ) }
 					</span>
-					<div className="tw-flex tw-flex-wrap tw-items-center tw-gap-[var(--cmplz-space-s,_12px)]">
-						<a href={ upgradeUrl } target="_blank" rel="noopener noreferrer" className={ primaryLinkButtonCls }>
-							{ __( 'Upgrade to Premium', 'complianz-gdpr' ) }
-						</a>
-						<span className="tw-inline-flex tw-items-center tw-rounded-full tw-bg-[var(--cmplz-success,_#1f7a34)] tw-px-[10px] tw-py-[3px] tw-text-[0.6875rem] tw-font-bold tw-uppercase tw-tracking-[0.04em] tw-text-[#ffffff]">
-							{ __( '50% off', 'complianz-gdpr' ) }
+					<div className="tw-flex tw-flex-col tw-items-start tw-gap-[var(--cmplz-space-xs,_8px)]">
+						<div className="tw-flex tw-flex-wrap tw-items-center tw-gap-[var(--cmplz-space-s,_12px)]">
+							<a href={ upgradeUrl } target="_blank" rel="noopener noreferrer" className={ primaryLinkButtonCls }>
+								{ __( 'Upgrade to Premium', 'complianz-gdpr' ) }
+							</a>
+							<span className="tw-inline-flex tw-items-center tw-rounded-full tw-bg-[var(--cmplz-success,_#1f7a34)] tw-px-[10px] tw-py-[3px] tw-text-[0.6875rem] tw-font-bold tw-uppercase tw-tracking-[0.04em] tw-text-[#ffffff]">
+								{ __( '50% off', 'complianz-gdpr' ) }
+							</span>
+						</div>
+						<span className="tw-text-[0.75rem] tw-text-[color:var(--cmplz-text-muted,_#475569)]">
+							{ __( 'Use code', 'complianz-gdpr' ) }{ ' ' }
+							<code className="tw-rounded-[4px] tw-border tw-border-dashed tw-border-[color:var(--cmplz-border,_#e2e8f0)] tw-bg-[var(--cmplz-surface-sunken,_#f1f5f9)] tw-px-[6px] tw-py-[1px] tw-font-mono tw-font-bold tw-text-[color:var(--cmplz-text,_#0f172a)]">{ PROMO_CODE }</code>{ ' ' }
+							{ __( 'at checkout — expires', 'complianz-gdpr' ) } { PROMO_EXPIRY }.
 						</span>
 					</div>
 				</div>
