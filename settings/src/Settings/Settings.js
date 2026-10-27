@@ -13,6 +13,7 @@ import ErrorBoundary from '../utils/ErrorBoundary';
 import { clsx } from '../components/ui/cx';
 // SHOWCASE-ONLY (design-dashboard-ctas): per-customer notice at the top of the Consent Banner page.
 import CustomerNotice from '../preview/CustomerNotice';
+import { getCustomerState } from '../preview/customerState';
 
 // Settings-screen frame (T-046, DB-07/DB-08; Stage-H section 1b). The two-column body, the sticky save/nav
 // footer (scroll-progress + upsell + buttons) and the help sidebar migrated off the retired
@@ -254,6 +255,22 @@ const Settings = () => {
 	}
 	helpNotices = helpNotices.filter(
 		notice => notice.label.toLowerCase() !== 'completed');
+	// SHOWCASE-ONLY (design-dashboard-ctas): a previewed NEW customer gets a banner-page notification nudging
+	// domain authentication — the free-plan lever that unlocks more customization and automates consent
+	// management. Prepended so it leads the Notifications list. Inert without a customer-state override;
+	// remove with the preview/ helpers before release.
+	if ( selectedMainMenuItem === 'banner' && getCustomerState() === 'new' ) {
+		helpNotices = [
+			{
+				id: 'cmplz-preview-new-authenticate',
+				label: 'warning',
+				title: __( 'Authenticate your domain', 'complianz-gdpr' ),
+				text: __( 'You’re on the free plan with a local banner. Authenticate your domain to unlock more customization options and to let Complianz manage your consent automatically.', 'complianz-gdpr' ),
+				url: 'https://complianz.io/authentication/',
+			},
+			...helpNotices,
+		];
+	}
 	let cookiebannerEnabled = fields.filter(
 		field => field.id === 'enable_cookie_banner' && field.value ===
 			'yes').length > 0;

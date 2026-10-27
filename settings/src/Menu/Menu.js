@@ -4,6 +4,9 @@ import useMenu from "./MenuData";
 import CookieBannerControls from "../Settings/CookieBannerPreview/CookieBannerControls";
 import MenuPlaceholder from "../Placeholder/MenuPlaceholder";
 import { clsx } from "../components/ui/cx";
+import Icon from "../utils/Icon";
+// SHOWCASE-ONLY (design-dashboard-ctas): shared customer-state preview.
+import { getCustomerState } from "../preview/customerState";
 
 // Redesigned sidebar menu frame (T-040, DB-07, C-3, ADR-005), rebuilt on `tw-` utilities + the semantic
 // `--cmplz-*` tokens, matching docs/specs/001-settings-ui-redesign/design/shell-preview.html. The active
@@ -43,6 +46,25 @@ const PREMIUM_BUTTON = clsx(
 	"tw-w-full tw-text-center tw-no-underline tw-font-semibold tw-text-[#fff] tw-bg-[#111827]",
 	"tw-py-[8px] tw-px-[16px] tw-rounded-[var(--cmplz-radius-field)] tw-text-[length:var(--cmplz-font-size-sm)]"
 );
+// SHOWCASE-ONLY (design-dashboard-ctas): a subtle premium upsell under the banner sub-menu for a previewed
+// NEW customer, pairing with the locked look sections above (MenuItem.js). Muted sunken card, lock glyph,
+// one quiet accent link — deliberately understated. Inert without a customer-state override. Remove with preview/.
+const UPSELL_CARD = clsx(
+	"cmplz-premium-menu-item",
+	"tw-mt-[var(--cmplz-space-s)] tw-flex tw-flex-col tw-gap-[var(--cmplz-space-2xs)]",
+	"tw-rounded-[var(--cmplz-radius-s)] tw-bg-[var(--cmplz-surface-sunken,_#f1f5f9)]",
+	"tw-border tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)] tw-p-[var(--cmplz-space-s)]"
+);
+const UPSELL_HEAD = clsx(
+	"tw-flex tw-items-center tw-gap-[var(--cmplz-space-2xs)]",
+	"[&_svg]:tw-h-[13px] [&_svg]:tw-w-[13px]",
+	"tw-font-semibold tw-text-[length:var(--cmplz-font-size-sm)] tw-text-[color:var(--cmplz-text,_#0f172a)]"
+);
+const UPSELL_TEXT = "tw-m-0 tw-text-[length:var(--cmplz-font-size-xs)] tw-text-[color:var(--cmplz-text-muted,_#475569)]";
+const UPSELL_LINK = clsx(
+	"tw-no-underline tw-font-semibold tw-text-[length:var(--cmplz-font-size-sm)]",
+	"tw-text-[color:var(--cmplz-accent-on-subtle,_#17608f)]"
+);
 
 /**
  * Menu block, rendering the entire menu
@@ -66,6 +88,20 @@ const PREMIUM_BUTTON = clsx(
 					}
 					{ hasPremiumItems && cmplz_settings.is_premium &&
 						<div className={PREMIUM_ITEM}><a target="_blank" rel="noopener noreferrer" href={cmplz_settings.upgrade_link} className={PREMIUM_BUTTON}>{__('Go Pro', 'complianz-gdpr')}</a></div>
+					}
+					{ selectedMainMenuItem === 'banner' && getCustomerState() === 'new' &&
+						<div className={UPSELL_CARD}>
+							<span className={UPSELL_HEAD}>
+								<Icon name="lock" size={13} color="dark-blue" />
+								{__('Premium design', 'complianz-gdpr')}
+							</span>
+							<p className={UPSELL_TEXT}>
+								{__('Unlock the full appearance, colors and text controls with a Premium license.', 'complianz-gdpr')}
+							</p>
+							<a href="https://complianz.io/pricing/" target="_blank" rel="noopener noreferrer" className={UPSELL_LINK}>
+								{__('Upgrade to Premium', 'complianz-gdpr')} →
+							</a>
+						</div>
 					}
 					{selectedMainMenuItem==='banner' &&
 						<CookieBannerControls />

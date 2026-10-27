@@ -5,6 +5,8 @@ import useFields from '../Settings/Fields/FieldsData';
 import Icon from '../utils/Icon';
 import {UseDocumentsData} from "../Settings/CreateDocuments/DocumentsData";
 import { clsx } from "../components/ui/cx";
+// SHOWCASE-ONLY (design-dashboard-ctas): shared customer-state preview.
+import { getCustomerState } from "../preview/customerState";
 
 // Redesigned sidebar menu item (T-040, DB-07, C-3, ADR-005), rebuilt on `tw-` utilities + the semantic
 // `--cmplz-*` tokens, matching docs/specs/001-settings-ui-redesign/design/shell-preview.html (the
@@ -65,6 +67,10 @@ const FEATURED_PILL = clsx(
 	"tw-ms-auto tw-bg-[color:var(--cmplz-success)] tw-text-[color:var(--cmplz-text-on-accent)]",
 	"tw-py-[1px] tw-px-[8px] tw-rounded-[999px] tw-text-[length:var(--cmplz-font-size-xs)] tw-font-bold"
 );
+// SHOWCASE-ONLY (design-dashboard-ctas): for a previewed NEW customer, the Consent Banner's look sections
+// read as premium-locked in the sub-menu — dimmed, non-navigable, with a lock glyph (paired with the Menu.js
+// upsell). Inert without a customer-state override, so the real menu is untouched. Remove with preview/.
+const BANNER_LOCKED_IDS = [ 'appearance', 'colors', 'banner-texts' ];
 
 const useMenuItem = (menuItem, isMain) => {
 	const {hasMissingPages, fetchDocumentsData, documentsDataLoaded, documentsDataLoading} = UseDocumentsData();
@@ -125,7 +131,18 @@ const MenuItem = ({ index, menuItem, isMain }) => {
 		selectedMainMenuItem,
 		selectedSubMenuItem,
 	);
-	const menuClass = getMenuClass(menuItem, isMain, menuIsSelected, attributes.href);
+	// SHOWCASE-ONLY: a previewed NEW customer sees the banner look sections as premium-locked — dimmed,
+	// non-navigable (href + submenu dropped) and flagged with a lock glyph. Inert without a state override.
+	const locked = isMain
+		&& selectedMainMenuItem === 'banner'
+		&& getCustomerState() === 'new'
+		&& BANNER_LOCKED_IDS.includes(menuItem.id);
+	if (locked) {
+		delete attributes.href;
+		attributes['aria-disabled'] = true;
+		attributes.tabIndex = -1;
+	}
+	const menuClass = getMenuClass(menuItem, isMain, menuIsSelected, attributes.href, locked);
 
 	if (menuItem.visible
 		//&& menuHasFields
@@ -140,8 +157,13 @@ const MenuItem = ({ index, menuItem, isMain }) => {
               {__('New', 'complianz-gdpr')}
             </span>
 					)}
+					{locked && (
+						<span className="tw-ms-auto tw-flex [&_svg]:tw-h-[12px] [&_svg]:tw-w-[12px]">
+							<Icon name="lock" size={12} color="grey" />
+						</span>
+					)}
 				</a>
-				{menuItem.menu_items && menuIsSelected && (
+				{menuItem.menu_items && menuIsSelected && !locked && (
 					<div className={SUBMENU_ITEMS}>
 						{menuItem.menu_items.map(
 							(subMenuItem, i) =>
@@ -202,14 +224,16 @@ const isSelectedMenuItem = (selectedSubMenuItem, menuItem) => {
  * @param href the resolved link target (undefined when the item is the selected parent — no link)
  * @returns {string}
  */
-const getMenuClass = (menuItem, isMain, menuIsSelected, href) => {
+const getMenuClass = (menuItem, isMain, menuIsSelected, href, locked) => {
 	return clsx(
 		ITEM_BASE,
 		isMain ? MAIN_BASE : SUB_BASE,
 		isMain
 			? (menuIsSelected ? MAIN_ACTIVE : MAIN_INACTIVE)
 			: (menuIsSelected ? SUB_ACTIVE : SUB_INACTIVE),
-		href && ITEM_HOVER,
+		!locked && href && ITEM_HOVER,
+		// SHOWCASE: the disabled/locked look — dim + not-allowed, no hover affordance (see getMenuClass caller).
+		locked && 'tw-opacity-60 tw-cursor-not-allowed cmplz-premium',
 		menuItem.featured && 'cmplz-featured',
 		menuItem.premium && !cmplz_settings.is_premium && 'cmplz-premium'
 	);
