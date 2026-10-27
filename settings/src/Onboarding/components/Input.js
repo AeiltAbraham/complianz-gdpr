@@ -4,7 +4,7 @@ import { TextField } from "../../components/ui/TextField";
 // `invalid` ring driven by the error); the error hint is a tw- danger caption. Rendered inside the
 // Radix Dialog portal island, so tokens/base reset apply. The checkbox variant is a plain native
 // checkbox (the fancy legacy checkmark moved to the dedicated CheckBox component).
-const OnboardingInput = ({ type, className = '', error = '', ...otherProps }) => {
+const OnboardingInput = ({ type, className = '', error = '', description = '', ...otherProps }) => {
 
 	if (!type) return;
 
@@ -16,6 +16,7 @@ const OnboardingInput = ({ type, className = '', error = '', ...otherProps }) =>
 				className={`tw-w-full ${className}`}
 				{...otherProps}
 			/>
+			{description && <span className="tw-mt-[var(--cmplz-space-2xs)] tw-block tw-text-[0.75rem] tw-text-[color:var(--cmplz-text-muted)]">{description}</span>}
 			{error && <span className="tw-mt-[var(--cmplz-space-2xs)] tw-block tw-text-[0.75rem] tw-text-[color:var(--cmplz-danger)]">{error}</span>}
 		</div>
 	)

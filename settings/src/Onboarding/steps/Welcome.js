@@ -87,6 +87,7 @@ const Welcome = () => {
 							value={wscEmail}
 							onChange={handleEmailChange}
 							placeholder={__("Your email address", "complianz-gdpr")}
+							description={__("This email is used for your authentication confirmation, so make sure you have access to it.", "complianz-gdpr")}
 							error={emailError}
 						/>
 					) }
