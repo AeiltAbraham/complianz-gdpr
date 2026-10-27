@@ -205,7 +205,7 @@ const CookieDatabaseSyncControl = () => {
 						'complianz-gdpr'
 					) }
 					subtitle={ __(
-						'Authenticate your domain to sync cookie descriptions automatically.',
+						'Authenticate your domain to sync cookie descriptions.',
 						'complianz-gdpr'
 					) }
 					ctaLabel={ __( 'Start', 'complianz-gdpr' ) }
