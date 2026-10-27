@@ -73,17 +73,17 @@ const Alert = ( {
 	return (
 		<div className={ compact ? CARD_COMPACT_CLS : CARD_CLS }>
 			<Icon name={ icon } color={ iconColor } size={ compact ? 24 : 48 } />
-			<div className="tw-flex tw-flex-col">
+			<div className={ compact ? 'tw-flex tw-flex-wrap tw-items-baseline tw-gap-[8px] tw-me-auto' : 'tw-flex tw-flex-col' }>
 				<div className="tw-text-[0.875rem] tw-font-semibold tw-text-[color:var(--cmplz-text,_#0f172a)]">
 					{ title }
 				</div>
 				{ subtitle && (
-					<div className="tw-my-[var(--cmplz-space-2xs,_4px)] tw-whitespace-nowrap tw-text-[0.75rem] tw-text-[color:var(--cmplz-text-muted,_#475569)]">
+					<div className={ compact ? 'tw-text-[0.8125rem] tw-text-[color:var(--cmplz-text-muted,_#475569)]' : 'tw-my-[var(--cmplz-space-2xs,_4px)] tw-whitespace-nowrap tw-text-[0.75rem] tw-text-[color:var(--cmplz-text-muted,_#475569)]' }>
 						{ subtitle }
 					</div>
 				) }
 			</div>
-			{ body && (
+			{ ! compact && body && (
 				<div className="tw-flex-1 tw-me-auto tw-min-w-[25ch] tw-text-[0.75rem] tw-leading-[1.6] tw-text-[color:var(--cmplz-text,_#0f172a)]">
 					{ body }
 				</div>

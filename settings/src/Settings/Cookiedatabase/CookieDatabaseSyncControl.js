@@ -204,6 +204,10 @@ const CookieDatabaseSyncControl = () => {
 						'Cookiedatabase Sync Unavailable',
 						'complianz-gdpr'
 					) }
+					subtitle={ __(
+						'Authenticate your domain to sync cookie descriptions automatically.',
+						'complianz-gdpr'
+					) }
 					ctaLabel={ __( 'Start', 'complianz-gdpr' ) }
 					onCtaClick={ startWscOnboarding }
 				/>
