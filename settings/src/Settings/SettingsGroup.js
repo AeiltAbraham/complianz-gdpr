@@ -8,7 +8,7 @@ import UseBannerData from "./CookieBannerPreview/CookieBannerData";
 import ErrorBoundary from "../utils/ErrorBoundary";
 import DOMPurify from "dompurify";
 import { clsx } from "../components/ui/cx";
-import PremiumSupportBlock from "./Support/PremiumSupportBlock";
+import PremiumSupportBlock, { PremiumSupportHeading } from "./Support/PremiumSupportBlock";
 
 // Settings-screen CARD frame (T-046, DB-07/DB-08; Stage-H section 1b). Migrated off the retired
 // assets/css/admin/modules/wizard.scss (`.cmplz-wizard-settings .cmplz-grid-item*` layer) + the T-045
@@ -163,7 +163,7 @@ const SettingsGroup = (props) => {
 	return (
 		<div className={clsx("cmplz-grid-item", "cmplz-"+activeGroup.id, disabledClass, cardCls)} key={activeGroup.id}>
 			{activeGroup.title && <div className={clsx("cmplz-grid-item-header", headerCls)}>
-				<h3 className="cmplz-h4">{activeGroup.title}</h3>
+				<h3 className="cmplz-h4">{premiumSupportLocked ? <PremiumSupportHeading /> : activeGroup.title}</h3>
 				{regions.length>0 && <div className={clsx("cmplz-grid-item-controls", controlsCls)}>
 					{regions.map((region, i) =>
 						<div key={i}><img className="cmplz-settings-region tw-w-[25px]" src={cmplz_settings.plugin_url+'/assets/images/'+region+'.svg'}  alt="region"/></div>

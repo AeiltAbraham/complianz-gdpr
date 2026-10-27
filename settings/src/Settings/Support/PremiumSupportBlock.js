@@ -34,11 +34,12 @@ const blockCls = clsx(
 	'cmplz-premium-support tw-flex tw-flex-col tw-items-start tw-gap-[var(--cmplz-space-s,_12px)]',
 	'tw-px-[var(--cmplz-space-l,_24px)]'
 );
-const iconCls = clsx(
-	'tw-flex tw-items-center tw-justify-center tw-w-[40px] tw-h-[40px] tw-shrink-0',
-	'tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)] tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]'
+// The Support card header carries the upsell's identity (crown + "Premium Support") via the exported heading
+// below, so the body needs no badge/heading of its own — it opens straight on the value hook.
+const headingInlineCls = clsx(
+	'tw-inline-flex tw-items-center tw-gap-[var(--cmplz-space-xs,_8px)]',
+	'[&_svg]:tw-shrink-0 [&_svg]:tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]'
 );
-const headingCls = 'tw-m-0 tw-text-[length:var(--cmplz-font-size-lg,_1rem)] tw-font-bold tw-text-[color:var(--cmplz-text,_#0f172a)]';
 const textCls = 'tw-m-0 tw-text-[length:var(--cmplz-font-size-sm,_0.8125rem)] tw-text-[color:var(--cmplz-text-muted,_#475569)]';
 const listCls = 'tw-m-0 tw-p-0 tw-list-none tw-flex tw-flex-col tw-gap-[var(--cmplz-space-xs,_8px)]';
 const liCls = clsx(
@@ -59,10 +60,15 @@ const altCls = clsx(
 	'[&_a]:tw-text-[color:var(--cmplz-accent-on-subtle,_#17608f)]'
 );
 
+// The Support settings-card header, replacing the plain "Support" title: the CTA's crown + "Premium Support".
+export const PremiumSupportHeading = () => (
+	<span className={ headingInlineCls }>
+		<Crown s={ 18 } />{ __( 'Premium Support', 'complianz-gdpr' ) }
+	</span>
+);
+
 const PremiumSupportBlock = ( { upgradeUrl = 'https://complianz.io/pricing/' } ) => (
 	<div className={ blockCls }>
-		<span className={ iconCls }><Crown s={ 22 } /></span>
-		<h4 className={ headingCls }>{ __( 'Premium Support', 'complianz-gdpr' ) }</h4>
 		<p className={ textCls }>
 			{ __( 'Get priority support from the Complianz team with a Premium license — the fastest way to a reliable answer.', 'complianz-gdpr' ) }
 		</p>
