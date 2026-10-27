@@ -1,11 +1,12 @@
 import { __ } from '@wordpress/i18n';
 import { clsx } from '../../components/ui/cx';
 
-// Premium Support upsell block (Tools > Support). Replaces the generic transparent locked-scrim + CTA overlay
-// that SettingsGroup draws over premium groups with a clear, self-standing block: crown, heading, the value
-// hook, benefits and one unambiguous CTA. Built on the C-2 design system (semantic --cmplz-* tokens with
-// literal fallbacks, so it holds up markerless too). Shown to free users in place of the (unusable) support
-// form; premium users with an invalid license keep the original check-license scrim (see SettingsGroup).
+// Premium Support upsell (Tools > Support). Replaces the generic transparent locked-scrim + CTA overlay that
+// SettingsGroup draws over premium groups with a clear upsell: crown, heading, the value hook, benefits and
+// one unambiguous CTA. It renders DIRECTLY inside the Support settings card (no second bordered/tinted box —
+// the group card IS the upsell), with only the content padding the card body expects. Built on the C-2 design
+// system (semantic --cmplz-* tokens with literal fallbacks). Shown to free users in place of the (unusable)
+// support form; premium users with an invalid license keep the original check-license scrim (see SettingsGroup).
 
 // The premium crown + check used elsewhere (Settings/Premium.js, Dashboard/FeatureCTAs) — lucide, stroke/
 // currentColor so they take the parent text colour. Defined locally per the project's existing convention.
@@ -27,15 +28,15 @@ const BENEFITS = [
 	__( 'Hands-on help with setup, integrations and region-specific compliance', 'complianz-gdpr' ),
 ];
 
+// No card chrome of its own (no border/tint/radius/own margin) — the surrounding Support settings card is the
+// block. Just the body's inline padding + a column layout.
 const blockCls = clsx(
 	'cmplz-premium-support tw-flex tw-flex-col tw-items-start tw-gap-[var(--cmplz-space-s,_12px)]',
-	'tw-mx-[var(--cmplz-space-l,_24px)] tw-p-[var(--cmplz-space-l,_24px)]',
-	'tw-rounded-[var(--cmplz-radius,_12px)] tw-border tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)]',
-	'tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)]'
+	'tw-px-[var(--cmplz-space-l,_24px)]'
 );
 const iconCls = clsx(
 	'tw-flex tw-items-center tw-justify-center tw-w-[40px] tw-h-[40px] tw-shrink-0',
-	'tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-surface,_#ffffff)] tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]'
+	'tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)] tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]'
 );
 const headingCls = 'tw-m-0 tw-text-[length:var(--cmplz-font-size-lg,_1rem)] tw-font-bold tw-text-[color:var(--cmplz-text,_#0f172a)]';
 const textCls = 'tw-m-0 tw-text-[length:var(--cmplz-font-size-sm,_0.8125rem)] tw-text-[color:var(--cmplz-text-muted,_#475569)]';
