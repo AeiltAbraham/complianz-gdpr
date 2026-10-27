@@ -9,8 +9,8 @@ import Placeholder from '../../Placeholder/Placeholder';
 // Per-audience intro copy — the seam for designing each onboarding apart (showcase). `needsEmail`
 // decides whether the email/verify input shows: new + unauthenticated users still have to verify the
 // domain, a current (authenticated) user does not. `showPremiumLicense` adds the premium-license
-// shortcut (new users only). The variant is set from the ?cmplz_onboarding override
-// (OnboardingDevLauncher) and otherwise defaults to the real first-run 'new'.
+// shortcut (new users only). The variant comes from the shared customer-preview state
+// (CustomerPreviewLauncher) and otherwise defaults to the real first-run 'new'.
 const VARIANT_INTRO = {
 	new: {
 		needsEmail: true,

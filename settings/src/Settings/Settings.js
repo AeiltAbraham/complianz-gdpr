@@ -11,6 +11,8 @@ import useProgress from '../Dashboard/Progress/ProgressData';
 import SettingsPlaceholder from '../Placeholder/SettingsPlaceholder';
 import ErrorBoundary from '../utils/ErrorBoundary';
 import { clsx } from '../components/ui/cx';
+// SHOWCASE-ONLY (design-dashboard-ctas): per-customer notice at the top of the Consent Banner page.
+import CustomerNotice from '../preview/CustomerNotice';
 
 // Settings-screen frame (T-046, DB-07/DB-08; Stage-H section 1b). The two-column body, the sticky save/nav
 // footer (scroll-progress + upsell + buttons) and the help sidebar migrated off the retired
@@ -262,6 +264,7 @@ const Settings = () => {
 		<>
 			{isExploding && ConfettiExplosion && <div className="cmplz-confetti tw-absolute tw-start-1/2"><ConfettiExplosion zIndex={999999}/></div>}
 			<div className={clsx("cmplz-wizard-settings cmplz-column-2", bodyCls)}>
+				{ selectedMainMenuItem === 'banner' && <CustomerNotice /> }
 				{groups.map((group, i) =>
 					<ErrorBoundary key={"groups-"+i} fallback={"Could not load: Banner preview"}>
 						<SettingsGroup key={i} index={i} group={group} fields={selectedFields}/>

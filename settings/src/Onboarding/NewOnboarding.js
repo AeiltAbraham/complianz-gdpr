@@ -16,6 +16,7 @@ import {
 	DialogTitle,
 } from "../components/ui/Dialog";
 import { secondaryLinkButtonCls } from "../components/ui/downloadLink";
+import { getCustomerState } from "../preview/customerState";
 
 /**
  * NewOnboarding — the website-scan onboarding/signup modal, lazy-loaded by Page.js when the URL
@@ -63,11 +64,11 @@ const NewOnboarding = () => {
 		// If the url contains cmplz_force_signup, it will force the modal to show.
 		const isForcedModal = window.location.href.indexOf('cmplz_force_signup') !== -1;
 
-		// Showcase dev override (design-dashboard-ctas): ?cmplz_onboarding=new|current|unauthenticated
-		// force-opens the modal in that audience variant regardless of the real auth/dismissed state —
-		// a VISUAL override only, the database flags are left untouched. Driven by OnboardingDevLauncher.
-		// The unauthenticated audience gets an extra service-disruption step before the normal flow.
-		const variantParam = new URLSearchParams(window.location.search).get('cmplz_onboarding');
+		// Showcase customer-preview override (design-dashboard-ctas): the shared customer state
+		// (new|current|unauthenticated, set by CustomerPreviewLauncher) picks the audience variant
+		// regardless of the real auth/dismissed state — a VISUAL override only, the DB flags are left
+		// untouched. The unauthenticated audience gets an extra service-disruption step before the flow.
+		const variantParam = getCustomerState();
 
 		// init() sets the audience + starting step exactly once, so a later effect re-run (e.g. a field
 		// refresh) can keep syncing showModal without rewinding the user to the first step.
