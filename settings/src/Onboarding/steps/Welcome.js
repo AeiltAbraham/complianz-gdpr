@@ -16,8 +16,7 @@ const VARIANT_INTRO = {
 		needsEmail: true,
 		showPremiumLicense: true,
 		paragraphs: [
-			__( "We’ve enabled a local banner. To use our automated services you need to authenticate your domain.", "complianz-gdpr" ),
-			__( "Without authentication this plugin is limited and needs manual configuration.", "complianz-gdpr" ),
+			__( "We’ve enabled a local banner. To use our automated services you need to authenticate your domain. Without authentication this plugin is limited and needs manual configuration.", "complianz-gdpr" ),
 		],
 	},
 	unauthenticated: {
