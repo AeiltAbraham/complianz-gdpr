@@ -72,7 +72,7 @@ const SettingsGroup = (props) => {
 	const {licenseStatus} = useLicense();
 	const { bannerDataLoaded} = UseBannerData();
 	let upgrade='https://complianz.io/pricing/';
-	const {subMenu, getMenuRegions, selectedSubMenuItem} = useMenu();
+	const {subMenu, getMenuRegions, selectedSubMenuItem, selectedMainMenuItem} = useMenu();
 
 	let regions = getMenuRegions();
 	//get selected regions from the regions field
@@ -150,6 +150,10 @@ const SettingsGroup = (props) => {
 		return null;
 	}
 
+	// The first premium field on a WIZARD page shows the full upsell callout; the rest get a subtle crown.
+	// Outside the wizard (Settings, Tools, …) there is no callout — every premium field gets the crown only.
+	const firstPremiumId = ( cmplz_settings.is_premium || selectedMainMenuItem !== 'wizard' ) ? null : ( selectedFields.find( ( f ) => f.premium ) || {} ).id;
+
 	return (
 		<div className={clsx("cmplz-grid-item", "cmplz-"+activeGroup.id, disabledClass, cardCls)} key={activeGroup.id}>
 			{activeGroup.title && <div className={clsx("cmplz-grid-item-header", headerCls)}>
@@ -174,7 +178,7 @@ const SettingsGroup = (props) => {
 				{activeGroup.intro &&
 					<div className={clsx("cmplz-settings-block-intro", introCls)} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize( activeGroup.intro ) } }></div>} {/* nosemgrep: react-dangerouslysetinnerhtml */}
 				{Field && selectedFields.map((field, i) =>
-					<ErrorBoundary key={"field-"+field.id} fallback={"Could not load field "+field.id}><Field key={field.id} field={field} highLightField={highLightField} /></ErrorBoundary>)
+					<ErrorBoundary key={"field-"+field.id} fallback={"Could not load field "+field.id}><Field key={field.id} field={field} highLightField={highLightField} firstPremiumId={firstPremiumId} /></ErrorBoundary>)
 				}
 			</div>
 			{ disabled && <div className={clsx("cmplz-locked", lockedScrimCls)}>

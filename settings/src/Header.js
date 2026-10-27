@@ -92,6 +92,7 @@ const Header = () => {
 				</nav>
 				<div className={RIGHT}>
 					<a className={DOC_LINK} href="https://complianz.io/docs" target="_blank" rel="noopener noreferrer">{__("Documentation", "complianz-gdpr")}</a>
+					<a className={DOC_LINK} href="https://www.iubenda.com/en/about-us" target="_blank" rel="noopener noreferrer">{__("About iubenda", "complianz-gdpr")}</a>
 					{cmplz_settings.is_premium &&
 						<a href="#tools/support"
 						   className={CTA_BUTTON}

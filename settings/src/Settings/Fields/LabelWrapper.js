@@ -28,7 +28,7 @@ const requiredCls = clsx(
 	"tw-text-[color:var(--cmplz-danger,_#d7263d)]"
 );
 
-const LabelWrapper = ({id, label, tooltip, premium, required, type, isParentLabel }) => {
+const LabelWrapper = ({id, label, tooltip, premium, premiumVariant, required, type, isParentLabel }) => {
 	if (!label || label.length===0) return null;
 
 	return (
@@ -39,7 +39,7 @@ const LabelWrapper = ({id, label, tooltip, premium, required, type, isParentLabe
 					)</span>}
 			</label>
 			<FieldTooltip tooltip={tooltip}/>
-			<Premium premium={premium} id={id}/>
+			{ premiumVariant === 'inline' && <Premium variant="inline" premium={premium} id={id}/> }
 		</div>
 	);
 };

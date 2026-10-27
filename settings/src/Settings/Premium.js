@@ -46,6 +46,7 @@ const UPSELLS = {
 	regions: {
 		Icon: Globe,
 		cta: __( 'Unlock geo-targeting', 'complianz-gdpr' ),
+		hook: __( 'Show every visitor the right privacy law automatically — with Premium.', 'complianz-gdpr' ),
 		title: __( 'Target every region automatically', 'complianz-gdpr' ),
 		body: __( "On the free plan you pick one privacy law for all visitors. With Premium, Complianz detects each visitor's location and shows the right law and banner automatically — GDPR for the EU, CCPA for California, LGPD for Brazil, and more.", 'complianz-gdpr' ),
 		benefits: [
@@ -58,6 +59,7 @@ const UPSELLS = {
 const DEFAULT_UPSELL = {
 	Icon: Crown,
 	cta: __( 'Upgrade to Pro', 'complianz-gdpr' ),
+	hook: __( 'This setting is part of Complianz Premium.', 'complianz-gdpr' ),
 	title: __( 'Unlock this with Premium', 'complianz-gdpr' ),
 	body: __( 'This option is part of Complianz Premium. Upgrade to unlock the full feature set for complete, worldwide compliance.', 'complianz-gdpr' ),
 	benefits: [
@@ -67,17 +69,37 @@ const DEFAULT_UPSELL = {
 	],
 };
 
-const triggerCls = clsx(
+// Direction B — a full-width callout banner (tinted accent strip) rendered under the question,
+// with the value hook on the left and the modal-trigger CTA on the right.
+const calloutCls = clsx(
+	'cmplz-premium-callout tw-flex tw-flex-wrap tw-items-center tw-gap-[var(--cmplz-space-s,_12px)]',
+	'tw-my-[var(--cmplz-space-s,_12px)] tw-py-[var(--cmplz-space-s,_12px)] tw-px-[var(--cmplz-space-m,_16px)]',
+	'tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)]',
+	'tw-border tw-border-solid tw-border-[color:var(--cmplz-accent-strong,_#1e73be)]'
+);
+const calloutIconCls = 'tw-flex tw-shrink-0 tw-items-center tw-justify-center tw-w-[32px] tw-h-[32px] tw-rounded-[var(--cmplz-radius-field,_6px)] tw-bg-[var(--cmplz-accent-strong,_#1e73be)] tw-text-[color:var(--cmplz-text-on-accent,_#ffffff)]';
+const hookCls = 'tw-grow tw-text-[length:var(--cmplz-font-size-sm,_0.8125rem)] tw-font-semibold tw-text-[color:var(--cmplz-accent-on-subtle,_#17608f)]';
+const ctaCls = clsx(
 	'cmplz-premium-cta tw-inline-flex tw-shrink-0 tw-items-center tw-gap-[6px] tw-whitespace-nowrap tw-cursor-pointer',
-	'tw-m-0 tw-rounded-[999px] tw-border-0 tw-py-[5px] tw-px-[12px]',
+	'tw-m-0 tw-rounded-[var(--cmplz-radius-field,_6px)] tw-border-0 tw-py-[6px] tw-px-[14px]',
 	'tw-bg-[var(--cmplz-accent-strong,_#1e73be)] tw-text-[color:var(--cmplz-text-on-accent,_#ffffff)]',
 	'tw-text-[length:var(--cmplz-font-size-sm,_0.8125rem)] tw-font-semibold tw-leading-none tw-no-underline',
 	'tw-transition-all tw-duration-300 tw-ease-[ease] hover:tw-bg-[#17608f]',
 	'focus-visible:tw-outline focus-visible:tw-outline-2 focus-visible:tw-outline-offset-1 focus-visible:tw-outline-[color:var(--cmplz-accent-strong,_#1e73be)]'
 );
+// Modal header icon badge (subtle tint).
 const badgeCls = 'tw-flex tw-items-center tw-justify-center tw-w-[44px] tw-h-[44px] tw-shrink-0 tw-rounded-[var(--cmplz-radius-s,_8px)] tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)] tw-text-[color:var(--cmplz-accent-strong,_#1e73be)]';
 
-const Premium = ( { premium, id } ) => {
+// Subtle inline variant — a small crown button sitting next to the question; opens the same modal.
+const crownBtnCls = clsx(
+	'cmplz-premium-crown tw-inline-flex tw-shrink-0 tw-items-center tw-justify-center tw-cursor-pointer',
+	'tw-m-0 tw-p-[2px] tw-border-0 tw-bg-transparent tw-rounded-[4px]',
+	'tw-text-[color:var(--cmplz-accent-strong,_#1e73be)] hover:tw-text-[color:var(--cmplz-accent-on-subtle,_#17608f)]',
+	'tw-transition-colors tw-duration-200',
+	'focus-visible:tw-outline focus-visible:tw-outline-2 focus-visible:tw-outline-offset-1 focus-visible:tw-outline-[color:var(--cmplz-accent-strong,_#1e73be)]'
+);
+
+const Premium = ( { premium, id, variant = 'callout' } ) => {
 	if ( cmplz_settings.is_premium || ! premium ) {
 		return null;
 	}
@@ -86,13 +108,27 @@ const Premium = ( { premium, id } ) => {
 	const u = UPSELLS[ id ] || DEFAULT_UPSELL;
 	const Icon = u.Icon;
 
-	return (
-		<div className="cmplz-premium tw-inline-flex">
-			<Dialog>
+	// The trigger differs by variant: a full callout banner (one per page) vs. a subtle inline crown.
+	const trigger = variant === 'inline'
+		? (
+			<DialogTrigger asChild>
+				<button type="button" className={crownBtnCls} aria-label={u.cta} title={u.cta}><Crown s={16} /></button>
+			</DialogTrigger>
+		)
+		: (
+			<div className={calloutCls}>
+				<div className={calloutIconCls}><Icon s={20} /></div>
+				<span className={hookCls}>{ u.hook }</span>
 				<DialogTrigger asChild>
-					<button type="button" className={triggerCls}><Icon s={14} />{ u.cta }</button>
+					<button type="button" className={ctaCls}>{ u.cta }</button>
 				</DialogTrigger>
-				<DialogContent size="md">
+			</div>
+		);
+
+	return (
+		<Dialog>
+			{ trigger }
+			<DialogContent size="md">
 					<div className="tw-flex tw-flex-col tw-gap-[var(--cmplz-space-m,_16px)]">
 						<div className={badgeCls}><Icon s={24} /></div>
 						<div className="tw-flex tw-flex-col tw-gap-[var(--cmplz-space-2xs,_4px)]">
@@ -112,9 +148,8 @@ const Premium = ( { premium, id } ) => {
 							<a href={url} target="_blank" rel="noopener noreferrer" className={primaryLinkButtonCls}>{ __( 'Go Pro', 'complianz-gdpr' ) }</a>
 						</div>
 					</div>
-				</DialogContent>
-			</Dialog>
-		</div>
+			</DialogContent>
+		</Dialog>
 	);
 };
 
