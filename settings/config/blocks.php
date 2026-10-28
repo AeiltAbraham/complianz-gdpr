@@ -43,30 +43,60 @@ if (!function_exists('cmplz_blocks')) {
 				'width'   => 1,
 				'variant' => 'edge-to-edge',
 			],
-			[
-				'id'       => 'tips_tricks',
-				'header' => [
-					'type' => 'text',
-					'data' => __( "Tips & Tricks", 'complianz-gdpr' ),
-				],
-				'content'  => ['data' => 'TipsTricks' ],
-				'footer'   => [ 'data' => 'TipsTricksFooter' ],
+			array(
+				'id'      => 'cta-premium',
+				'content' => array(
+					'type' => 'react',
+					'data' => 'FeatureCTA',
+				),
+				'cta'     => array(
+					'icon'    => 'crown',
+					'tint'    => 'accent-filled',
+					'primary' => true,
+					'title'   => __( 'Upgrade to Premium', 'complianz-gdpr' ),
+					'desc'    => __( 'Get the most out of Complianz — unlock every premium feature for complete, worldwide compliance.', 'complianz-gdpr' ),
+					'button'  => __( 'Go Pro', 'complianz-gdpr' ),
+					'href'    => 'https://complianz.io/pricing/',
+				),
 				'width'   => 2,
 				'variant' => 'default',
-			],
-			[
-				'id'       => 'other-plugins',
-				'header' => [
+			),
+			array(
+				'id'      => 'cta-tcf',
+				'content' => array(
 					'type' => 'react',
-					'data' => 'OtherPluginsHeader'
-				],
-				'title'    => __( "Other Plugins", 'complianz-gdpr' ),
-				'help'     => __( 'A help text', 'complianz-gdpr' ),
-				'content'  => [ 'type' => 'react', 'data' => 'OtherPlugins' ],
-				'footer'   => [ 'type' => 'html', 'data' => '' ],
-				'width'   => 2,
-				'variant' => 'borderless',
-			],
+					'data' => 'FeatureCTA',
+				),
+				'cta'     => array(
+					'icon'    => 'tcf',
+					'tint'    => 'accent',
+					'primary' => false,
+					'title'   => __( 'TCF v2.4', 'complianz-gdpr' ),
+					'desc'    => __( 'Enable the IAB Transparency & Consent Framework v2.4 for programmatic advertising.', 'complianz-gdpr' ),
+					'button'  => __( 'Learn more', 'complianz-gdpr' ),
+					'href'    => 'https://complianz.io/',
+				),
+				'width'   => 1,
+				'variant' => 'default',
+			),
+			array(
+				'id'      => 'cta-geolocation',
+				'content' => array(
+					'type' => 'react',
+					'data' => 'FeatureCTA',
+				),
+				'cta'     => array(
+					'icon'    => 'globe',
+					'tint'    => 'success',
+					'primary' => false,
+					'title'   => __( 'Geolocation', 'complianz-gdpr' ),
+					'desc'    => __( 'Show the right consent banner for every region with geo-targeting.', 'complianz-gdpr' ),
+					'button'  => __( 'Learn more', 'complianz-gdpr' ),
+					'href'    => 'https://complianz.io/',
+				),
+				'width'   => 1,
+				'variant' => 'default',
+			),
 		];
 
 		return apply_filters( 'cmplz_blocks', $blocks );

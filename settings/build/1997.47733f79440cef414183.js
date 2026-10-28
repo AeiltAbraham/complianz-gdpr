@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkcomplianz_settings||=[]).push([[1997],{31997(e,n,s){var l=s(25338),i=s(10790);s.d(n,["default",0,({isOpen:e,title:n,onClose:s,children:h})=>(0,i.jsx)(l.lG,{open:e,onOpenChange:e=>{e||s()},children:(0,i.jsxs)(l.Cf,{children:[(0,i.jsx)(l.L3,{children:n}),h]})})])}}]);

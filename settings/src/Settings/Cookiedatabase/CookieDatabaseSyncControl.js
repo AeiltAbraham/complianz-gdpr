@@ -199,16 +199,13 @@ const CookieDatabaseSyncControl = () => {
 		<>
 			{ wscLocked && (
 				<Alert
+					compact
 					title={ __(
 						'Cookiedatabase Sync Unavailable',
 						'complianz-gdpr'
 					) }
 					subtitle={ __(
-						'We need to authenticate this domain.',
-						'complianz-gdpr'
-					) }
-					body={ __(
-						'The cookiedatabase.org sync requires Website Scan authentication. It only takes a second!',
+						'Authenticate your domain to sync cookie descriptions.',
 						'complianz-gdpr'
 					) }
 					ctaLabel={ __( 'Start', 'complianz-gdpr' ) }

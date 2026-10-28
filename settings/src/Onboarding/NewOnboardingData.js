@@ -3,6 +3,18 @@ import { create } from 'zustand';
 import { __ } from '@wordpress/i18n';
 
 const steps = {
+	serviceDisruption: { // unauthenticated audience only — precedes the default onboarding (showcase)
+		title: __("Your Complianz services are paused", "complianz-gdpr"),
+		prevButton: __("Not now", "complianz-gdpr"),
+		nextButton: __("Authenticate now", "complianz-gdpr"),
+		prevButtonGoTo: null, // on Not now, dismiss the onboarding (handled in goToPrevStep)
+		nextButtonGoTo: 'welcome' // on Authenticate now, continue into the normal verify flow
+	},
+	bannerUpdate: { // authenticated "current" audience only — single what's-new + limits notice (showcase)
+		title: __("You have a new cookie banner", "complianz-gdpr"),
+		nextButton: __("Understood", "complianz-gdpr"),
+		nextButtonGoTo: false // single step — "Understood" closes the modal (handled in goToNextStep)
+	},
 	welcome: { // thanks for updating
 		title: __("Welcome to Complianz", "complianz-gdpr"),
 		prevButton: __("No, Thanks", "complianz-gdpr"),
@@ -24,29 +36,19 @@ const steps = {
 		prevButtonGoTo: 'plugins', // on Skip, go to plugins step
 		nextButtonGoTo: 'plugins' // on Continue, newsletter sign up, go to plugins step
 	},
-	plugins: { // list plugins with checkbox
-		title: __("Install quickly for free", "complianz-gdpr"),
-		prevButton: __("Skip", "complianz-gdpr"),
-		nextButton: __("Continue", "complianz-gdpr"), // wait the plugin installation, then go to thankyou step
-		nextButtonSecondary: __("Install", "complianz-gdpr"), // wait the plugin installation, then go to thankyou step
-		nextButtonThird: __("Installing ...", "complianz-gdpr"), // wait the plugin installation, then go to thankyou step
-		prevButtonGoTo: 'thankYou', // on Skip, go to thankyou step
-		nextButtonGoTo: 'thankYou' // on Install, wait the installation, then change button to thankYou step
-	},
-	thankYou: {
-		title: __("You’re almost there...", "complianz-gdpr"),
-		nextButton: __("Close", "complianz-gdpr"),
-		nextButtonGoTo: false // on Install, wait the installation, then change button to thankYou step
-		//  clsoe the onboarding
+	plugins: { // final step — "you're all set, start the wizard" (plugin install removed)
+		title: __("You’re all set", "complianz-gdpr"),
+		nextButton: __("Start the Wizard", "complianz-gdpr"),
+		nextButtonGoTo: false // terminal — closes the onboarding and opens the wizard (see goToNextStep)
 	}
 }
 
 const stepDismissOnPrev = {
+	serviceDisruption: null, // "Not now" closes the modal directly (see goToPrevStep), no skip call
 	welcome:    'websitescan',
 	terms:      'websitescan',
 	newsletter: 'newsletter',
 	plugins:    null,
-	thankYou:   null,
 };
 
 const suggestedPlugins = [
@@ -119,6 +121,13 @@ const useNewOnboardingData = create((set, get) => ({
 	isModalOpen: true,
 	isOnboardingComplete: false,
 	currentStep: 'welcome',
+	// Showcase dev override: which onboarding audience is being previewed —
+	// 'new' | 'current' | 'unauthenticated'. Set from the shared customer-preview state
+	// (CustomerPreviewLauncher, see preview/customerState.js) and read by the steps to diverge
+	// copy per audience. Defaults to 'new' so the real first-run auto-show behaves as before.
+	variant: 'new',
+	setVariant: (variant) => set({ variant }),
+	setCurrentStep: (currentStep) => set({ currentStep }),
 	stepProcessing: false,
 	isLoading: false,
 	isContentLoading: true,
@@ -207,6 +216,8 @@ const useNewOnboardingData = create((set, get) => ({
 		}
 
 		const url = new URL(window.location.href);
+		// Only drop `websitescan` (closes the modal). The showcase `cmplz_customer` preview state is left
+		// in place so the page behind the modal keeps reflecting the selected customer.
 		url.searchParams.delete('websitescan');
 		window.history.pushState({}, '', url.href);
 		set({ isModalOpen: false })
@@ -219,21 +230,33 @@ const useNewOnboardingData = create((set, get) => ({
 	},
 	//
 	// buttons actions
-	goToPrevStep: () => set((state) => { // prev step or skip
-		const newStep = steps[state.currentStep]?.prevButtonGoTo ?? null;
-		if (!newStep) return state;
+	goToPrevStep: () => { // prev step or skip
+		// The service-disruption notice has no previous step — "Not now" dismisses the onboarding.
+		if (get().currentStep === 'serviceDisruption') {
+			get().closeModal(true);
+			return;
+		}
+		set((state) => {
+			const newStep = steps[state.currentStep]?.prevButtonGoTo ?? null;
+			if (!newStep) return state;
 
-		const dismissStep = stepDismissOnPrev[state.currentStep];
-		if (dismissStep) get().skipStep(dismissStep);
+			const dismissStep = stepDismissOnPrev[state.currentStep];
+			if (dismissStep) get().skipStep(dismissStep);
 
-		return { ...state, currentStep: newStep, stepProcessing: false };
-	}),
+			return { ...state, currentStep: newStep, stepProcessing: false };
+		});
+	},
 	goToNextStep: () => set(async (state) => {
 		let newStep = steps[state.currentStep].nextButtonGoTo;
 
 		set({ stepProcessing: true });
 		try {
 			switch (state.currentStep) {
+				case 'bannerUpdate':
+					// Single-step notice for authenticated users — "Understood" just closes it.
+					// closeModal() with no arg does NOT persist a dismissal (DB-neutral, showcase).
+					get().closeModal();
+					return;
 				case 'welcome':
 					if (state.wscEmail.length === 0) {
 						set({ enableWsc: false });
@@ -271,34 +294,13 @@ const useNewOnboardingData = create((set, get) => ({
 					set({ isLoading: false });
 
 					break;
-				case 'plugins':
-					const isEnabled = get().enablePluginInstallation;
-					if (!isEnabled) break;
-
-					const newPlugins = get().plugins.filter((p) => p.toProcess);
-					if (newPlugins.length <= 0) break;
-
-					const defaultPlugins = get().suggestedPlugins;
-
-					set({ isInstalling: true });
-					for (const plugin of newPlugins) {
-						if (plugin.status === 'not-installed') {
-							// await installPlugin(defaultPlugins, plugin, set);
-							await handlePluginInstallation(defaultPlugins, 'install_plugin', plugin, set);
-						} else if (plugin.status === 'installed') {
-							// await activatePlugin(defaultPlugins, plugin, set);
-							await handlePluginInstallation(defaultPlugins, 'activate_plugin', plugin, set);
-						}
-					}
-					set({ isInstalling: false, stepProcessing: false, enablePluginInstallation: false });
-
-					return;
-				// break;
-				case 'thankYou':
-					set({ isOnboardingComplete: true });
-					get().closeModal();
-					break;
-				default:
+					case 'plugins':
+						// Final step — "Start the Wizard" ends onboarding and opens the wizard.
+						set({ isOnboardingComplete: true });
+						get().closeModal();
+						window.location.hash = '#wizard';
+						return;
+					default:
 					break;
 			}
 			set({ currentStep: newStep, stepProcessing: false, });

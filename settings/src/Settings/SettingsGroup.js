@@ -8,6 +8,7 @@ import UseBannerData from "./CookieBannerPreview/CookieBannerData";
 import ErrorBoundary from "../utils/ErrorBoundary";
 import DOMPurify from "dompurify";
 import { clsx } from "../components/ui/cx";
+import PremiumSupportBlock, { PremiumSupportHeading } from "./Support/PremiumSupportBlock";
 
 // Settings-screen CARD frame (T-046, DB-07/DB-08; Stage-H section 1b). Migrated off the retired
 // assets/css/admin/modules/wizard.scss (`.cmplz-wizard-settings .cmplz-grid-item*` layer) + the T-045
@@ -72,7 +73,7 @@ const SettingsGroup = (props) => {
 	const {licenseStatus} = useLicense();
 	const { bannerDataLoaded} = UseBannerData();
 	let upgrade='https://complianz.io/pricing/';
-	const {subMenu, getMenuRegions, selectedSubMenuItem} = useMenu();
+	const {subMenu, getMenuRegions, selectedSubMenuItem, selectedMainMenuItem} = useMenu();
 
 	let regions = getMenuRegions();
 	//get selected regions from the regions field
@@ -145,15 +146,24 @@ const SettingsGroup = (props) => {
 	let helplinkText = activeGroup.helpLink_text ? activeGroup.helpLink_text : __("Instructions","complianz-gdpr");
 	let disabledClass = disabled ? 'cmplz-disabled' : '';
 
+	// Tools > Support: for free users, replace the generic transparent locked-scrim + CTA overlay drawn over
+	// the (unusable) support form with a clear, self-standing Premium Support block + CTA. Premium users with
+	// an invalid license keep the original check-license scrim below.
+	const premiumSupportLocked = disabled && !cmplz_settings.is_premium && activeGroup.id === 'premiumsupport';
+
 	//if all fields are conditionally disabled, hide the entire group
 	if ( selectedFields.filter((field)=> ( field.conditionallyDisabled && field.conditionallyDisabled===true ) || (field.visible && field.visible===false) ).length===selectedFields.length ) {
 		return null;
 	}
 
+	// The first premium field on a WIZARD page shows the full upsell callout; the rest get a subtle crown.
+	// Outside the wizard (Settings, Tools, …) there is no callout — every premium field gets the crown only.
+	const firstPremiumId = ( cmplz_settings.is_premium || selectedMainMenuItem !== 'wizard' ) ? null : ( selectedFields.find( ( f ) => f.premium ) || {} ).id;
+
 	return (
 		<div className={clsx("cmplz-grid-item", "cmplz-"+activeGroup.id, disabledClass, cardCls)} key={activeGroup.id}>
 			{activeGroup.title && <div className={clsx("cmplz-grid-item-header", headerCls)}>
-				<h3 className="cmplz-h4">{activeGroup.title}</h3>
+				<h3 className="cmplz-h4">{premiumSupportLocked ? <PremiumSupportHeading /> : activeGroup.title}</h3>
 				{regions.length>0 && <div className={clsx("cmplz-grid-item-controls", controlsCls)}>
 					{regions.map((region, i) =>
 						<div key={i}><img className="cmplz-settings-region tw-w-[25px]" src={cmplz_settings.plugin_url+'/assets/images/'+region+'.svg'}  alt="region"/></div>
@@ -171,13 +181,19 @@ const SettingsGroup = (props) => {
 				</div>}
 			</div>}
 			<div className={clsx("cmplz-grid-item-content", contentCls)}>
-				{activeGroup.intro &&
-					<div className={clsx("cmplz-settings-block-intro", introCls)} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize( activeGroup.intro ) } }></div>} {/* nosemgrep: react-dangerouslysetinnerhtml */}
-				{Field && selectedFields.map((field, i) =>
-					<ErrorBoundary key={"field-"+field.id} fallback={"Could not load field "+field.id}><Field key={field.id} field={field} highLightField={highLightField} /></ErrorBoundary>)
-				}
+				{premiumSupportLocked ? (
+					<PremiumSupportBlock upgradeUrl={upgrade} />
+				) : (
+					<>
+						{activeGroup.intro &&
+							<div className={clsx("cmplz-settings-block-intro", introCls)} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize( activeGroup.intro ) } }></div>} {/* nosemgrep: react-dangerouslysetinnerhtml */}
+						{Field && selectedFields.map((field, i) =>
+							<ErrorBoundary key={"field-"+field.id} fallback={"Could not load field "+field.id}><Field key={field.id} field={field} highLightField={highLightField} firstPremiumId={firstPremiumId} /></ErrorBoundary>)
+						}
+					</>
+				)}
 			</div>
-			{ disabled && <div className={clsx("cmplz-locked", lockedScrimCls)}>
+			{ disabled && !premiumSupportLocked && <div className={clsx("cmplz-locked", lockedScrimCls)}>
 				<div className={clsx("cmplz-locked-overlay", lockedOverlayCls)}>
 					<span className="cmplz-task-status cmplz-premium">{__("Upgrade","complianz-gdpr")}</span>
 					<span>

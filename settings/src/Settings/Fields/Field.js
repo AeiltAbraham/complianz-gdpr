@@ -3,6 +3,7 @@ import useFields from '../../Settings/Fields/FieldsData';
 import {__} from '@wordpress/i18n';
 import Icon from "../../utils/Icon";
 import LabelWrapper from "./LabelWrapper";
+import Premium from "../Premium";
 import DOMPurify from "dompurify";
 import Placeholder from "../../Placeholder/Placeholder";
 import { clsx } from "../../components/ui/cx";
@@ -236,7 +237,9 @@ const COMPONENT_MAP = {
 	}
 };
 
-const Field = ({field, highLightField, isCustomField, customChangeHandler}) => {
+const Field = ({field, highLightField, isCustomField, customChangeHandler, firstPremiumId}) => {
+	// Upsell variant: the first premium field on the page gets the full callout, the rest a subtle crown.
+	const premiumVariant = ( field && field.premium ) ? ( field.id === firstPremiumId ? 'callout' : 'inline' ) : null;
 	const {updateField, getFieldValue, setChangedField} = useFields();
 	const [Component, setComponent] = useState(null);
 	const [error, setError] = useState(null);
@@ -357,11 +360,13 @@ const Field = ({field, highLightField, isCustomField, customChangeHandler}) => {
 						label={label}
 						tooltip={field.tooltip}
 						premium={field.premium}
+						premiumVariant={premiumVariant}
 						required={field.required}
 						type={field.type}
 						isParentLabel={false}
 					/>
 				}
+				{ premiumVariant === 'callout' && <Premium variant="callout" premium={field.premium} id={field.id}/> }
 				{Component && (
 					<Component
 						id={field.id}

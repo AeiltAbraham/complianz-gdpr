@@ -48,7 +48,7 @@ const AlertDialogContent = forwardRef(
 					ref={ ref }
 					className={ clsx(
 						'tw-relative tw-w-full tw-bg-[var(--cmplz-surface)] tw-text-[color:var(--cmplz-text)]',
-						'tw-rounded-[var(--cmplz-radius)] tw-p-[var(--cmplz-space-m)] tw-shadow-2xl',
+						'tw-rounded-[var(--cmplz-radius)] tw-p-[var(--cmplz-space-xl)] tw-shadow-2xl',
 						'focus:tw-outline-none',
 						sizes[ size ],
 						className

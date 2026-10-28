@@ -1,5 +1,6 @@
 import Icon from './Icon';
 import useFields from '../Settings/Fields/FieldsData';
+import { clsx } from '../components/ui/cx';
 
 /**
  * Generic alert/notice block component.
@@ -37,11 +38,25 @@ import useFields from '../Settings/Fields/FieldsData';
  * @param root0.onCtaClick
  */
 
-// The callout card — warning-tinted, matching the WebSiteScanStatus WSC_ALERT_CLS pattern, plus the
-// legacy flex/gap/padding layout (gap 20px ≈ space-l, padding 20px ≈ space-l). Body text #0f172a is
-// >15:1 on the warning tint.
+// The callout card — C-2 card chrome (surface + slate border + soft shadow + radius), matching the
+// dashboard CTA cards and the upgrade modal. The status colour lives in the icon badge, not the box
+// (design iteration 2026-10-27, "Option B" — replacing the former warning-tinted Bootstrap-style alert).
+const SHADOW = 'tw-shadow-[0_1px_3px_0_rgba(15,23,42,0.10)]';
 const CARD_CLS =
-	'tw-flex tw-flex-wrap tw-items-center tw-gap-[var(--cmplz-space-l,_24px)] tw-rounded-[var(--cmplz-radius,_12px)] tw-border tw-border-solid tw-border-[color:var(--cmplz-warning,_#eab308)] tw-bg-[var(--cmplz-warning-surface,_#fbf4da)] tw-p-[var(--cmplz-space-l,_24px)]';
+	'tw-flex tw-flex-wrap tw-items-center tw-gap-[var(--cmplz-space-l,_24px)] tw-rounded-[var(--cmplz-radius,_12px)] tw-border tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)] tw-bg-[var(--cmplz-surface,_#ffffff)] ' + SHADOW + ' tw-p-[var(--cmplz-space-l,_24px)]';
+
+// Compact variant — tighter gap/padding + radius-s. Used for terse alerts (title + inline reason + CTA).
+const CARD_COMPACT_CLS =
+	'tw-flex tw-flex-wrap tw-items-center tw-gap-[var(--cmplz-space-s,_12px)] tw-rounded-[var(--cmplz-radius-s,_8px)] tw-border tw-border-solid tw-border-[color:var(--cmplz-border,_#e2e8f0)] tw-bg-[var(--cmplz-surface,_#ffffff)] ' + SHADOW + ' tw-py-[var(--cmplz-space-s,_12px)] tw-px-[var(--cmplz-space-m,_16px)]';
+
+// Icon badge — a small tinted square carrying the status colour (the only colour on the card). The tint
+// follows iconColor (warning by default); the glyph uses a readable shade on that tint.
+const BADGE_TINT = {
+	blue: 'tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)]',
+	'dark-blue': 'tw-bg-[var(--cmplz-accent-subtle,_#e3f2ff)]',
+	green: 'tw-bg-[var(--cmplz-success-surface,_#e9f6ec)]',
+};
+const BADGE_BASE = 'tw-flex tw-items-center tw-justify-center tw-shrink-0 tw-rounded-[var(--cmplz-radius-s,_8px)]';
 
 // CTA button/anchor — the secondary-button look (white fill, accent-strong text/border) as a complete
 // literal class string (ADR-013), with `tw-border-solid` so it renders bordered in this markerless
@@ -59,25 +74,28 @@ const Alert = ( {
 	ctaUrl,
 	ctaFieldId = '',
 	onCtaClick,
+	compact = false,
 } ) => {
 	const resolvedUrl = ctaUrl
 		? useFields.getState().getReferralUrl( 'warnings', ctaFieldId, ctaUrl )
 		: null;
 
 	return (
-		<div className={ CARD_CLS }>
-			<Icon name={ icon } color={ iconColor } size={ 48 } />
-			<div className="tw-flex tw-flex-col">
+		<div className={ compact ? CARD_COMPACT_CLS : CARD_CLS }>
+			<span className={ clsx( BADGE_BASE, compact ? 'tw-w-[32px] tw-h-[32px]' : 'tw-w-[44px] tw-h-[44px]', BADGE_TINT[ iconColor ] || 'tw-bg-[var(--cmplz-warning-surface,_#fbf4da)]' ) }>
+				<Icon name={ icon } color={ ( iconColor === 'orange' || iconColor === 'yellow' ) ? 'orange-strong' : iconColor } size={ compact ? 20 : 24 } />
+			</span>
+			<div className={ compact ? 'tw-flex tw-flex-wrap tw-items-baseline tw-gap-[8px] tw-me-auto' : 'tw-flex tw-flex-col' }>
 				<div className="tw-text-[0.875rem] tw-font-semibold tw-text-[color:var(--cmplz-text,_#0f172a)]">
 					{ title }
 				</div>
 				{ subtitle && (
-					<div className="tw-my-[var(--cmplz-space-2xs,_4px)] tw-whitespace-nowrap tw-text-[0.75rem] tw-text-[color:var(--cmplz-text-muted,_#475569)]">
+					<div className={ compact ? 'tw-text-[0.8125rem] tw-text-[color:var(--cmplz-text-muted,_#475569)]' : 'tw-my-[var(--cmplz-space-2xs,_4px)] tw-whitespace-nowrap tw-text-[0.75rem] tw-text-[color:var(--cmplz-text-muted,_#475569)]' }>
 						{ subtitle }
 					</div>
 				) }
 			</div>
-			{ body && (
+			{ ! compact && body && (
 				<div className="tw-flex-1 tw-me-auto tw-min-w-[25ch] tw-text-[0.75rem] tw-leading-[1.6] tw-text-[color:var(--cmplz-text,_#0f172a)]">
 					{ body }
 				</div>

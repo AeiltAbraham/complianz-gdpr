@@ -1,18 +1,22 @@
-import { useEffect, useState } from "@wordpress/element";
+import { useEffect, useRef, useState } from "@wordpress/element";
+import { __ } from "@wordpress/i18n";
 import useFields from "../Settings/Fields/FieldsData";
 import { useNewOnboardingData, steps } from "./NewOnboardingData"
 import { OnboardingModalClose } from "./components/Close"
 import OnboardingButton from './components/Button';
+import ServiceDisruption from './steps/ServiceDisruption';
+import BannerUpdate from './steps/BannerUpdate';
 import Welcome from './steps/Welcome';
 import Terms from './steps/Terms';
 import Newsletter from './steps/Newsletter';
 import Plugins from './steps/Plugins';
-import ThankYou from './steps/ThankYou';
 import {
 	Dialog,
 	DialogContent,
 	DialogTitle,
 } from "../components/ui/Dialog";
+import { secondaryLinkButtonCls } from "../components/ui/downloadLink";
+import { getCustomerState } from "../preview/customerState";
 
 /**
  * NewOnboarding — the website-scan onboarding/signup modal, lazy-loaded by Page.js when the URL
@@ -36,6 +40,8 @@ const NewOnboarding = () => {
 		currentStep,
 		closeModal,
 		isContentLoading,
+		setVariant,
+		setCurrentStep,
 	} = useNewOnboardingData();
 
 	const {
@@ -44,6 +50,8 @@ const NewOnboarding = () => {
 	} = useFields();
 
 	const [showModal, setShowModal] = useState(false);
+	// Guards the one-time audience/starting-step init so the effect re-running never resets navigation.
+	const didInit = useRef(false);
 
 	// This useEffect checks if the wscClientId and wscClientSecret exist.
 	// If they don't exist, it shows the modal. Otherwise, it closes/reset the modal.
@@ -56,15 +64,44 @@ const NewOnboarding = () => {
 		// If the url contains cmplz_force_signup, it will force the modal to show.
 		const isForcedModal = window.location.href.indexOf('cmplz_force_signup') !== -1;
 
+		// Showcase customer-preview override (design-dashboard-ctas): the shared customer state
+		// (new|current|unauthenticated, set by CustomerPreviewLauncher) picks the audience variant
+		// regardless of the real auth/dismissed state — a VISUAL override only, the DB flags are left
+		// untouched. The unauthenticated audience gets an extra service-disruption step before the flow.
+		const variantParam = getCustomerState();
+
+		// init() sets the audience + starting step exactly once, so a later effect re-run (e.g. a field
+		// refresh) can keep syncing showModal without rewinding the user to the first step.
+		const init = (variant) => {
+			if (didInit.current) return;
+			didInit.current = true;
+			setVariant(variant);
+			if (variant === 'unauthenticated') {
+				setCurrentStep('serviceDisruption');
+			} else if (variant === 'current') {
+				// Authenticated users skip the full flow — a single what's-new/limits notice.
+				setCurrentStep('bannerUpdate');
+			}
+		};
+
+		if (['new', 'current', 'unauthenticated'].includes(variantParam)) {
+			init(variantParam);
+			setShowModal(true);
+			return;
+		}
+
 		if (!wscClientId || !wscClientSecret) {
+			// Real first-run / not-yet-authenticated state.
+			init('new');
 			setShowModal(true);
 		} else if (isForcedModal) {
+			init('current');
 			setShowModal(true);
 		} else {
 			// closeModal change the state and remove websitescan from url
 			closeModal();
 		}
-	}, [fieldsLoaded, closeModal, getFieldValue, setShowModal]);
+	}, [fieldsLoaded, closeModal, getFieldValue, setShowModal, setVariant, setCurrentStep]);
 
 	if (!isModalOpen || !showModal) return null;
 
@@ -89,15 +126,26 @@ const NewOnboarding = () => {
 				</div>
 
 				<div className="tw-relative tw-text-[0.8125rem]">
+					{currentStep === 'serviceDisruption' && <ServiceDisruption />}
+					{currentStep === 'bannerUpdate' && <BannerUpdate />}
 					{currentStep === 'welcome' && <Welcome />}
 					{currentStep === 'terms' && <Terms />}
 					{currentStep === 'newsletter' && <Newsletter />}
 					{currentStep === 'plugins' && <Plugins />}
-					{currentStep === 'thankYou' && <ThankYou />}
 				</div>
 
 				<div className="tw-flex tw-items-center tw-justify-between tw-gap-[var(--cmplz-space-m)] tw-border-t tw-border-solid tw-border-[color:var(--cmplz-border)] tw-pt-[var(--cmplz-space-m)] max-[576px]:tw-flex-col-reverse">
-					{currentStep !== 'thankYou' && <OnboardingButton type="prev" />}
+					{currentStep !== 'plugins' && currentStep !== 'bannerUpdate' && <OnboardingButton type="prev" />}
+					{currentStep === 'bannerUpdate' && (
+						<a
+							href="https://complianz.io/docs"
+							target="_blank"
+							rel="noopener noreferrer"
+							className={secondaryLinkButtonCls + ' max-[576px]:tw-w-full max-[576px]:tw-justify-center'}
+						>
+							{__('Why did your banner change?', 'complianz-gdpr')}
+						</a>
+					)}
 					<OnboardingButton type="next" />
 				</div>
 			</DialogContent>

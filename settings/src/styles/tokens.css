@@ -44,6 +44,9 @@
   --cmplz-success: #1f7a34;
   --cmplz-warning: #eab308;
   --cmplz-danger: #d7263d;
+  /* Premium accent (SHOWCASE, design-dashboard-ctas): a gold for the premium crown signifier, chosen to
+   * contrast the predominantly blue UI so "premium" reads at a glance. Used only by the lucide Crown icon. */
+  --cmplz-premium-gold: #d4a017;
 
   /* Status-surface tints (T-045, DB-08): light washes derived from the C-2 status hues above,
    * for faded status backgrounds the solid hues can't give — the invalid-field halo, save-highlight
@@ -77,6 +80,7 @@
   --cmplz-space-s: 12px;
   --cmplz-space-m: 16px;
   --cmplz-space-l: 24px;
+  --cmplz-space-xl: 32px;
 
   /* Typography (base; the scale below adds the heading/caption steps) */
   --cmplz-font-size: 0.875rem;

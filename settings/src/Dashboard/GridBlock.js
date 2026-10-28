@@ -13,6 +13,7 @@ import OtherPlugins from "./OtherPlugins/OtherPlugins";
 import TipsTricks from "./TipsTricks/TipsTricks";
 import TipsTricksFooter from "./TipsTricks/TipsTricksFooter";
 import OtherPluginsHeader from "./OtherPlugins/OtherPluginsHeader";
+import FeatureCTA from "./FeatureCTAs/FeatureCTA";
 import ErrorBoundary from "../utils/ErrorBoundary";
 
 /*
@@ -33,6 +34,7 @@ var dynamicComponents = {
 	"Tools": Tools,
     "OtherPluginsHeader": OtherPluginsHeader,
     "OtherPlugins": OtherPlugins,
+    "FeatureCTA": FeatureCTA,
 };
 
 // Dashboard GridBlock (T-048, DB-17 / C-4; Stage-H Dashboard). Reads the ADR-015 forward width/variant
@@ -111,13 +113,15 @@ const GridBlock = ({block}) => {
 	if ( width && ! WIDTH_CLASS[ width ] ) {
 		console.warn( 'cmplz: dashboard block "' + blockData.id + '" requested unsupported width ' + width + ' — falling back to span 1.' );
 	}
-	const className = clsx("cmplz-grid-item", "cmplz-" + blockData.id, cardCls(variant, width));
+	// A `fullWidth` block spans the whole auto-fit grid row (grid-column: 1 / -1) — used by the
+	// feature-CTA row so its internal responsive card grid fills the dashboard width (ADR-013 literal).
+	const className = clsx("cmplz-grid-item", "cmplz-" + blockData.id, cardCls(variant, width), blockData.fullWidth && "tw-col-span-full");
 	const footer =block.footer ? block.footer.data : false;
 
 	return (
 		<ErrorBoundary fallback={"Could not load:"+' '+blockData.id}>
 			<div key={"block-"+blockData.id} className={className}>
-				<div className={clsx("cmplz-grid-item-header", headerCls(variant))}>
+				{blockData.header && <div className={clsx("cmplz-grid-item-header", headerCls(variant))}>
 					{blockData.header.type==='text' && <>
 						<h3 className="cmplz-grid-title cmplz-h4 tw-m-0">{ blockData.header.data }</h3>
 						<div className="cmplz-grid-item-controls tw-flex tw-items-center tw-gap-[var(--cmplz-space-s,_12px)]">
@@ -128,8 +132,8 @@ const GridBlock = ({block}) => {
 					{blockData.header.type==='react' && <>
 						{ wp.element.createElement(dynamicComponents[blockData.header.data])}
 					</>}
-				</div>
-				 <div className={clsx("cmplz-grid-item-content", contentCls(variant))}>{wp.element.createElement(dynamicComponents[block.content.data])}</div>
+				</div>}
+				 <div className={clsx("cmplz-grid-item-content", contentCls(variant))}>{wp.element.createElement(dynamicComponents[block.content.data], {block})}</div>
 
 				{!footer && <div className="cmplz-grid-item-footer"></div>}
 				{footer && <div className={clsx("cmplz-grid-item-footer", footerCls, "empty:tw-hidden")}>{wp.element.createElement(dynamicComponents[block.footer.data])}</div>}

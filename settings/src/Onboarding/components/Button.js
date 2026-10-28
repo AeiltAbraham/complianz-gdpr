@@ -16,29 +16,21 @@ const OnboardingButton = ({ type, ...otherProps }) => {
 		goToPrevStep,
 		nextStepDisabled,
 		prevStepDisabled,
-		enablePluginInstallation,
 		isInstalling,
 		isLoading,
 		currentStep
 	} = useNewOnboardingData();
 
-	const [prevButtonLabel] = useState(steps[currentStep].prevButton);
+	// Derive the prev label directly so it tracks the current step (the button stays mounted across
+	// steps, so a one-time useState would pin it to the first step's label — wrong once a step is
+	// inserted ahead of the flow, e.g. the unauthenticated service-disruption notice).
+	const prevButtonLabel = steps[currentStep].prevButton;
 	const [nextButtonLabel, setNextButtonLabel] = useState(steps[currentStep].nextButton);
 	const [buttonDisabledStatus, setButtonDisabledStatus] = useState(false);
 
 	useEffect(() => {
-		if (currentStep === 'plugins') {
-			if (isInstalling) {
-				setNextButtonLabel(steps[currentStep].nextButtonThird); // installing ...
-			} else if (enablePluginInstallation) {
-				setNextButtonLabel(steps[currentStep].nextButtonSecondary); // install
-			} else {
-				setNextButtonLabel(steps[currentStep].nextButton); // Continue
-			}
-		} else {
-			setNextButtonLabel(steps[currentStep].nextButton);
-		}
-	}, [currentStep, enablePluginInstallation, isInstalling]);
+		setNextButtonLabel(steps[currentStep].nextButton);
+	}, [currentStep]);
 
 	// disable button on step processing or when input fields are not valid
 	useEffect(() => {

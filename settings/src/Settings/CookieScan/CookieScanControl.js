@@ -203,13 +203,10 @@ const CookieScanControl = () => {
 		<>
 			{ wscLocked && (
 				<Alert
+					compact
 					title={ __( 'Cookie Scan Unavailable', 'complianz-gdpr' ) }
 					subtitle={ __(
-						'We need to authenticate this domain.',
-						'complianz-gdpr'
-					) }
-					body={ __(
-						'The new advanced Website Scan needs to authenticate your website for security purposes. It only takes a second!',
+						'Authenticate your domain to run the Website Scan.',
 						'complianz-gdpr'
 					) }
 					ctaLabel={ __( 'Start', 'complianz-gdpr' ) }

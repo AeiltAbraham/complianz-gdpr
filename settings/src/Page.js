@@ -14,6 +14,9 @@ import PreloadFields from "./Settings/Fields/PreloadFields";
 import {__, setLocaleData} from "@wordpress/i18n";
 import ErrorBoundary from "./utils/ErrorBoundary";
 import { clsx } from "./components/ui/cx";
+// SHOWCASE-ONLY (design-dashboard-ctas): floating control to preview each customer state across pages
+// (onboarding, Consent Banner, …). Remove this import + its render below before any production build.
+import CustomerPreviewLauncher from "./preview/CustomerPreviewLauncher";
 
 // Redesigned grid FRAME (T-038, DB-07, ADR-005). The `.cmplz-content-area .cmplz-grid` container is
 // restyled with `tw-` utilities (logical/block-axis only, ADR-007) matching
@@ -162,13 +165,17 @@ const Page = () => {
 				<Header/>
 				{ showTour && Tour && <Tour />}
 				{ showNewOnboarding && NewOnboarding && <NewOnboarding/>}
+				{ /* SHOWCASE-ONLY: customer-state preview launcher (remove before production). */ }
+				<CustomerPreviewLauncher/>
 
 				<div
 					className={clsx(
 						"cmplz-content-area cmplz-grid cmplz-" + selectedMainMenuItem,
 						CONTENT_AREA_FRAME,
+						// Dashboard: a fixed 4-column grid so blocks tile 50/25/25 (col-span-2 = 50%,
+						// col-span-1 = 25%) on both rows; stacks to a single column below the md breakpoint.
 						selectedMainMenuItem === 'dashboard'
-							? "tw-grid-cols-[repeat(auto-fit,minmax(18rem,1fr))]"
+							? "tw-grid-cols-1 md:tw-grid-cols-4"
 							: "tw-grid-cols-[28ch_1fr_1fr_1fr]",
 						// Banner save-clearance (T-050, ADR-008): replaces the legacy
 						// `.cmplz-grid.cmplz-banner { margin-bottom: 200px }` (CookieBannerPreview.scss, now

@@ -11,6 +11,9 @@ import useProgress from '../Dashboard/Progress/ProgressData';
 import SettingsPlaceholder from '../Placeholder/SettingsPlaceholder';
 import ErrorBoundary from '../utils/ErrorBoundary';
 import { clsx } from '../components/ui/cx';
+// SHOWCASE-ONLY (design-dashboard-ctas): per-customer notice at the top of the Consent Banner page.
+import CustomerNotice from '../preview/CustomerNotice';
+import { getCustomerState } from '../preview/customerState';
 
 // Settings-screen frame (T-046, DB-07/DB-08; Stage-H section 1b). The two-column body, the sticky save/nav
 // footer (scroll-progress + upsell + buttons) and the help sidebar migrated off the retired
@@ -252,6 +255,35 @@ const Settings = () => {
 	}
 	helpNotices = helpNotices.filter(
 		notice => notice.label.toLowerCase() !== 'completed');
+	// SHOWCASE-ONLY (design-dashboard-ctas): a banner-page notification that differs per previewed customer —
+	// a CURRENT-UNAUTHENTICATED customer is nudged to authenticate (the lever for more customization +
+	// automated consent), a CURRENT customer is told their banner was rebuilt and asked to review the design.
+	// Both are red (label 'error') and lead the Notifications list. A NEW customer gets no warning here — they
+	// get the distinct starter-banner treatment instead. Inert without a customer-state override; remove with
+	// the preview/ helpers before release.
+	const previewCustomerState = selectedMainMenuItem === 'banner' ? getCustomerState() : null;
+	if ( previewCustomerState === 'unauthenticated' ) {
+		helpNotices = [
+			{
+				id: 'cmplz-preview-unauthenticated-authenticate',
+				label: 'error',
+				title: __( 'Authenticate your domain', 'complianz-gdpr' ),
+				text: __( 'Your domain isn’t verified yet. Authenticate your domain to unlock more customization options and to let Complianz manage your consent automatically.', 'complianz-gdpr' ),
+				url: 'https://complianz.io/authentication/',
+			},
+			...helpNotices,
+		];
+	} else if ( previewCustomerState === 'current' ) {
+		helpNotices = [
+			{
+				id: 'cmplz-preview-current-newbanner',
+				label: 'error',
+				title: __( 'Your consent banner has changed', 'complianz-gdpr' ),
+				text: __( 'We’ve rebuilt your consent banner for better performance, security and consent metrics. Please review the design — we kept it as close as possible to your previous banner.', 'complianz-gdpr' ),
+			},
+			...helpNotices,
+		];
+	}
 	let cookiebannerEnabled = fields.filter(
 		field => field.id === 'enable_cookie_banner' && field.value ===
 			'yes').length > 0;
@@ -262,6 +294,7 @@ const Settings = () => {
 		<>
 			{isExploding && ConfettiExplosion && <div className="cmplz-confetti tw-absolute tw-start-1/2"><ConfettiExplosion zIndex={999999}/></div>}
 			<div className={clsx("cmplz-wizard-settings cmplz-column-2", bodyCls)}>
+				{ selectedMainMenuItem === 'banner' && <CustomerNotice /> }
 				{groups.map((group, i) =>
 					<ErrorBoundary key={"groups-"+i} fallback={"Could not load: Banner preview"}>
 						<SettingsGroup key={i} index={i} group={group} fields={selectedFields}/>
