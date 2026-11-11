@@ -45,7 +45,10 @@ There is no `package.json` in the repo. The asset build in `gulpfile.js` and the
    - **Known issues:** with the locked WPCS 2.3, this aborted ("An error occurred during processing") on PHP 8.4. Also, `.phpcs.xml.dist` still has the placeholder prefix and text domain `my-plugin`.
    - **What to do:** if it aborts, say so in the PR. If it runs, ignore the prefix and text-domain findings caused by the placeholders.
    - **Scope:** fix only findings in lines you changed; the legacy code is not WPCS-clean.
-4. **Tests.** Run `vendor/bin/phpunit`. It needs the WP test library and a MySQL database: `bash bin/install-wp-tests.sh <db> <user> <pass> <host> latest`.
+4. **Tests.** Run `vendor/bin/phpunit`. It needs the WP test library and a MySQL database, set up with `bash bin/install-wp-tests.sh <db> <user> <pass> <host> latest`.
+   - **Use only a disposable database** with a new, unique name (for example `cmplz_test_<task id>`), on a local or throwaway MySQL, with the WP test library in a temporary `WP_TESTS_DIR`.
+   - **Never point the script at an existing database.** If the database exists, the script offers to drop and recreate it, and the tests reset its tables. Never answer "y" for a database you did not just create for this run.
+   - **Never use a real site's database or credentials,** including production, staging or shared environments.
    - `phpunit.xml.dist` points its suite at `./tests/legacy/`, which does not exist. The tests are in `tests/test-*.php`.
    - If you cannot set this up, say so in the PR; do not claim tests passed. Add or adjust tests only where `tests/` already covers the area.
 
