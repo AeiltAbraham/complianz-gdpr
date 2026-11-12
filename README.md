@@ -22,3 +22,42 @@ For support, we kindly ask you to start at our [support forum](https://wordpress
 
 If you like Complianz - Please [rate us](https://wordpress.org/support/plugin/complianz-gdpr/reviews/) on WordPress.org
 
+## Development
+
+The dev tools are declared in `composer.json` (`require-dev`). The commands below are run from the plugin root.
+
+**Install the dev tools** (PHP_CodeSniffer, WordPress Coding Standards, PHPCompatibility, PHPUnit):
+
+```sh
+composer install
+```
+
+**PHP syntax check** of a file you changed:
+
+```sh
+php -l complianz-gpdr.php
+```
+
+**Coding standards check** with PHP_CodeSniffer. It reads the ruleset in `.phpcs.xml.dist`; pass the files you changed:
+
+```sh
+vendor/bin/phpcs path/to/changed-file.php
+```
+
+`composer phpcs` runs `phpcs -p -s *.php` (the PHP files in the plugin root only).
+
+**Unit tests** with PHPUnit (`phpunit.xml.dist`, bootstrap `tests/bootstrap.php`):
+
+```sh
+vendor/bin/phpunit
+```
+
+The tests need the WordPress test library and a MySQL database. Install them with `bin/install-wp-tests.sh`:
+
+```sh
+bash bin/install-wp-tests.sh <db-name> <db-user> <db-pass> [db-host] [wp-version]
+```
+
+Use a **disposable** database with a new, unique name on a local or throwaway MySQL server. The tests reset the tables of that database, so never use an existing database or a real site's credentials. If the library is installed outside the default location (`$TMPDIR/wordpress-tests-lib`), set `WP_TESTS_DIR` to its path before running PHPUnit.
+
+Note: at the time of writing, `phpunit.xml.dist` points its test suite at `./tests/legacy/`, which does not exist, while the test files are `tests/test-*.php`. If `vendor/bin/phpunit` finds no tests, run the files directly, for example `vendor/bin/phpunit tests/test-404.php`.
